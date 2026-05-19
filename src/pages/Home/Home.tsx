@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { profile } from "../../data/profile";
@@ -55,6 +56,8 @@ export default function Home() {
         </div>
       </section>
 
+      <Navigation />
+
       {/* ── dashboard cards (uniform 3-col) ──────────────── */}
       <div className="grid">
         {/* row 1-6 col 1-4 : profile photo card */}
@@ -78,7 +81,7 @@ export default function Home() {
           </div>
           <div className="card-footer">
             <a className="card-link" href={profile.links.github} target="_blank" rel="noreferrer">view github</a>
-            <span className="mono faint">@yule-studio</span>
+            <span className="mono faint">@{profile.githubUsername}</span>
           </div>
         </Card>
 

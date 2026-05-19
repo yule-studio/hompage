@@ -1,4 +1,5 @@
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import { awards } from "../../data/awards";
 
 export default function Awards() {
@@ -12,6 +13,8 @@ export default function Awards() {
         </div>
         <span className="chip mono">{awards.length}</span>
       </header>
+
+      <Navigation />
 
       <div className="section-grid">
         {awards.map((a) => (

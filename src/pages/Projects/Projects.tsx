@@ -1,4 +1,5 @@
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { projects, type Project } from "../../data/projects";
 
@@ -20,6 +21,8 @@ export default function Projects() {
         </div>
         <span className="chip mono">{projects.length} total</span>
       </header>
+
+      <Navigation />
 
       <div className="section-grid">
         {projects.map((p) => (

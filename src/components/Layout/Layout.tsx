@@ -1,9 +1,14 @@
 import { ReactNode } from "react";
 import Topbar from "../Topbar/Topbar";
-import Navigation from "../Navigation/Navigation";
 
 type Props = { children: ReactNode };
 
+/**
+ * Layout — Topbar at top, page content fills the main column.
+ * Navigation is intentionally NOT rendered here; each page mounts
+ * <Navigation /> *after* its hero/page-header so the nav sits
+ * visually under the profile, not above it.
+ */
 export default function Layout({ children }: Props) {
   return (
     <>
@@ -11,7 +16,6 @@ export default function Layout({ children }: Props) {
         본문으로 건너뛰기
       </a>
       <Topbar />
-      <Navigation />
       <main id="main" className="page">
         <div className="container">{children}</div>
       </main>

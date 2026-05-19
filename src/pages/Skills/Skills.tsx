@@ -1,4 +1,5 @@
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import { skills } from "../../data/skills";
 
@@ -12,6 +13,8 @@ export default function Skills() {
           <p className="page-subtitle">현재 자주 쓰는 스택. 숫자는 자기 평가 — 면접용 아님.</p>
         </div>
       </header>
+
+      <Navigation />
 
       {skills.map((group) => (
         <section key={group.group}>

@@ -1,4 +1,5 @@
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { certs, type Cert } from "../../data/certs";
 
@@ -19,6 +20,8 @@ export default function Certs() {
         </div>
         <span className="chip mono">{certs.length}</span>
       </header>
+
+      <Navigation />
 
       <div className="section-grid">
         {certs.map((c) => (
