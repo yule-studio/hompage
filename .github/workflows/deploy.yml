@@ -36,14 +36,19 @@ jobs:
         env:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_PROJECTS_OWNER: yule-studio
-          GITHUB_PROJECTS_OWNER_TYPE: org
+          GITHUB_PROJECTS_SOURCES: user:codwithyc,org:yule-studio
       - name: Generate GitHub languages
         run: npm run github:languages
         env:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_LANGUAGES_USERNAME: codwithyc
+      - name: Generate GitHub topics
+        run: npm run github:topics
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOPICS_SOURCES: user:codwithyc,org:yule-studio
       - run: npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5
