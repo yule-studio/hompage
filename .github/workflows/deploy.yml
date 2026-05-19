@@ -42,7 +42,7 @@ jobs:
         env:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_LANGUAGES_USERNAME: codwithyc
+          GITHUB_LANGUAGES_SOURCES: user:codwithyc,org:yule-studio
       - name: Generate GitHub topics
         run: npm run github:topics
         env:
