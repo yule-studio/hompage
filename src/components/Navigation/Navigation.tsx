@@ -1,5 +1,11 @@
 import { NavLink } from "react-router-dom";
 
+/**
+ * Primary navigation.
+ *
+ * Note: Blog lives on an external host (Tistory). It is intentionally
+ * not in this list — Home renders a Blog button that opens externally.
+ */
 const ITEMS = [
   { to: "/",          label: "Home" },
   { to: "/projects",  label: "Projects" },
@@ -8,7 +14,6 @@ const ITEMS = [
   { to: "/certs",     label: "Certs" },
   { to: "/homelab",   label: "Homelab" },
   { to: "/calendar",  label: "Calendar" },
-  { to: "/blog",      label: "Blog" },
   { to: "/contact",   label: "Contact" },
 ];
 

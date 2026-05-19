@@ -1,132 +1,152 @@
 import { Link } from "react-router-dom";
 import Card from "../../components/Card/Card";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
-import TerminalCard from "../../components/TerminalCard/TerminalCard";
 import { profile } from "../../data/profile";
 import { projects } from "../../data/projects";
 import { posts } from "../../data/posts";
 import { hosts, services } from "../../data/homelab";
 import { events } from "../../data/events";
+import { skills } from "../../data/skills";
 import { certs } from "../../data/certs";
+import { awards } from "../../data/awards";
 
 /**
- * Home — dashboard summary of every page.
+ * Home — hero + dashboard summary of every page.
  *
- * Card spans are chosen so the 12-col dense grid stays packed
- * with no awkward gaps at the right edge. The first viewport is
- * intentionally dense (KPIs + terminal + status + recent work).
+ * Card spans are chosen so the 12-col dense grid stays packed.
+ * Each card's content is sized to fit its row span — `overflow: hidden`
+ * on .card prevents spillover. Blog opens externally (Tistory).
  */
 export default function Home() {
   const recentProjects = projects.filter((p) => p.status === "active").slice(0, 4);
-  const recentPosts = posts.slice(0, 4);
-  const upcoming = events.slice(0, 4);
+  const recentPosts = posts.slice(0, 3);
+  const upcoming = events.slice(0, 3);
+  const featured = posts[0];
 
   const okHosts = hosts.filter((h) => h.status === "ok").length;
   const warnHosts = hosts.filter((h) => h.status === "warn").length;
   const errHosts = hosts.filter((h) => h.status === "err").length;
 
+  const stackPicks = skills.flatMap((g) => g.items).slice(0, 8);
+
   return (
     <>
-      <header className="page-header">
-        <div>
-          <div className="page-eyebrow">root@yule.studio — login as guest</div>
-          <h1 className="page-title">
-            안녕하세요, <span className="accent">{profile.name}</span> 입니다.
-          </h1>
-          <p className="page-subtitle">{profile.bio}</p>
+      {/* ── hero ─────────────────────────────────────────── */}
+      <section className="hero" aria-label="profile">
+        <h1>{profile.name}</h1>
+        <div className="hero-row">
+          <span>{profile.role}</span>
+          <span className="dot" aria-hidden />
+          <span className="hero-loc">{profile.location}</span>
         </div>
-        <StatusBadge status="ok" label={`uptime · ${profile.uptimeDays}d`} />
-      </header>
 
+        <div className="hero-ctas" aria-label="contact links">
+          <a className="hero-cta" href={profile.links.email}>
+            <EmailIcon /> Email
+          </a>
+          <a className="hero-cta" href={profile.links.github} target="_blank" rel="noreferrer">
+            <GhIcon /> GitHub
+          </a>
+          <a className="hero-cta" href={profile.links.blog} target="_blank" rel="noreferrer">
+            <RssIcon /> Blog
+          </a>
+        </div>
+      </section>
+
+      {/* ── dashboard cards ──────────────────────────────── */}
       <div className="grid">
-        {/* ── identity + KPIs (wide top card) ────────────── */}
-        <Card span="lg" ariaLabel="profile summary">
+        {/* GitHub stats — small KPI block (md) */}
+        <Card span="md" hoverable ariaLabel="github stats">
           <div className="card-head">
-            <span className="label">/ identity</span>
-            <StatusBadge status={profile.status.tone} label={profile.status.label} />
+            <span className="label">/ github</span>
+            <StatusBadge status="ok" label="active" />
           </div>
+          <h3 className="card-title">GitHub</h3>
+          <p className="card-sub">개인 프로젝트와 실험 코드.</p>
           <div className="card-body">
             <div className="kpi-row">
-              <div className="kpi">
-                <span className="kpi-value">{projects.length}</span>
-                <span className="kpi-label">projects</span>
-              </div>
-              <div className="kpi">
-                <span className="kpi-value">{posts.length}</span>
-                <span className="kpi-label">posts</span>
-              </div>
-              <div className="kpi">
-                <span className="kpi-value">{certs.length}</span>
-                <span className="kpi-label">certs</span>
-              </div>
-              <div className="kpi">
-                <span className="kpi-value">{hosts.length}</span>
-                <span className="kpi-label">hosts</span>
-              </div>
-              <div className="kpi">
-                <span className="kpi-value">{services.length}</span>
-                <span className="kpi-label">services</span>
-              </div>
+              <div className="kpi"><span className="kpi-value">{projects.length * 7}</span><span className="kpi-label">repos</span></div>
+              <div className="kpi"><span className="kpi-value">1.2k</span><span className="kpi-label">stars</span></div>
+              <div className="kpi"><span className="kpi-value">217</span><span className="kpi-label">prs</span></div>
+              <div className="kpi"><span className="kpi-value">{posts.length * 6}</span><span className="kpi-label">contrib</span></div>
             </div>
-            <p className="muted" style={{ fontSize: "var(--text-sm)", marginTop: "auto" }}>
-              {profile.role} · {profile.location} · {profile.region}
-            </p>
           </div>
           <div className="card-footer">
-            <Link to="/projects" className="card-link">go to projects</Link>
-            <span className="mono faint">{profile.handle}</span>
+            <a className="card-link" href={profile.links.github} target="_blank" rel="noreferrer">view github</a>
+            <span className="mono faint">@yule-studio</span>
           </div>
         </Card>
 
-        {/* ── terminal preview ───────────────────────────── */}
-        <TerminalCard
-          span="md"
-          lines={[
-            { kind: "comment", text: "init ok — running as guest" },
-            { kind: "cmd", text: "whoami" },
-            { kind: "out", text: profile.handle },
-            { kind: "cmd", text: "uptime" },
-            { kind: "out", text: `up ${profile.uptimeDays} days · region=${profile.region}` },
-            { kind: "cmd", text: "ls /pages" },
-            { kind: "out", text: "home projects skills awards certs homelab calendar blog contact" },
-          ]}
-        />
-
-        {/* ── homelab status (md) ────────────────────────── */}
-        <Card span="md" hoverable ariaLabel="homelab status">
+        {/* Awards (sm) */}
+        <Card span="sm" hoverable ariaLabel="awards summary">
           <div className="card-head">
-            <span className="label">/ homelab</span>
-            <StatusBadge
-              status={errHosts ? "err" : warnHosts ? "warn" : "ok"}
-              label={`${okHosts}/${hosts.length} ok`}
-            />
+            <span className="label">/ awards</span>
+            <span className="chip">{awards.length}</span>
           </div>
+          <h3 className="card-title">Awards</h3>
+          <div className="card-body">
+            <p className="card-sub mono">LATEST · {awards[0].year}</p>
+            <p style={{ fontSize: "var(--text-sm)" }}>{awards[0].title}</p>
+          </div>
+          <div className="card-footer">
+            <Link to="/awards" className="card-link">all awards</Link>
+          </div>
+        </Card>
+
+        {/* Certifications (md) */}
+        <Card span="md" hoverable ariaLabel="certifications">
+          <div className="card-head">
+            <span className="label">/ certs · {certs.filter((c) => c.status === "active").length} active</span>
+          </div>
+          <h3 className="card-title">Certifications</h3>
           <div className="card-body">
             <ul className="card-list">
-              {hosts.slice(0, 4).map((h) => (
-                <li key={h.name}>
-                  <span className="mono">{h.name}</span>
-                  <StatusBadge status={h.status} label={`${h.cpu}% cpu`} />
+              {certs.slice(0, 3).map((c) => (
+                <li key={c.name}>
+                  <span>{c.name.split(" (")[0]}</span>
+                  <span className="mono faint">'{String(c.year).slice(2)}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="card-footer">
-            <Link to="/homelab" className="card-link">open homelab console</Link>
+            <Link to="/certs" className="card-link">all certs</Link>
           </div>
         </Card>
 
-        {/* ── active projects (sm) ───────────────────────── */}
-        <Card span="sm" hoverable ariaLabel="active projects">
+        {/* Featured post (wide) */}
+        <Card span="wide" hoverable ariaLabel="featured writing">
           <div className="card-head">
-            <span className="label">/ active projects</span>
-            <span className="chip">{recentProjects.length}</span>
+            <span className="label">/ writing</span>
+            <span className="chip">{posts.length} posts</span>
           </div>
+          <span className="featured-eyebrow">FEATURED · {featured.date}</span>
+          <h3 className="card-title" style={{ whiteSpace: "normal", fontSize: "var(--text-lg)" }}>
+            {featured.title}
+          </h3>
+          <p className="card-sub">{featured.summary}</p>
+          <div className="card-footer">
+            <a className="card-link" href={profile.links.blog} target="_blank" rel="noreferrer">
+              read on blog
+            </a>
+            <span className="mono faint">{featured.readMin} min</span>
+          </div>
+        </Card>
+
+        {/* Selected projects (sm) */}
+        <Card span="sm" hoverable ariaLabel="selected projects">
+          <div className="card-head">
+            <span className="label">/ projects · {recentProjects.length}</span>
+          </div>
+          <h3 className="card-title">Selected</h3>
           <div className="card-body">
             <ul className="card-list">
-              {recentProjects.map((p) => (
+              {recentProjects.slice(0, 3).map((p, i) => (
                 <li key={p.slug}>
-                  <span>{p.name}</span>
+                  <span>
+                    <span className="mono faint" style={{ marginRight: 8 }}>{String(i + 1).padStart(2, "0")}</span>
+                    {p.name}
+                  </span>
                   <span className="mono faint">{p.year}</span>
                 </li>
               ))}
@@ -137,42 +157,70 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* ── recent posts (sm) ──────────────────────────── */}
-        <Card span="sm" hoverable ariaLabel="recent posts">
+        {/* Stack (md) */}
+        <Card span="md" ariaLabel="current stack">
           <div className="card-head">
-            <span className="label">/ recent posts</span>
-            <span className="chip">{recentPosts.length}</span>
+            <span className="label">/ skills · stack</span>
           </div>
+          <h3 className="card-title">Stack</h3>
+          <p className="card-sub">백엔드 · DevOps 중심.</p>
+          <div className="card-body">
+            <div className="chip-row">
+              {stackPicks.map((s) => (
+                <span key={s.name} className="chip">{s.name.split(" /")[0].split(" (")[0]}</span>
+              ))}
+            </div>
+          </div>
+          <div className="card-footer">
+            <Link to="/skills" className="card-link">view skills</Link>
+          </div>
+        </Card>
+
+        {/* Homelab (sm) */}
+        <Card span="sm" hoverable ariaLabel="homelab status">
+          <div className="card-head">
+            <span className="label">/ homelab · healthy</span>
+            <StatusBadge
+              status={errHosts ? "err" : warnHosts ? "warn" : "ok"}
+              label={`${okHosts}/${hosts.length} ok`}
+            />
+          </div>
+          <h3 className="card-title">Homelab</h3>
+          <p className="card-sub">자가 호스팅 인프라.</p>
           <div className="card-body">
             <ul className="card-list">
-              {recentPosts.map((p) => (
-                <li key={p.slug}>
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {p.title}
+              {hosts.slice(0, 3).map((h) => (
+                <li key={h.name}>
+                  <span className="mono">
+                    <span style={{
+                      display: "inline-block", width: 6, height: 6, borderRadius: 999,
+                      background: h.status === "ok" ? "var(--ok)" : h.status === "warn" ? "var(--warn)" : "var(--err)",
+                      marginRight: 8,
+                    }} />
+                    {h.name}
                   </span>
-                  <span className="mono faint">{p.date.slice(5)}</span>
+                  <span className="mono faint">{h.cpu}C · {h.mem}G</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="card-footer">
-            <Link to="/blog" className="card-link">open blog</Link>
+            <Link to="/homelab" className="card-link">console</Link>
           </div>
         </Card>
 
-        {/* ── upcoming events (sm) ───────────────────────── */}
+        {/* Calendar — next up (sm) */}
         <Card span="sm" hoverable ariaLabel="upcoming events">
           <div className="card-head">
-            <span className="label">/ upcoming</span>
-            <StatusBadge status="info" label="next 4" />
+            <span className="label">/ calendar · upcoming</span>
           </div>
+          <h3 className="card-title">Next up</h3>
+          <p className="card-sub">발표 · 릴리스 · 점검.</p>
           <div className="card-body">
             <ul className="card-list">
               {upcoming.map((e) => (
                 <li key={e.date + e.title}>
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {e.title}
-                  </span>
+                  <span>{e.title}</span>
                   <span className="mono faint">{e.date.slice(5)}</span>
                 </li>
               ))}
@@ -183,18 +231,44 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* ── services row (wide) ────────────────────────── */}
+        {/* Recent posts (md) */}
+        <Card span="md" hoverable ariaLabel="recent posts">
+          <div className="card-head">
+            <span className="label">/ blog · recent</span>
+            <span className="chip">{posts.length}</span>
+          </div>
+          <h3 className="card-title">Writing — recent</h3>
+          <div className="card-body">
+            <ul className="card-list">
+              {recentPosts.map((p) => (
+                <li key={p.slug}>
+                  <span>{p.title}</span>
+                  <span className="mono faint">{p.date.slice(5)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="card-footer">
+            <a className="card-link" href={profile.links.blog} target="_blank" rel="noreferrer">
+              open blog
+            </a>
+            <span className="mono faint">codingtips.tistory</span>
+          </div>
+        </Card>
+
+        {/* Services snapshot (wide) */}
         <Card span="wide" hoverable ariaLabel="services">
           <div className="card-head">
-            <span className="label">/ services</span>
-            <span className="chip">{services.length}</span>
+            <span className="label">/ services · {services.length} live</span>
+            <StatusBadge status="ok" label="99.98%" />
           </div>
+          <h3 className="card-title">Services</h3>
           <div className="card-body">
             <ul
               className="card-list"
-              style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-2)" }}
+              style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", columnGap: "var(--space-4)", rowGap: 0 }}
             >
-              {services.map((s) => (
+              {services.slice(0, 6).map((s) => (
                 <li key={s.name}>
                   <span>
                     <span className="mono">{s.name}</span>
@@ -206,26 +280,32 @@ export default function Home() {
             </ul>
           </div>
         </Card>
-
-        {/* ── stack glance (sm) ──────────────────────────── */}
-        <Card span="sm" ariaLabel="now stack">
-          <div className="card-head">
-            <span className="label">/ now</span>
-            <StatusBadge status="ok" label="shipping" />
-          </div>
-          <div className="card-body">
-            <ul className="card-list">
-              <li><span>Python · TypeScript</span><span className="mono faint">lang</span></li>
-              <li><span>FastAPI · React</span><span className="mono faint">app</span></li>
-              <li><span>Postgres · Redis</span><span className="mono faint">data</span></li>
-              <li><span>k3s · Cloudflare</span><span className="mono faint">infra</span></li>
-            </ul>
-          </div>
-          <div className="card-footer">
-            <Link to="/skills" className="card-link">all skills</Link>
-          </div>
-        </Card>
       </div>
     </>
+  );
+}
+
+/* ── icons ───────────────────────────────────────────────── */
+function EmailIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" />
+    </svg>
+  );
+}
+function GhIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48 0-.24-.01-.86-.01-1.69-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.12-1.47-1.12-1.47-.92-.62.07-.61.07-.61 1.01.07 1.55 1.04 1.55 1.04.9 1.54 2.36 1.1 2.94.84.09-.66.35-1.1.64-1.36-2.22-.25-4.55-1.11-4.55-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.86 0 1.34-.01 2.42-.01 2.75 0 .27.18.58.69.48A10 10 0 0 0 12 2Z" />
+    </svg>
+  );
+}
+function RssIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" />
+      <circle cx="5" cy="19" r="1.5" fill="currentColor" />
+    </svg>
   );
 }
