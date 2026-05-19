@@ -82,6 +82,12 @@ export default function Home() {
           <a className="hero-cta" href={profile.links.blog} target="_blank" rel="noreferrer">
             <RssIcon /> Blog
           </a>
+          <a className="hero-cta" href={profile.links.instagram} target="_blank" rel="noreferrer">
+            <IgIcon /> Instagram
+          </a>
+          <a className="hero-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">
+            <LiIcon /> LinkedIn
+          </a>
         </div>
       </section>
 
@@ -366,6 +372,22 @@ function RssIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
       <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" />
       <circle cx="5" cy="19" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+function IgIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+function LiIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M4.98 3.5a2.5 2.5 0 1 1-.02 5.001A2.5 2.5 0 0 1 4.98 3.5ZM3 9.75h4v11.25H3V9.75Zm6.5 0h3.84v1.54h.05c.53-.96 1.84-1.97 3.78-1.97 4.05 0 4.8 2.66 4.8 6.13V21h-4v-5.32c0-1.27-.02-2.91-1.78-2.91-1.78 0-2.06 1.39-2.06 2.82V21h-4V9.75Z" />
     </svg>
   );
 }
