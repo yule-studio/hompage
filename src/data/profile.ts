@@ -1,3 +1,5 @@
+const githubUsername = "codwithyc";
+
 export const profile = {
   handle: "yuchan.oh",
   name: "Oh Yuchan",
@@ -9,9 +11,11 @@ export const profile = {
     "최근에는 LLM 코딩 에이전트와 self-host 홈랩 자동화에 시간을 쏟고 있어요.",
   links: {
     email: "mailto:hi@yuchan.oh",
-    github: "https://github.com/codwithyc",
+    github: `https://github.com/${githubUsername}`,
     blog: "https://codingtips.tistory.com/",
   },
+  githubUsername,
+  avatarUrl: `https://github.com/${githubUsername}.png?size=512`,
   uptimeDays: 412,
   region: "home / seoul",
 };
