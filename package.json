@@ -8,6 +8,9 @@
   "homepage": "https://github.com/yule-studio/hompage",
   "scripts": {
     "dev": "vite",
+    "github:stats": "node scripts/fetch-github-stats.mjs",
+    "github:projects": "node scripts/fetch-github-projects.mjs",
+    "github:languages": "node scripts/fetch-github-languages.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host --port 4173",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",

@@ -1,10 +1,13 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../components/Card/Card";
 import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { profile } from "../../data/profile";
-import { projects } from "../../data/projects";
+import { githubStatItems, githubStatsFallback, type GithubStats } from "../../data/githubStats";
+import { useProjects } from "../../hooks/useProjects";
+import { useGithubLanguages } from "../../hooks/useGithubLanguages";
 import { posts } from "../../data/posts";
 import { hosts, services } from "../../data/homelab";
 import { events } from "../../data/events";
@@ -24,6 +27,9 @@ import { awards } from "../../data/awards";
  * Blog opens externally (Tistory).
  */
 export default function Home() {
+  const [githubStats, setGithubStats] = useState<GithubStats>(githubStatsFallback);
+  const { projects } = useProjects();
+  const { languages: topLanguages } = useGithubLanguages();
   const featured = posts[0];
   const okHosts = hosts.filter((h) => h.status === "ok").length;
   const warnHosts = hosts.filter((h) => h.status === "warn").length;
@@ -31,9 +37,32 @@ export default function Home() {
   const nextEvent = events[0];
   const lastAward = awards[0];
   const stackCount = skills.reduce((sum, g) => sum + g.items.length, 0);
+  const selectedProjects = projects
+    .filter((project) => project.status === "active" || project.status === "shipped")
+    .slice(0, 3);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch(`${import.meta.env.BASE_URL}github-stats.json`, { cache: "no-cache" })
+      .then((response) => {
+        if (!response.ok) throw new Error("GitHub stats unavailable");
+        return response.json();
+      })
+      .then((data: unknown) => {
+        if (isMounted) setGithubStats(normalizeGithubStats(data));
+      })
+      .catch(() => {
+        if (isMounted) setGithubStats(githubStatsFallback);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
-    <>
+    <div className="home-shell">
       {/* ── hero ─────────────────────────────────────────── */}
       <section className="hero" aria-label="profile">
         <h1>{profile.name}</h1>
@@ -60,11 +89,11 @@ export default function Home() {
 
       {/* ── dashboard cards (uniform 3-col) ──────────────── */}
       <div className="grid">
-        {/* row 1-6 col 1-4 : profile photo card */}
+        {/* row 1 col 1-4 : profile photo card */}
         <ProfileCard />
 
         {/* row 1-3 : GitHub + Awards */}
-        <Card span="sm" hoverable ariaLabel="github">
+        <Card span="sm" hoverable ariaLabel="github" className="home-github-card">
           <div className="card-head">
             <span className="label">/ github</span>
             <StatusBadge status="ok" label="active" />
@@ -72,16 +101,18 @@ export default function Home() {
           <h3 className="card-title">GitHub</h3>
           <p className="card-sub">개인 프로젝트와 실험 코드.</p>
           <div className="card-body">
-            <div className="kpi-row">
-              <div className="kpi"><span className="kpi-value">42</span><span className="kpi-label">repos</span></div>
-              <div className="kpi"><span className="kpi-value">1.2k</span><span className="kpi-label">stars</span></div>
-              <div className="kpi"><span className="kpi-value">217</span><span className="kpi-label">prs</span></div>
-              <div className="kpi"><span className="kpi-value">30</span><span className="kpi-label">contrib</span></div>
+            <div className="kpi-row github-kpi-row">
+              {githubStatItems.map((item) => (
+                <div className="kpi" key={item.key}>
+                  <span className="kpi-value">{formatKpi(githubStats[item.key])}</span>
+                  <span className="kpi-label">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
           <div className="card-footer">
             <a className="card-link" href={profile.links.github} target="_blank" rel="noreferrer">view github</a>
-            <span className="mono faint">@{profile.githubUsername}</span>
+            <span className="mono faint">@{githubStats.username}</span>
           </div>
         </Card>
 
@@ -129,15 +160,20 @@ export default function Home() {
           <h3 className="card-title">Selected</h3>
           <div className="card-body">
             <ul className="card-list">
-              {projects.filter((p) => p.status === "active").slice(0, 3).map((p, i) => (
+              {selectedProjects.length ? selectedProjects.map((p, i) => (
                 <li key={p.slug}>
-                  <span>
+                  <Link to={`/projects/${p.slug}`} className="project-list-link">
                     <span className="mono faint" style={{ marginRight: 8 }}>{String(i + 1).padStart(2, "0")}</span>
-                    {p.name}
-                  </span>
+                    <span>{p.name}</span>
+                  </Link>
                   <span className="mono faint">{p.year}</span>
                 </li>
-              ))}
+              )) : (
+                <li>
+                  <span className="mono faint">sync pending</span>
+                  <span className="mono faint">--</span>
+                </li>
+              )}
             </ul>
           </div>
           <div className="card-footer">
@@ -145,8 +181,8 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* row 7-9 : Blog (sm) + Skills (sm) — uniform tiles */}
-        <Card span="sm" hoverable ariaLabel="featured writing">
+        {/* row 7-9 : Blog (md) + Skills (sm) */}
+        <Card span="md" hoverable ariaLabel="featured writing">
           <div className="card-head">
             <span className="label">/ blog</span>
             <span className="chip">{posts.length} posts</span>
@@ -166,22 +202,38 @@ export default function Home() {
 
         <Card span="sm" hoverable ariaLabel="skills">
           <div className="card-head">
-            <span className="label">/ skills · stack</span>
+            <span className="label">/ skills · top langs</span>
           </div>
           <h3 className="card-title">Stack</h3>
-          <p className="card-sub">백엔드 · DevOps 중심.</p>
+          <p className="card-sub">GitHub 코드 바이트 기준 상위 언어.</p>
           <div className="card-body">
             <div className="chip-row">
-              {skills.flatMap((g) => g.items).slice(0, 6).map((s) => (
-                <span key={s.name} className="chip">
-                  {s.name.split(" /")[0].split(" (")[0]}
+              {(topLanguages.length ? topLanguages.slice(0, 6) : skills[0].items.slice(0, 6).map((s) => ({
+                name: s.name.split(" /")[0].split(" (")[0],
+                percent: 0,
+                color: null as string | null,
+              }))).map((lang) => (
+                <span key={lang.name} className="chip lang-chip">
+                  <span
+                    className="lang-dot"
+                    aria-hidden
+                    style={{ background: lang.color ?? "var(--text-muted)" }}
+                  />
+                  {lang.name}
+                  {lang.percent > 0 ? (
+                    <span className="mono faint" style={{ marginLeft: 4 }}>
+                      {lang.percent.toFixed(0)}%
+                    </span>
+                  ) : null}
                 </span>
               ))}
             </div>
           </div>
           <div className="card-footer">
             <Link to="/skills" className="card-link">view skills</Link>
-            <span className="mono faint">{stackCount} items</span>
+            <span className="mono faint">
+              {topLanguages.length || stackCount} {topLanguages.length ? "langs" : "items"}
+            </span>
           </div>
         </Card>
 
@@ -232,7 +284,7 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card span="sm" hoverable ariaLabel="services">
+        <Card span="sm" hoverable ariaLabel="services" className="home-services-card">
           <div className="card-head">
             <span className="label">/ services · {services.length} live</span>
             <StatusBadge status="ok" label="99.98%" />
@@ -241,7 +293,7 @@ export default function Home() {
           <p className="card-sub">self-host 서비스 상태.</p>
           <div className="card-body">
             <ul className="card-list">
-              {services.slice(0, 3).map((s) => (
+              {services.slice(0, 2).map((s) => (
                 <li key={s.name}>
                   <span className="mono">{s.name}</span>
                   <StatusBadge status={s.status} label={s.status === "ok" ? "ok" : s.status} />
@@ -254,8 +306,43 @@ export default function Home() {
           </div>
         </Card>
       </div>
-    </>
+    </div>
   );
+}
+
+const numberFormatter = new Intl.NumberFormat("en-US");
+
+function formatKpi(value: number) {
+  if (value >= 1_000_000) return `${trimDecimal(value / 1_000_000)}m`;
+  if (value >= 10_000) return `${trimDecimal(value / 1_000)}k`;
+  return numberFormatter.format(value);
+}
+
+function trimDecimal(value: number) {
+  return value.toFixed(1).replace(".0", "");
+}
+
+function normalizeGithubStats(value: unknown): GithubStats {
+  if (!value || typeof value !== "object") return githubStatsFallback;
+
+  const data = value as Partial<Record<keyof GithubStats, unknown>>;
+
+  return {
+    username: typeof data.username === "string" ? data.username : githubStatsFallback.username,
+    stars: readStat(data.stars, githubStatsFallback.stars),
+    prs: readStat(data.prs, githubStatsFallback.prs),
+    issues: readStat(data.issues, githubStatsFallback.issues),
+    repos: readStat(data.repos, githubStatsFallback.repos),
+    commits: readStat(data.commits, githubStatsFallback.commits),
+    contributedTo: readStat(data.contributedTo, githubStatsFallback.contributedTo),
+    updatedAt: typeof data.updatedAt === "string" ? data.updatedAt : null,
+  };
+}
+
+function readStat(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? Math.round(value)
+    : fallback;
 }
 
 /* ── icons (inline so SVGs always have explicit size) ───── */

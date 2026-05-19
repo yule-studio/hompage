@@ -25,6 +25,25 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci
+      - name: Generate GitHub stats
+        run: npm run github:stats
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_STATS_USERNAME: codwithyc
+      - name: Generate GitHub projects
+        run: npm run github:projects
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_PROJECTS_OWNER: yule-studio
+          GITHUB_PROJECTS_OWNER_TYPE: org
+      - name: Generate GitHub languages
+        run: npm run github:languages
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_LANGUAGES_USERNAME: codwithyc
       - run: npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5
