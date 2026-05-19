@@ -23,11 +23,18 @@ const topicFilter = process.env.GITHUB_PROJECTS_TOPIC?.trim();
 const includeArchived = process.env.GITHUB_PROJECTS_INCLUDE_ARCHIVED === "true";
 const includeForks = process.env.GITHUB_PROJECTS_INCLUDE_FORKS === "true";
 const maxProjects = Number.parseInt(process.env.GITHUB_PROJECTS_MAX ?? "24", 10);
+/**
+ * Token priority — prefer the workflow-scoped GITHUB_TOKEN over user PATs.
+ * yule-studio org has a fine-grained PAT lifetime ≤366d policy, so a
+ * long-lived GH_STATS_TOKEN gets 403 on org endpoints. The default
+ * GITHUB_TOKEN from GH Actions is scoped to the repo / workflow and works.
+ * Falls through to a PAT only when GITHUB_TOKEN isn't present (local runs).
+ */
 const token = [
   process.env.GITHUB_PROJECTS_TOKEN,
+  process.env.GITHUB_TOKEN,
   process.env.GH_STATS_TOKEN,
   process.env.GH_TOKEN,
-  process.env.GITHUB_TOKEN,
 ].find(Boolean);
 
 const apiHeaders = {
@@ -220,12 +227,24 @@ function getYear(value) {
 }
 
 const allRepos = [];
+const failedSources = [];
 for (const source of sources) {
-  const repos = await restPages(getReposPath(source));
-  for (const repo of repos) {
-    repo.__source = source;
+  try {
+    const repos = await restPages(getReposPath(source));
+    for (const repo of repos) {
+      repo.__source = source;
+    }
+    allRepos.push(...repos);
+    console.log(`  ${source.type}:${source.name} → ${repos.length} repos`);
+  } catch (error) {
+    console.warn(`  ${source.type}:${source.name} failed: ${error.message}`);
+    failedSources.push(`${source.type}:${source.name}`);
   }
-  allRepos.push(...repos);
+}
+
+if (allRepos.length === 0 && failedSources.length > 0) {
+  console.error(`All sources failed: ${failedSources.join(", ")}`);
+  process.exit(1);
 }
 
 // Dedupe by full_name (user repo + org fork could collide; prefer first occurrence).
