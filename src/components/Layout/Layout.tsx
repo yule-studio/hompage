@@ -17,7 +17,9 @@ export default function Layout({ children }: Props) {
       </a>
       <Topbar />
       <main id="main" className="page">
-        <div className="container">{children}</div>
+        <div className="container">
+          <div className="page-shell">{children}</div>
+        </div>
       </main>
       <footer className="site-footer">
         <div className="container site-footer-inner">
