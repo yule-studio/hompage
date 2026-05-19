@@ -17,7 +17,7 @@ export default function Contact() {
       <Navigation />
 
       <div className="grid">
-        <Card span="md" ariaLabel="reach">
+        <Card span="sm" ariaLabel="reach">
           <div className="card-head">
             <span className="label">/ reach</span>
           </div>
@@ -41,7 +41,7 @@ export default function Contact() {
           </div>
         </Card>
 
-        <Card span="md" ariaLabel="open to">
+        <Card span="sm" ariaLabel="open to">
           <div className="card-head">
             <span className="label">/ open to</span>
           </div>
@@ -56,7 +56,7 @@ export default function Contact() {
         </Card>
 
         <TerminalCard
-          span="wide"
+          span="sm"
           title="~/contact"
           lines={[
             { kind: "comment", text: "shortest path" },

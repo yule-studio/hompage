@@ -145,8 +145,8 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* row 7-9 : Blog (md=8) + Skills (sm) */}
-        <Card span="md" hoverable ariaLabel="featured writing">
+        {/* row 7-9 : Blog (sm) + Skills (sm) — uniform tiles */}
+        <Card span="sm" hoverable ariaLabel="featured writing">
           <div className="card-head">
             <span className="label">/ blog</span>
             <span className="chip">{posts.length} posts</span>
