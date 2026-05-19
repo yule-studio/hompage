@@ -1,4 +1,5 @@
 import Card from "../../components/Card/Card";
+import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { events, type Event } from "../../data/events";
 
@@ -21,6 +22,8 @@ export default function CalendarPage() {
         </div>
         <span className="chip mono">{events.length}</span>
       </header>
+
+      <Navigation />
 
       <div className="section-grid">
         {events.map((e) => (
