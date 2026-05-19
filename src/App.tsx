@@ -7,10 +7,13 @@ import Awards from "./pages/Awards/Awards";
 import Certs from "./pages/Certs/Certs";
 import Homelab from "./pages/Homelab/Homelab";
 import CalendarPage from "./pages/Calendar/Calendar";
-import Blog from "./pages/Blog/Blog";
 import Contact from "./pages/Contact/Contact";
 import NotFound from "./pages/NotFound";
 
+/**
+ * Routes — Blog lives externally (Tistory), so there is no /blog route.
+ * The Home page exposes the external Blog link as a CTA button instead.
+ */
 export default function App() {
   return (
     <Layout>
@@ -22,7 +25,6 @@ export default function App() {
         <Route path="/certs" element={<Certs />} />
         <Route path="/homelab" element={<Homelab />} />
         <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/blog" element={<Blog />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
