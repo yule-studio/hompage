@@ -1,7 +1,21 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-const username = process.env.GITHUB_LANGUAGES_USERNAME?.trim() || "codwithyc";
+/**
+ * Sources mirror the projects / topics fetchers — comma-separated `type:name`.
+ * Falls back to legacy `GITHUB_LANGUAGES_USERNAME` (single user) when sources
+ * isn't set so existing local commands keep working.
+ */
+const sourcesRaw = process.env.GITHUB_LANGUAGES_SOURCES?.trim();
+const legacyUsername = process.env.GITHUB_LANGUAGES_USERNAME?.trim() || "codwithyc";
+const sources = sourcesRaw
+  ? sourcesRaw.split(",").map((entry) => {
+      const [type, name] = entry.split(":").map((part) => part.trim());
+      if (!type || !name) throw new Error(`Invalid source entry: ${entry}`);
+      if (type !== "user" && type !== "org") throw new Error(`Source type must be user/org, got: ${type}`);
+      return { type, name };
+    })
+  : [{ type: "user", name: legacyUsername }];
 const outputPath = resolve(process.env.GITHUB_LANGUAGES_OUTPUT ?? "public/github-languages.json");
 const includeArchived = process.env.GITHUB_LANGUAGES_INCLUDE_ARCHIVED === "true";
 const includeForks = process.env.GITHUB_LANGUAGES_INCLUDE_FORKS === "true";
@@ -116,7 +130,39 @@ function filterRepos(repos) {
   });
 }
 
-const ownedRepos = filterRepos(await restPages(`/users/${username}/repos?type=owner&sort=pushed`));
+function reposPath(source) {
+  return source.type === "user"
+    ? `/users/${source.name}/repos?type=owner&sort=pushed`
+    : `/orgs/${source.name}/repos?type=public&sort=pushed`;
+}
+
+const allRepos = [];
+const failedSources = [];
+for (const source of sources) {
+  try {
+    const repos = await restPages(reposPath(source));
+    allRepos.push(...repos);
+    console.log(`  ${source.type}:${source.name} → ${repos.length} repos`);
+  } catch (error) {
+    console.warn(`  ${source.type}:${source.name} failed: ${error.message}`);
+    failedSources.push(`${source.type}:${source.name}`);
+  }
+}
+
+if (allRepos.length === 0 && failedSources.length > 0) {
+  console.error(`All sources failed: ${failedSources.join(", ")}`);
+  process.exit(1);
+}
+
+// Dedup by full_name in case the same repo appears under both sources.
+const seenRepos = new Set();
+const ownedRepos = filterRepos(
+  allRepos.filter((repo) => {
+    if (seenRepos.has(repo.full_name)) return false;
+    seenRepos.add(repo.full_name);
+    return true;
+  }),
+);
 
 const byteByLanguage = new Map();
 const reposByLanguage = new Map();
@@ -129,7 +175,7 @@ for (const repo of ownedRepos) {
     for (const [language, bytes] of Object.entries(data)) {
       if (typeof bytes !== "number" || bytes <= 0) continue;
       byteByLanguage.set(language, (byteByLanguage.get(language) ?? 0) + bytes);
-      reposByLanguage.set(language, (reposByLanguage.get(language) ?? new Set()).add(repo.name));
+      reposByLanguage.set(language, (reposByLanguage.get(language) ?? new Set()).add(repo.full_name));
       totalBytes += bytes;
     }
     processed += 1;
@@ -154,7 +200,10 @@ if (Number.isFinite(maxLanguages)) {
 }
 
 const payload = {
-  username,
+  sources: sources.map((s) => `${s.type}:${s.name}`),
+  // Keep legacy `username` field populated with the first user source for
+  // backward compat with the existing JSON consumers.
+  username: sources.find((s) => s.type === "user")?.name ?? legacyUsername,
   totalBytes,
   reposScanned: processed,
   languages,
@@ -166,5 +215,5 @@ await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 
 console.log(
   `Wrote ${languages.length} languages (${processed} repos, ${totalBytes.toLocaleString()} bytes) ` +
-  `for @${username} to ${outputPath}`,
+  `from ${sources.map((s) => `${s.type}:${s.name}`).join(", ")} to ${outputPath}`,
 );
