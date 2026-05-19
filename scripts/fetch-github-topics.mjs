@@ -16,9 +16,9 @@ const includeForks = process.env.GITHUB_TOPICS_INCLUDE_FORKS === "true";
 const minRepos = Number.parseInt(process.env.GITHUB_TOPICS_MIN_REPOS ?? "1", 10);
 const token = [
   process.env.GITHUB_TOPICS_TOKEN,
+  process.env.GITHUB_TOKEN,
   process.env.GH_STATS_TOKEN,
   process.env.GH_TOKEN,
-  process.env.GITHUB_TOKEN,
 ].find(Boolean);
 
 if (!token) {
@@ -166,9 +166,21 @@ function shouldKeepRepo(repo) {
 }
 
 const allRepos = [];
+const failedSources = [];
 for (const source of sources) {
-  const repos = await restPages(reposPath(source));
-  allRepos.push(...repos.filter(shouldKeepRepo));
+  try {
+    const repos = await restPages(reposPath(source));
+    allRepos.push(...repos.filter(shouldKeepRepo));
+    console.log(`  ${source.type}:${source.name} → ${repos.length} repos`);
+  } catch (error) {
+    console.warn(`  ${source.type}:${source.name} failed: ${error.message}`);
+    failedSources.push(`${source.type}:${source.name}`);
+  }
+}
+
+if (allRepos.length === 0 && failedSources.length > 0) {
+  console.error(`All sources failed: ${failedSources.join(", ")}`);
+  process.exit(1);
 }
 
 const seen = new Set();

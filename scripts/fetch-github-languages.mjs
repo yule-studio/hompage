@@ -10,9 +10,9 @@ const minPercent = Number.parseFloat(process.env.GITHUB_LANGUAGES_MIN_PERCENT ??
 const maxLanguages = Number.parseInt(process.env.GITHUB_LANGUAGES_MAX ?? "20", 10);
 const token = [
   process.env.GITHUB_LANGUAGES_TOKEN,
+  process.env.GITHUB_TOKEN,
   process.env.GH_STATS_TOKEN,
   process.env.GH_TOKEN,
-  process.env.GITHUB_TOKEN,
 ].find(Boolean);
 
 if (!token) {
