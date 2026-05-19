@@ -157,6 +157,95 @@ for (const [category, entries] of Object.entries(CATEGORIES)) {
   }
 }
 
+/**
+ * Manifest scanning — extracts skill signals from common dependency / config
+ * files when a repo doesn't have explicit GitHub topics. Each manifest gets a
+ * regex per topic slug. The match is content-only (file existence alone is not
+ * a signal, except for Dockerfile FROM lines).
+ */
+const MANIFEST_FILES = [
+  "requirements.txt",
+  "pyproject.toml",
+  "package.json",
+  "pom.xml",
+  "build.gradle",
+  "build.gradle.kts",
+  "go.mod",
+  "Cargo.toml",
+  "Dockerfile",
+  "docker-compose.yml",
+  "docker-compose.yaml",
+];
+
+/**
+ * Topic slug → regex (case-insensitive). When the regex matches any of the
+ * fetched manifest contents, we register that topic for the repo as if it
+ * had been explicitly tagged. Same slug is used as TOPIC_INDEX key so the
+ * existing aggregation flow handles labelling.
+ */
+const MANIFEST_PATTERNS = [
+  // Backend
+  ["fastapi",        /\bfastapi\b/i],
+  ["spring-boot",    /spring-boot-starter|org\.springframework\.boot/i],
+  ["spring",         /org\.springframework\b/i],
+  ["django",         /^django(?![\w-])|^django==|"django"/im],
+  ["flask",          /^flask(?![\w-])|^flask==|"flask"/im],
+  ["express",        /"express"\s*:/i],
+  ["nestjs",         /@nestjs\//i],
+  ["nodejs",         /"node"\s*:\s*"[\^~>=]/i],
+  ["postgresql",     /\b(psycopg2|psycopg|asyncpg|pg|postgres(?:ql)?)\b/i],
+  ["mysql",          /\b(pymysql|mysql-connector|mysqlclient|"mysql2"|"mysql")\b/i],
+  ["redis",          /\bredis\b/i],
+  ["kafka",          /\bkafka(?:-python|js)?\b/i],
+  ["rabbitmq",       /\b(pika|amqplib|rabbitmq)\b/i],
+  ["graphql",        /\bgraphql\b/i],
+  ["mongodb",        /\b(pymongo|mongoose|mongodb)\b/i],
+  ["elasticsearch",  /\belasticsearch\b/i],
+  ["sqlalchemy",     /\bsqlalchemy\b/i],
+  ["pydantic",       /\bpydantic\b/i],
+  ["asyncio",        /\basyncio\b/i],
+  // DevOps
+  ["docker",         /^FROM\s+|^docker(?:file)?$/im],
+  ["kubernetes",     /\bkubernetes\b|apiVersion:\s*apps\/v1/i],
+  ["k3s",            /\bk3s\b/i],
+  ["terraform",      /\b(terraform|hashicorp\/)/i],
+  ["ansible",        /\bansible\b/i],
+  ["helm",           /\bhelm\b/i],
+  ["prometheus",     /\bprometheus(?:-client)?\b/i],
+  ["grafana",        /\bgrafana\b/i],
+  ["nginx",          /\bnginx\b/i],
+  ["traefik",        /\btraefik\b/i],
+  // AI / Agents
+  ["openai",         /\bopenai\b/i],
+  ["anthropic",      /\banthropic\b/i],
+  ["langchain",      /\blangchain\b/i],
+  ["llamaindex",     /\bllama[-_]?index\b/i],
+  ["mcp",            /\bmcp(?:-server|-client)?\b|"@modelcontextprotocol\//i],
+];
+
+async function fetchManifestTopics(repo) {
+  const matched = new Set();
+  for (const file of MANIFEST_FILES) {
+    try {
+      const { data } = await rest(`/repos/${repo.full_name}/contents/${file}`);
+      if (!data || typeof data !== "object" || !data.content) continue;
+      const content = Buffer.from(data.content.replace(/\s/g, ""), "base64").toString("utf8");
+      for (const [slug, pattern] of MANIFEST_PATTERNS) {
+        if (matched.has(slug)) continue;
+        if (pattern.test(content)) {
+          matched.add(slug);
+        }
+      }
+    } catch (error) {
+      // 404 = file doesn't exist for this repo — common, ignore.
+      if (!String(error.message).includes("404")) {
+        console.warn(`  ${repo.full_name} ${file}: ${error.message}`);
+      }
+    }
+  }
+  return matched;
+}
+
 function shouldKeepRepo(repo) {
   if (repo.private) return false;
   if (repo.disabled) return false;
@@ -195,16 +284,30 @@ const groups = Object.fromEntries(
   Object.keys(CATEGORIES).map((cat) => [cat, new Map()]),
 );
 
+function registerTopic(slug, repoFullName) {
+  const entry = TOPIC_INDEX.get(slug);
+  if (!entry) return;
+  const bucket = groups[entry.category];
+  if (!bucket.has(entry.label)) {
+    bucket.set(entry.label, { topic: slug, label: entry.label, repos: new Set() });
+  }
+  bucket.get(entry.label).repos.add(repoFullName);
+}
+
+let manifestHits = 0;
 for (const repo of dedupedRepos) {
-  if (!Array.isArray(repo.topics)) continue;
-  for (const topic of repo.topics) {
-    const entry = TOPIC_INDEX.get(topic);
-    if (!entry) continue;
-    const bucket = groups[entry.category];
-    if (!bucket.has(entry.label)) {
-      bucket.set(entry.label, { topic, label: entry.label, repos: new Set() });
-    }
-    bucket.get(entry.label).repos.add(repo.full_name);
+  // 1) Explicit GitHub topics (preferred — repo owner's intent).
+  const declared = Array.isArray(repo.topics) ? repo.topics : [];
+  for (const topic of declared) {
+    registerTopic(topic, repo.full_name);
+  }
+
+  // 2) Manifest fallback — derived signals from dependency files.
+  const fromManifests = await fetchManifestTopics(repo);
+  for (const slug of fromManifests) {
+    if (declared.includes(slug)) continue;
+    registerTopic(slug, repo.full_name);
+    manifestHits += 1;
   }
 }
 
@@ -230,5 +333,6 @@ await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 const totalItems = categories.reduce((sum, c) => sum + c.items.length, 0);
 console.log(
   `Wrote ${totalItems} topics across ${categories.length} categories ` +
-  `(${dedupedRepos.length} repos scanned) to ${outputPath}`,
+  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest-derived hits) ` +
+  `to ${outputPath}`,
 );
