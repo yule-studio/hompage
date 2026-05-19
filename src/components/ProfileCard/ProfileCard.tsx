@@ -1,10 +1,10 @@
 import { profile } from "../../data/profile";
 
 /**
- * ProfileCard — corner-bracketed photo / silhouette card.
+ * ProfileCard — corner-bracketed GitHub avatar card.
  * Lives in the Home grid as a tall left-anchor card (span="hero").
  * The frame mirrors the look from the reference design:
- *   four corner ticks → blurred silhouette → "[_ PROFILE / ONLINE _]"
+ *   four corner ticks → avatar → "[_ PROFILE / ONLINE _]"
  *   label → NAME / ROLE / SINCE rows.
  */
 export default function ProfileCard() {
@@ -15,12 +15,7 @@ export default function ProfileCard() {
         <span className="bracket tr" />
         <span className="bracket bl" />
         <span className="bracket br" />
-        <div className="profile-silhouette">
-          <svg viewBox="0 0 64 64" width="64" height="64">
-            <circle cx="32" cy="22" r="12" fill="currentColor" />
-            <path d="M8 60c0-13 11-22 24-22s24 9 24 22" fill="currentColor" />
-          </svg>
-        </div>
+        <img className="profile-avatar" src={profile.avatarUrl} alt="" decoding="async" />
         <span className="profile-frame-label mono">[_ PROFILE / ONLINE _]</span>
       </div>
 
