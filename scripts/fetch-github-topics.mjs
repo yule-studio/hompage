@@ -102,6 +102,10 @@ const CATEGORIES = {
     ["sqlalchemy", "SQLAlchemy"],
     ["pydantic", "Pydantic"],
     ["asyncio", "asyncio"],
+    ["sqlite", "SQLite"],
+    ["discord-py", "discord.py"],
+    ["caldav", "CalDAV"],
+    ["icalendar", "iCalendar"],
   ],
   DevOps: [
     ["docker", "Docker"],
@@ -144,6 +148,10 @@ const CATEGORIES = {
     ["mcp", "MCP"],
     ["tool-calling", "Tool Calling"],
     ["coding-agent", "Coding Agent"],
+    ["claude-code", "Claude Code"],
+    ["gpt-cli", "GPT CLI"],
+    ["self-host-ai", "Self-host AI"],
+    ["obsidian", "Obsidian"],
   ],
 };
 
@@ -204,6 +212,10 @@ const MANIFEST_PATTERNS = [
   ["sqlalchemy",     /\bsqlalchemy\b/i],
   ["pydantic",       /\bpydantic\b/i],
   ["asyncio",        /\basyncio\b/i],
+  ["sqlite",         /\b(sqlite3?|aiosqlite)\b|\.db['"]/i],
+  ["discord-py",     /\b(discord\.py|discord_py|"discord\.py")\b|^import\s+discord|^from\s+discord\b/im],
+  ["caldav",         /\bcaldav\b/i],
+  ["icalendar",      /\bicalendar\b/i],
   // DevOps
   ["docker",         /^FROM\s+|^docker(?:file)?$/im],
   ["kubernetes",     /\bkubernetes\b|apiVersion:\s*apps\/v1/i],
@@ -221,6 +233,8 @@ const MANIFEST_PATTERNS = [
   ["langchain",      /\blangchain\b/i],
   ["llamaindex",     /\bllama[-_]?index\b/i],
   ["mcp",            /\bmcp(?:-server|-client)?\b|"@modelcontextprotocol\//i],
+  ["claude-code",    /\bclaude[-_\s]?code\b/i],
+  ["obsidian",       /\bobsidian\b/i],
 ];
 
 async function fetchManifestTopics(repo) {
@@ -241,6 +255,31 @@ async function fetchManifestTopics(repo) {
       if (!String(error.message).includes("404")) {
         console.warn(`  ${repo.full_name} ${file}: ${error.message}`);
       }
+    }
+  }
+  return matched;
+}
+
+/**
+ * README scan — most repos describe their stack in README. Cheap signal
+ * (1 API call per repo) that catches frameworks not pinned in manifests
+ * (e.g. `discord.py` agent that imports Anthropic SDK at runtime but only
+ * lists `discord.py` in pyproject.toml).
+ */
+async function fetchReadmeTopics(repo) {
+  const matched = new Set();
+  try {
+    const { data } = await rest(`/repos/${repo.full_name}/readme`);
+    if (!data || typeof data !== "object" || !data.content) return matched;
+    const content = Buffer.from(data.content.replace(/\s/g, ""), "base64").toString("utf8");
+    for (const [slug, pattern] of MANIFEST_PATTERNS) {
+      if (pattern.test(content)) {
+        matched.add(slug);
+      }
+    }
+  } catch (error) {
+    if (!String(error.message).includes("404")) {
+      console.warn(`  ${repo.full_name} README: ${error.message}`);
     }
   }
   return matched;
@@ -295,6 +334,7 @@ function registerTopic(slug, repoFullName) {
 }
 
 let manifestHits = 0;
+let readmeHits = 0;
 for (const repo of dedupedRepos) {
   // 1) Explicit GitHub topics (preferred — repo owner's intent).
   const declared = Array.isArray(repo.topics) ? repo.topics : [];
@@ -302,12 +342,21 @@ for (const repo of dedupedRepos) {
     registerTopic(topic, repo.full_name);
   }
 
-  // 2) Manifest fallback — derived signals from dependency files.
+  // 2) Manifest fallback — declared dependencies.
   const fromManifests = await fetchManifestTopics(repo);
   for (const slug of fromManifests) {
     if (declared.includes(slug)) continue;
     registerTopic(slug, repo.full_name);
     manifestHits += 1;
+  }
+
+  // 3) README fallback — frameworks mentioned in prose / fenced code.
+  //    Catches runtime libs that aren't pinned in manifests.
+  const fromReadme = await fetchReadmeTopics(repo);
+  for (const slug of fromReadme) {
+    if (declared.includes(slug) || fromManifests.has(slug)) continue;
+    registerTopic(slug, repo.full_name);
+    readmeHits += 1;
   }
 }
 
@@ -333,6 +382,6 @@ await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 const totalItems = categories.reduce((sum, c) => sum + c.items.length, 0);
 console.log(
   `Wrote ${totalItems} topics across ${categories.length} categories ` +
-  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest-derived hits) ` +
+  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest + ${readmeHits} README hits) ` +
   `to ${outputPath}`,
 );
