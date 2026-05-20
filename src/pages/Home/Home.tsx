@@ -39,7 +39,7 @@ export default function Home() {
   const stackCount = skills.reduce((sum, g) => sum + g.items.length, 0);
   const selectedProjects = projects
     .filter((project) => project.status === "active" || project.status === "shipped")
-    .slice(0, 3);
+    .slice(0, 2);
 
   useEffect(() => {
     let isMounted = true;
@@ -212,7 +212,7 @@ export default function Home() {
           </div>
           <h3 className="card-title">Stack</h3>
           <div className="card-body">
-            <ul className="stack-list">
+            <div className="chip-row">
               {(topLanguages.length
                 ? topLanguages.slice(0, 4)
                 : skills[0].items.slice(0, 4).map((s) => ({
@@ -221,31 +221,16 @@ export default function Home() {
                     color: null as string | null,
                   }))
               ).map((lang) => (
-                <li key={lang.name} className="stack-row">
-                  <span className="stack-row-head">
-                    <span
-                      className="lang-dot"
-                      aria-hidden
-                      style={{ background: lang.color ?? "var(--text-muted)" }}
-                    />
-                    <span className="stack-row-name">{lang.name}</span>
-                    {lang.percent > 0 ? (
-                      <span className="mono faint stack-row-pct">{lang.percent.toFixed(1)}%</span>
-                    ) : null}
-                  </span>
-                  {lang.percent > 0 ? (
-                    <span
-                      className="stack-row-bar"
-                      aria-hidden
-                      style={{
-                        width: `${Math.max(2, Math.min(100, lang.percent))}%`,
-                        background: lang.color ?? "var(--accent)",
-                      }}
-                    />
-                  ) : null}
-                </li>
+                <span key={lang.name} className="chip lang-chip">
+                  <span
+                    className="lang-dot"
+                    aria-hidden
+                    style={{ background: lang.color ?? "var(--text-muted)" }}
+                  />
+                  {lang.name}
+                </span>
               ))}
-            </ul>
+            </div>
           </div>
           <div className="card-footer">
             <Link to="/skills" className="card-link">view skills</Link>
@@ -304,11 +289,10 @@ export default function Home() {
 
         <Card span="sm" hoverable ariaLabel="services" className="home-services-card">
           <div className="card-head">
-            <span className="label">/ services · {services.length} live</span>
-            <StatusBadge status="ok" label="99.98%" />
+            <span className="label">/ services</span>
+            <span className="chip">{services.length} live</span>
           </div>
           <h3 className="card-title">Services</h3>
-          <p className="card-sub">self-host 서비스 상태.</p>
           <div className="card-body">
             <ul className="card-list">
               {services.slice(0, 2).map((s) => (
@@ -321,6 +305,7 @@ export default function Home() {
           </div>
           <div className="card-footer">
             <Link to="/homelab" className="card-link">view all</Link>
+            <span className="mono faint">99.98%</span>
           </div>
         </Card>
       </div>
