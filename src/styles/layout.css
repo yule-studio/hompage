@@ -103,6 +103,67 @@
 
 /* ── page main ────────────────────────────────────────────── */
 .page { padding-block: var(--space-7) var(--space-9); }
+
+/* Page-change animation — children slide up + fade in one by one (stagger).
+   Triggered by Layout's key={location.pathname} which remounts .page-anim
+   on each route change. Two stagger levels:
+     - Level 1: page-anim > direct children (header / nav / hero / grids)
+     - Level 2: cards inside .grid and .section-grid
+   Respects prefers-reduced-motion. */
+@keyframes pageSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Level 1 — top-level sections of each page */
+.page-anim > * {
+  animation: pageSlideUp 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.page-anim > *:nth-child(1) { animation-delay: 0ms; }
+.page-anim > *:nth-child(2) { animation-delay: 80ms; }
+.page-anim > *:nth-child(3) { animation-delay: 160ms; }
+.page-anim > *:nth-child(4) { animation-delay: 240ms; }
+.page-anim > *:nth-child(n+5) { animation-delay: 320ms; }
+
+/* Level 2 — individual cards inside dashboard / section grids */
+.page-anim .grid > *,
+.page-anim .section-grid > * {
+  animation: pageSlideUp 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  opacity: 0;
+}
+.page-anim .grid > *:nth-child(1),
+.page-anim .section-grid > *:nth-child(1)   { animation-delay: 200ms; }
+.page-anim .grid > *:nth-child(2),
+.page-anim .section-grid > *:nth-child(2)   { animation-delay: 260ms; }
+.page-anim .grid > *:nth-child(3),
+.page-anim .section-grid > *:nth-child(3)   { animation-delay: 320ms; }
+.page-anim .grid > *:nth-child(4),
+.page-anim .section-grid > *:nth-child(4)   { animation-delay: 380ms; }
+.page-anim .grid > *:nth-child(5),
+.page-anim .section-grid > *:nth-child(5)   { animation-delay: 440ms; }
+.page-anim .grid > *:nth-child(6),
+.page-anim .section-grid > *:nth-child(6)   { animation-delay: 500ms; }
+.page-anim .grid > *:nth-child(7),
+.page-anim .section-grid > *:nth-child(7)   { animation-delay: 560ms; }
+.page-anim .grid > *:nth-child(8),
+.page-anim .section-grid > *:nth-child(8)   { animation-delay: 620ms; }
+.page-anim .grid > *:nth-child(9),
+.page-anim .section-grid > *:nth-child(9)   { animation-delay: 680ms; }
+.page-anim .grid > *:nth-child(10),
+.page-anim .section-grid > *:nth-child(10)  { animation-delay: 740ms; }
+.page-anim .grid > *:nth-child(n+11),
+.page-anim .section-grid > *:nth-child(n+11) { animation-delay: 800ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-anim > *,
+  .page-anim .grid > *,
+  .page-anim .section-grid > * {
+    animation: none;
+    opacity: 1;
+  }
+}
 .page-shell {
   width: min(100%, 720px);
   margin-inline: auto;
@@ -329,6 +390,60 @@
 .card-link:hover { color: var(--accent-strong); }
 .card-link::after { content: "→"; transition: transform var(--t-fast); }
 .card-link:hover::after { transform: translateX(2px); }
+
+/* Projects filter tabs — All / Live / Code-only */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-pill);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.filter-tab:hover { color: var(--text); background: var(--bg-pill-active); }
+.filter-tab[aria-selected="true"] {
+  color: var(--text);
+  background: var(--bg-card);
+  border-color: var(--border-accent);
+}
+
+/* Live project — accent border + subtle top gradient so live-shipped repos
+   stand apart from code-only ones at a glance. */
+.project-card--live {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 6%, var(--bg-card)) 0%,
+    var(--bg-card) 100%
+  );
+}
+.project-card--live:hover { border-color: var(--accent); }
+.project-live-link {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.project-live-link:hover { color: var(--accent-strong); }
 
 .project-list-link {
   min-width: 0;
@@ -572,6 +687,50 @@
   background: var(--text-muted);
   flex-shrink: 0;
   margin-right: 4px;
+}
+
+/* Home Stack card — chip list capped at 4 langs so wrapping never exceeds
+   the sm card body (~150px). Chips are slightly compacted to fit 2 rows of 2. */
+.home-stack-card .chip-row {
+  gap: 6px;
+  overflow: hidden;
+  min-height: 0;
+}
+.home-stack-card .lang-chip {
+  padding: 4px 10px;
+}
+
+/* Home Blog featured card — clamp title (2 lines) + description (2 lines) so
+   a long Tistory post never overflows the md card and pushes earlier elements
+   out of view.
+   line-height ≥1.5 keeps Korean descenders from being clipped by the parent
+   card's `overflow: hidden` when -webkit-line-clamp truncates. */
+.blog-featured-title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.5;
+  /* Bottom padding gives line-clamp room to render descenders + ellipsis
+     without the parent card cutting them off. */
+  padding-bottom: 2px;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+}
+.blog-featured-desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.55;
+  padding-bottom: 2px;
+  text-overflow: ellipsis;
+  word-break: keep-all;
 }
 
 /* icon button (legacy) */

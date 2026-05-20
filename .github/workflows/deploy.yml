@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Real-time refresh — triggered by tracked source repos (codwithyc/* /
+  # yule-studio/*) on their push events via the `notify-hompage.yml`
+  # workflow. Each source repo POSTs to /repos/yule-studio/hompage/dispatches
+  # with event_type=github-data-refresh.
+  repository_dispatch:
+    types: [github-data-refresh]
 
 permissions:
   contents: read
@@ -43,6 +49,10 @@ jobs:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_LANGUAGES_SOURCES: user:codwithyc,org:yule-studio
+          # Surface every language that has any code. Default 0.5 hides Go/JS/
+          # Shell/Go-Template when one repo (Python yule-studio-agent) dominates
+          # by bytes. With 0.01 the user still sees the full skill surface.
+          GITHUB_LANGUAGES_MIN_PERCENT: '0.01'
       - name: Generate GitHub topics
         run: npm run github:topics
         env:
@@ -52,6 +62,10 @@ jobs:
           # GH_STATS_TOKEN (fine-grained PAT) is the only one that works.
           GITHUB_TOPICS_SEARCH_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOPICS_SOURCES: user:codwithyc,org:yule-studio
+      - name: Sync Tistory blog (RSS + per-post view scrape)
+        run: npm run blog:sync
+        env:
+          BLOG_URL: https://codingtips.tistory.com
       - run: npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5
