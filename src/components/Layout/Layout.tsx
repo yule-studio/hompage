@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import Topbar from "../Topbar/Topbar";
 
 type Props = { children: ReactNode };
@@ -6,10 +7,13 @@ type Props = { children: ReactNode };
 /**
  * Layout — Topbar at top, page content fills the main column.
  * Navigation is intentionally NOT rendered here; each page mounts
- * <Navigation /> *after* its hero/page-header so the nav sits
- * visually under the profile, not above it.
+ * <Navigation /> *after* its hero/page-header.
+ *
+ * `key={location.pathname}` on page-shell forces a remount on every route
+ * change so the slide-up CSS keyframe re-fires.
  */
 export default function Layout({ children }: Props) {
+  const location = useLocation();
   return (
     <>
       <a href="#main" className="skip-link">
@@ -18,7 +22,9 @@ export default function Layout({ children }: Props) {
       <Topbar />
       <main id="main" className="page">
         <div className="container">
-          <div className="page-shell">{children}</div>
+          <div className="page-shell page-anim" key={location.pathname}>
+            {children}
+          </div>
         </div>
       </main>
       <footer className="site-footer">
