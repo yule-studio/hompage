@@ -8,6 +8,7 @@ export type Cert = {
 
 export const certs: Cert[] = [
   { name: "JLPT N5", issuer: "일본어능력시험", year: 2026, status: "in-progress", id: "JLPT-N5" },
+  { name: "한국능력검정능력 1급", issuer: "한국능력검정협회", year: 2026, status: "active", id: "한국능력검정능력-1급" },
   { name: "컴활 1급", issuer: "대한상공회의소", year: 2026, status: "active", id: "컴활 1급" },
   { name: "네트워크 관리사 2급", issuer: "한국정보통신협회", year: 2024, status: "in-progress", id: "네트워크 관리사 2급" },
   { name: "정보처리기사", issuer: "한국산업인력공단", year: 2024, status: "in-progress", id: "정보처리기사" },
