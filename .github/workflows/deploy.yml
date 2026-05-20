@@ -48,6 +48,9 @@ jobs:
         env:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
+          # Code search needs a PAT — Actions' github.token gets 429+HTML.
+          # GH_STATS_TOKEN (fine-grained PAT) is the only one that works.
+          GITHUB_TOPICS_SEARCH_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOPICS_SOURCES: user:codwithyc,org:yule-studio
       - run: npm run build
       - name: Configure Pages

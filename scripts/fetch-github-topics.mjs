@@ -304,11 +304,34 @@ const CODE_SEARCH_PATTERNS = [
   ["kafka",          '"from kafka" OR "from aiokafka"'],
 ];
 
+// Code search requires a PAT — Actions' default github.token returns 429 +
+// HTML login page for /search/code. Pick PAT first; fall back to github.token
+// only if no PAT is present (local dev convenience).
+const searchToken = [
+  process.env.GITHUB_TOPICS_SEARCH_TOKEN,
+  process.env.GH_STATS_TOKEN,
+  process.env.GH_TOKEN,
+  process.env.GITHUB_TOPICS_TOKEN,
+  process.env.GITHUB_TOKEN,
+].find(Boolean);
+
+const searchHeaders = {
+  Authorization: `Bearer ${searchToken}`,
+  Accept: "application/vnd.github+json",
+  "X-GitHub-Api-Version": "2022-11-28",
+  "User-Agent": "yule-studio-hompage",
+};
+
 async function codeSearch(query) {
-  // GitHub returns 422 if query is empty or malformed; surface it as an empty
-  // result so callers don't crash.
-  const url = `/search/code?q=${encodeURIComponent(query)}&per_page=30`;
-  const { data } = await rest(url);
+  const url = `https://api.github.com${`/search/code?q=${encodeURIComponent(query)}&per_page=30`}`;
+  const response = await fetch(url, { headers: searchHeaders });
+  if (!response.ok) {
+    const body = await response.text();
+    const err = new Error(`GitHub REST ${response.status} for /search/code: ${body.slice(0, 200)}`);
+    err.status = response.status;
+    throw err;
+  }
+  const data = await response.json();
   return Array.isArray(data?.items) ? data.items : [];
 }
 
@@ -325,7 +348,15 @@ async function fetchCodeSearchTopics(sources) {
   const matchedByRepo = new Map(); // slug → Set<full_name>
   const knownRepoOwners = new Set(sources.map((s) => s.name.toLowerCase()));
 
-  for (const source of sources) {
+  if (!searchToken) {
+    console.warn("  code-search: no token available, skipping");
+    return matchedByRepo;
+  }
+
+  let consecutive429 = 0;
+  let throttleMs = 7000; // ~8 req/min — under the 10/min code-search limit
+
+  outer: for (const source of sources) {
     const scope = source.type === "user" ? `user:${source.name}` : `org:${source.name}`;
     for (const [slug, queryBase] of CODE_SEARCH_PATTERNS) {
       const query = `${queryBase} ${scope}`;
@@ -334,20 +365,28 @@ async function fetchCodeSearchTopics(sources) {
         for (const item of items) {
           const fullName = item?.repository?.full_name;
           if (!fullName) continue;
-          // Defensive: ensure the matched repo belongs to one of our sources.
-          // GitHub's search API is normally scoped but it's worth checking.
           const owner = fullName.split("/")[0].toLowerCase();
           if (!knownRepoOwners.has(owner)) continue;
           if (!matchedByRepo.has(slug)) matchedByRepo.set(slug, new Set());
           matchedByRepo.get(slug).add(fullName);
         }
+        consecutive429 = 0;
       } catch (error) {
-        console.warn(`  code-search ${slug} ${scope}: ${error.message}`);
+        const status = error?.status;
+        if (status === 429 || status === 403) {
+          consecutive429 += 1;
+          // Exponential backoff up to 60s.
+          throttleMs = Math.min(throttleMs * 2, 60000);
+          console.warn(`  code-search ${slug} ${scope}: rate-limited (will retry next call after ${throttleMs}ms)`);
+          if (consecutive429 >= 3) {
+            console.warn("  code-search: 3 consecutive rate-limit responses, aborting remaining queries");
+            break outer;
+          }
+        } else {
+          console.warn(`  code-search ${slug} ${scope}: ${error.message}`);
+        }
       }
-      // Stay under 30 req/min for code search. fine-grained PATs sometimes
-      // get throttled at lower limits, so 4s is the safe floor for local runs;
-      // CI's github.token has higher headroom but the delay doesn't hurt.
-      await sleep(4000);
+      await sleep(throttleMs);
     }
   }
 
