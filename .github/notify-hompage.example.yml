@@ -1,0 +1,40 @@
+# Copy this file to `.github/workflows/notify-hompage.yml` in every repo
+# that should trigger a hompage rebuild on push.
+#
+# Setup steps:
+#   1) Generate a fine-grained PAT scoped to `yule-studio/hompage` with
+#      `Contents: read` + `Actions: write` (lifetime ≤ 366 days for org
+#      compliance).
+#   2) For yule-studio org repos: add as an org-level secret named
+#      HOMPAGE_DISPATCH_TOKEN (Settings → Secrets and variables → Actions →
+#      Manage organization secrets → New). Restrict access to repos you want
+#      to track.
+#      For codwithyc personal repos: add as a per-repo secret on each repo.
+#   3) Copy this file to the target repo at .github/workflows/notify-hompage.yml.
+#   4) Push — first push will trigger the hompage redeploy.
+
+name: Notify hompage to refresh
+
+on:
+  push:
+    branches: ["**"]
+  release:
+    types: [published]
+  # Manual fallback button in the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger hompage repository_dispatch
+        env:
+          GH_TOKEN: ${{ secrets.HOMPAGE_DISPATCH_TOKEN }}
+        run: |
+          gh api repos/yule-studio/hompage/dispatches \
+            --method POST \
+            --header 'Accept: application/vnd.github+json' \
+            -f event_type=github-data-refresh \
+            -f client_payload[source]="${{ github.repository }}" \
+            -f client_payload[sha]="${{ github.sha }}" \
+            -f client_payload[ref]="${{ github.ref }}"

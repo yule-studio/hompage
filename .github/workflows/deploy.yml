@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Real-time refresh — triggered by tracked source repos (codwithyc/* /
+  # yule-studio/*) on their push events via the `notify-hompage.yml`
+  # workflow. Each source repo POSTs to /repos/yule-studio/hompage/dispatches
+  # with event_type=github-data-refresh.
+  repository_dispatch:
+    types: [github-data-refresh]
 
 permissions:
   contents: read
