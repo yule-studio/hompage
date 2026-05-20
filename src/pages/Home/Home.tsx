@@ -209,10 +209,8 @@ export default function Home() {
                 <span className="featured-eyebrow">
                   FEATURED · {post.date}
                 </span>
-                <h3 className="card-title" style={{ whiteSpace: "normal", fontSize: "var(--text-lg)" }}>
-                  {post.title}
-                </h3>
-                <p className="card-sub">{post.description}</p>
+                <h3 className="card-title blog-featured-title">{post.title}</h3>
+                <p className="card-sub blog-featured-desc">{post.description}</p>
                 <div className="card-footer">
                   <a className="card-link" href={post.link} target="_blank" rel="noreferrer">
                     read on blog
