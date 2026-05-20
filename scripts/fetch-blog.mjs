@@ -72,6 +72,57 @@ function parseRssItems(rss) {
   });
 }
 
+function parseSitemapPostLinks(sitemap, baseUrl) {
+  const base = new URL(`${baseUrl}/`);
+  const basePathSegments = base.pathname.split("/").filter(Boolean);
+  const links = new Set();
+
+  for (const match of sitemap.matchAll(/<loc>([\s\S]*?)<\/loc>/gi)) {
+    const rawLoc = decodeEntities(match[1]).trim();
+
+    try {
+      const loc = new URL(rawLoc);
+      const locPathSegments = loc.pathname.split("/").filter(Boolean);
+      const isSameBlog =
+        loc.origin === base.origin &&
+        basePathSegments.every((segment, index) => locPathSegments[index] === segment);
+      const postPathSegments = locPathSegments.slice(basePathSegments.length);
+
+      // Tistory exposes public posts as canonical numeric paths like /28.
+      // The sitemap also contains /m/28 mobile duplicates and notices, so
+      // only count one-segment numeric article URLs.
+      if (isSameBlog && postPathSegments.length === 1 && /^\d+$/.test(postPathSegments[0])) {
+        loc.hash = "";
+        loc.search = "";
+        loc.pathname = `/${[...basePathSegments, postPathSegments[0]].join("/")}`;
+        links.add(loc.toString().replace(/\/$/, ""));
+      }
+    } catch {
+      // Ignore malformed loc entries and fall back to whatever valid links exist.
+    }
+  }
+
+  return [...links];
+}
+
+async function fetchTotalPostCount(fallbackCount) {
+  try {
+    const sitemap = await fetchText(`${blogUrl}/sitemap.xml`);
+    const postLinks = parseSitemapPostLinks(sitemap, blogUrl);
+
+    if (postLinks.length > 0) {
+      console.log(`  ${postLinks.length} total posts · sitemap.xml`);
+      return postLinks.length;
+    }
+
+    console.warn("  sitemap.xml had no canonical post URLs; falling back to RSS count");
+  } catch (error) {
+    console.warn(`  skip sitemap total count: ${error.message}`);
+  }
+
+  return fallbackCount;
+}
+
 function isoDate(pubDate) {
   if (!pubDate) return null;
   const d = new Date(pubDate);
@@ -95,6 +146,8 @@ if (posts.length === 0) {
   process.exit(1);
 }
 
+const totalPosts = await fetchTotalPostCount(posts.length);
+
 // Estimate reading time per post — be polite (single fetch per post).
 for (const post of posts) {
   try {
@@ -116,7 +169,7 @@ const featured = posts[0] ?? null;
 
 const payload = {
   blogUrl,
-  totalPosts: posts.length,
+  totalPosts,
   featured: featured ? { ...featured, date: isoDate(featured.pubDate) } : null,
   topPosts: posts.slice(0, 5).map((p) => ({ ...p, date: isoDate(p.pubDate) })),
   latestPosts: posts.slice(0, 5).map((p) => ({ ...p, date: isoDate(p.pubDate) })),
@@ -127,5 +180,5 @@ await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 
 console.log(
-  `Wrote ${posts.length} posts (featured: "${featured?.title}") to ${outputPath}`,
+  `Wrote ${posts.length} latest posts / ${totalPosts} total posts (featured: "${featured?.title}") to ${outputPath}`,
 );

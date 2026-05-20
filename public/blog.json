@@ -1,6 +1,6 @@
 {
   "blogUrl": "https://codingtips.tistory.com",
-  "totalPosts": 10,
+  "totalPosts": 25,
   "featured": {
     "title": "@Component, @Controller, @Service, @Repository의 차이점은 무엇일까",
     "link": "https://codingtips.tistory.com/28",
@@ -104,5 +104,5 @@
       "date": "2026-04-06"
     }
   ],
-  "updatedAt": "2026-05-20T01:39:00.944Z"
+  "updatedAt": "2026-05-20T03:34:57.822Z"
 }
