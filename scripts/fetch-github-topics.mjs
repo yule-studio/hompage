@@ -260,6 +260,47 @@ async function fetchManifestTopics(repo) {
   return matched;
 }
 
+// Path-pattern scan — file/dir names are a free, strong signal that doesn't
+// need any file content fetch. A repo with CLAUDE.md files is almost certainly
+// a Claude Code project; one with agents/<role>/CLAUDE.md is a multi-agent
+// system; .obsidian/ means Obsidian vault, etc.
+// Each entry is [slug, regex tested against each path].
+const PATH_PATTERNS = [
+  ["claude-code",  /(?:^|\/)CLAUDE\.md$|(?:^|\/)\.claude\//i],
+  ["agent",        /(?:^|\/)agents?\/|(?:^|\/)AGENTS\.md$/],
+  ["mcp",          /(?:^|\/)mcp\/|(?:^|\/)mcp\.json$/i],
+  ["obsidian",     /(?:^|\/)\.obsidian\//],
+  ["docker",       /(?:^|\/)Dockerfile(?:\..+)?$|(?:^|\/)docker-compose\.ya?ml$|(?:^|\/)\.docker\//],
+  ["kubernetes",   /(?:^|\/)k8s\/|(?:^|\/)kubernetes\/|(?:^|\/)kustomization\.ya?ml$/i],
+  ["helm",         /(?:^|\/)Chart\.ya?ml$|(?:^|\/)helm\//i],
+  ["terraform",    /\.tf$|(?:^|\/)terraform\//],
+  ["github-actions", /(?:^|\/)\.github\/workflows\//],
+  ["ansible",      /(?:^|\/)ansible\/|(?:^|\/)playbooks?\//i],
+  ["nginx",        /(?:^|\/)nginx\.conf$|(?:^|\/)nginx\//i],
+  ["prometheus",   /(?:^|\/)prometheus\.ya?ml$|(?:^|\/)prometheus\//i],
+  ["grafana",      /(?:^|\/)grafana\//i],
+];
+
+async function fetchPathTopics(repo) {
+  const matched = new Set();
+  try {
+    const branch = repo.default_branch || "main";
+    const { data } = await rest(`/repos/${repo.full_name}/git/trees/${branch}?recursive=1`);
+    const paths = Array.isArray(data?.tree) ? data.tree.map((node) => node.path).filter(Boolean) : [];
+    for (const [slug, pattern] of PATH_PATTERNS) {
+      if (matched.has(slug)) continue;
+      if (paths.some((p) => pattern.test(p))) {
+        matched.add(slug);
+      }
+    }
+  } catch (error) {
+    if (!String(error.message).includes("404")) {
+      console.warn(`  ${repo.full_name} tree: ${error.message}`);
+    }
+  }
+  return matched;
+}
+
 /**
  * README scan — most repos describe their stack in README. Cheap signal
  * (1 API call per repo) that catches frameworks not pinned in manifests
@@ -335,6 +376,7 @@ function registerTopic(slug, repoFullName) {
 
 let manifestHits = 0;
 let readmeHits = 0;
+let pathHits = 0;
 for (const repo of dedupedRepos) {
   // 1) Explicit GitHub topics (preferred — repo owner's intent).
   const declared = Array.isArray(repo.topics) ? repo.topics : [];
@@ -351,12 +393,21 @@ for (const repo of dedupedRepos) {
   }
 
   // 3) README fallback — frameworks mentioned in prose / fenced code.
-  //    Catches runtime libs that aren't pinned in manifests.
   const fromReadme = await fetchReadmeTopics(repo);
   for (const slug of fromReadme) {
     if (declared.includes(slug) || fromManifests.has(slug)) continue;
     registerTopic(slug, repo.full_name);
     readmeHits += 1;
+  }
+
+  // 4) Path-pattern fallback — file/dir names that reveal intent without
+  //    needing file content (e.g. CLAUDE.md → Claude Code, .obsidian/ →
+  //    Obsidian, agents/ → agent system).
+  const fromPaths = await fetchPathTopics(repo);
+  for (const slug of fromPaths) {
+    if (declared.includes(slug) || fromManifests.has(slug) || fromReadme.has(slug)) continue;
+    registerTopic(slug, repo.full_name);
+    pathHits += 1;
   }
 }
 
@@ -382,6 +433,6 @@ await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 const totalItems = categories.reduce((sum, c) => sum + c.items.length, 0);
 console.log(
   `Wrote ${totalItems} topics across ${categories.length} categories ` +
-  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest + ${readmeHits} README hits) ` +
+  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest + ${readmeHits} README + ${pathHits} path hits) ` +
   `to ${outputPath}`,
 );
