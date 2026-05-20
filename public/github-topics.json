@@ -1,7 +1,85 @@
 {
-  "sources": [],
-  "reposScanned": 0,
+  "sources": [
+    "user:codwithyc",
+    "org:yule-studio"
+  ],
+  "reposScanned": 8,
   "reposWithTopics": 0,
-  "categories": [],
-  "updatedAt": null
+  "categories": [
+    {
+      "name": "Backend",
+      "items": [
+        {
+          "topic": "elasticsearch",
+          "label": "Elasticsearch",
+          "repos": 1
+        },
+        {
+          "topic": "mongodb",
+          "label": "MongoDB",
+          "repos": 1
+        },
+        {
+          "topic": "postgresql",
+          "label": "PostgreSQL",
+          "repos": 1
+        },
+        {
+          "topic": "rabbitmq",
+          "label": "RabbitMQ",
+          "repos": 1
+        },
+        {
+          "topic": "redis",
+          "label": "Redis",
+          "repos": 1
+        },
+        {
+          "topic": "spring",
+          "label": "Spring",
+          "repos": 1
+        },
+        {
+          "topic": "spring-boot",
+          "label": "Spring Boot",
+          "repos": 1
+        }
+      ]
+    },
+    {
+      "name": "DevOps",
+      "items": [
+        {
+          "topic": "github-actions",
+          "label": "GitHub Actions",
+          "repos": 1
+        },
+        {
+          "topic": "grafana",
+          "label": "Grafana",
+          "repos": 1
+        },
+        {
+          "topic": "kubernetes",
+          "label": "Kubernetes",
+          "repos": 1
+        },
+        {
+          "topic": "nginx",
+          "label": "Nginx",
+          "repos": 1
+        },
+        {
+          "topic": "prometheus",
+          "label": "Prometheus",
+          "repos": 1
+        }
+      ]
+    },
+    {
+      "name": "AI · Agents",
+      "items": []
+    }
+  ],
+  "updatedAt": "2026-05-20T01:43:00.169Z"
 }

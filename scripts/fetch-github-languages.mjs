@@ -29,16 +29,11 @@ const token = [
   process.env.GH_TOKEN,
 ].find(Boolean);
 
-if (!token) {
-  console.error("Missing GitHub token. Set GH_STATS_TOKEN, GH_TOKEN, or GITHUB_TOKEN.");
-  process.exit(1);
-}
-
 const apiHeaders = {
-  Authorization: `Bearer ${token}`,
   Accept: "application/vnd.github+json",
   "X-GitHub-Api-Version": "2022-11-28",
   "User-Agent": "yule-studio-hompage",
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
 };
 
 async function rest(path) {

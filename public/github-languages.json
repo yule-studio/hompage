@@ -1,7 +1,54 @@
 {
+  "sources": [
+    "user:codwithyc",
+    "org:yule-studio"
+  ],
   "username": "codwithyc",
-  "totalBytes": 0,
-  "reposScanned": 0,
-  "languages": [],
-  "updatedAt": null
+  "totalBytes": 232431,
+  "reposScanned": 13,
+  "languages": [
+    {
+      "name": "TypeScript",
+      "bytes": 74805,
+      "percent": 32.18,
+      "repos": 2,
+      "color": "#3178c6"
+    },
+    {
+      "name": "Java",
+      "bytes": 63222,
+      "percent": 27.2,
+      "repos": 2,
+      "color": "#b07219"
+    },
+    {
+      "name": "JavaScript",
+      "bytes": 49657,
+      "percent": 21.36,
+      "repos": 2,
+      "color": "#f1e05a"
+    },
+    {
+      "name": "CSS",
+      "bytes": 32717,
+      "percent": 14.08,
+      "repos": 1,
+      "color": "#563d7c"
+    },
+    {
+      "name": "Go",
+      "bytes": 11038,
+      "percent": 4.75,
+      "repos": 1,
+      "color": "#00ADD8"
+    },
+    {
+      "name": "HTML",
+      "bytes": 992,
+      "percent": 0.43,
+      "repos": 1,
+      "color": "#e34c26"
+    }
+  ],
+  "updatedAt": "2026-05-20T02:47:28.337Z"
 }

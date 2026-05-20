@@ -49,6 +49,7 @@ jobs:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_LANGUAGES_SOURCES: user:codwithyc,org:yule-studio
+          GITHUB_LANGUAGES_EXCLUDE: yule-studio-agent
           # Surface every language that has any code. Default 0.5 hides Go/JS/
           # Shell/Go-Template when one repo (Python yule-studio-agent) dominates
           # by bytes. With 0.01 the user still sees the full skill surface.
