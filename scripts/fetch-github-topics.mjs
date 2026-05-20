@@ -281,6 +281,79 @@ const PATH_PATTERNS = [
   ["grafana",      /(?:^|\/)grafana\//i],
 ];
 
+// Code search — finds actual `import X` / `from X` statements across all
+// indexed source files. Bypasses both README and manifest gaps (e.g. a Python
+// agent that imports Anthropic SDK at runtime but never declares it in
+// pyproject.toml or mentions it in README).
+//
+// Each entry is [slug, search-query string] — query is plain text, not regex.
+// Wrap multi-word in quotes; add `language:` filter to reduce false positives.
+const CODE_SEARCH_PATTERNS = [
+  ["anthropic",      '"from anthropic" OR "import anthropic"'],
+  ["openai",         '"from openai" OR "import openai"'],
+  ["langchain",      '"from langchain"'],
+  ["llamaindex",     '"from llama_index" OR "from llamaindex"'],
+  ["fastapi",        '"from fastapi"'],
+  ["pydantic",       '"from pydantic"'],
+  ["sqlalchemy",     '"from sqlalchemy"'],
+  ["discord-py",     '"import discord" OR "from discord"'],
+  ["mcp",            '"from mcp" OR "@modelcontextprotocol/"'],
+  ["redis",          '"import redis" OR "from redis"'],
+  ["postgresql",     '"import psycopg" OR "from psycopg" OR "import asyncpg"'],
+  ["mongodb",        '"import pymongo" OR "from pymongo"'],
+  ["kafka",          '"from kafka" OR "from aiokafka"'],
+];
+
+async function codeSearch(query) {
+  // GitHub returns 422 if query is empty or malformed; surface it as an empty
+  // result so callers don't crash.
+  const url = `/search/code?q=${encodeURIComponent(query)}&per_page=30`;
+  const { data } = await rest(url);
+  return Array.isArray(data?.items) ? data.items : [];
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Runs CODE_SEARCH_PATTERNS once per source. Returns a Map<slug, Set<repoFullName>>.
+ * Throttled (~2s per request) to stay under the 30/min code-search rate limit.
+ * Soft-fails — per-query errors are warned but don't abort the rest.
+ */
+async function fetchCodeSearchTopics(sources) {
+  const matchedByRepo = new Map(); // slug → Set<full_name>
+  const knownRepoOwners = new Set(sources.map((s) => s.name.toLowerCase()));
+
+  for (const source of sources) {
+    const scope = source.type === "user" ? `user:${source.name}` : `org:${source.name}`;
+    for (const [slug, queryBase] of CODE_SEARCH_PATTERNS) {
+      const query = `${queryBase} ${scope}`;
+      try {
+        const items = await codeSearch(query);
+        for (const item of items) {
+          const fullName = item?.repository?.full_name;
+          if (!fullName) continue;
+          // Defensive: ensure the matched repo belongs to one of our sources.
+          // GitHub's search API is normally scoped but it's worth checking.
+          const owner = fullName.split("/")[0].toLowerCase();
+          if (!knownRepoOwners.has(owner)) continue;
+          if (!matchedByRepo.has(slug)) matchedByRepo.set(slug, new Set());
+          matchedByRepo.get(slug).add(fullName);
+        }
+      } catch (error) {
+        console.warn(`  code-search ${slug} ${scope}: ${error.message}`);
+      }
+      // Stay under 30 req/min for code search. fine-grained PATs sometimes
+      // get throttled at lower limits, so 4s is the safe floor for local runs;
+      // CI's github.token has higher headroom but the delay doesn't hurt.
+      await sleep(4000);
+    }
+  }
+
+  return matchedByRepo;
+}
+
 async function fetchPathTopics(repo) {
   const matched = new Set();
   try {
@@ -374,9 +447,15 @@ function registerTopic(slug, repoFullName) {
   bucket.get(entry.label).repos.add(repoFullName);
 }
 
+// 5) Code-search pass runs ONCE for all sources (not per-repo) — collect
+//    map of slug → Set<full_name> up front so the main loop can register
+//    these hits per repo without re-querying.
+const codeSearchMatches = await fetchCodeSearchTopics(sources);
+
 let manifestHits = 0;
 let readmeHits = 0;
 let pathHits = 0;
+let codeHits = 0;
 for (const repo of dedupedRepos) {
   // 1) Explicit GitHub topics (preferred — repo owner's intent).
   const declared = Array.isArray(repo.topics) ? repo.topics : [];
@@ -409,6 +488,14 @@ for (const repo of dedupedRepos) {
     registerTopic(slug, repo.full_name);
     pathHits += 1;
   }
+
+  // 5) Code-search fallback — actual import statements anywhere in the repo.
+  for (const [slug, repoSet] of codeSearchMatches.entries()) {
+    if (!repoSet.has(repo.full_name)) continue;
+    if (declared.includes(slug) || fromManifests.has(slug) || fromReadme.has(slug) || fromPaths.has(slug)) continue;
+    registerTopic(slug, repo.full_name);
+    codeHits += 1;
+  }
 }
 
 const categories = Object.entries(groups).map(([name, bucket]) => {
@@ -433,6 +520,6 @@ await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 const totalItems = categories.reduce((sum, c) => sum + c.items.length, 0);
 console.log(
   `Wrote ${totalItems} topics across ${categories.length} categories ` +
-  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest + ${readmeHits} README + ${pathHits} path hits) ` +
+  `(${dedupedRepos.length} repos scanned, ${manifestHits} manifest + ${readmeHits} README + ${pathHits} path + ${codeHits} code hits) ` +
   `to ${outputPath}`,
 );
