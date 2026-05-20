@@ -4,56 +4,56 @@
   "featured": {
     "title": "@Component, @Controller, @Service, @Repository의 차이점은 무엇일까",
     "link": "https://codingtips.tistory.com/28",
-    "description": "<p data-ke-size=\"size16\">스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게</p> <p data-ke-size=\"size16\">됩니다.</p> <p data-ke-size=\"size16\"> </p> <p data-end=\"448\" data-start=\"402\" data-ke-size=\"size16\">처음",
+    "description": "스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게 됩니다. 처음 보면 비슷합니다. 모두 스프링이 관리하는 Bean으로 등록되기 때문입니다. 하지만 이들은 완전히 같은 의미가 아닙니다. 공통점은 Bean 등록이고, 차이점은 역할과 사용 위치 입니다. 이번 글에서는 네 어노테이션의 공통점과 차이점, 그리고 왜 구분해서 사용하는",
     "pubDate": "Fri, 10 Apr 2026 11:14:11 +0900",
-    "views": 1061,
     "readMin": 4,
+    "views": 0,
     "date": "2026-04-10"
   },
   "topPosts": [
     {
       "title": "@Component, @Controller, @Service, @Repository의 차이점은 무엇일까",
       "link": "https://codingtips.tistory.com/28",
-      "description": "<p data-ke-size=\"size16\">스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게</p> <p data-ke-size=\"size16\">됩니다.</p> <p data-ke-size=\"size16\"> </p> <p data-end=\"448\" data-start=\"402\" data-ke-size=\"size16\">처음",
+      "description": "스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게 됩니다. 처음 보면 비슷합니다. 모두 스프링이 관리하는 Bean으로 등록되기 때문입니다. 하지만 이들은 완전히 같은 의미가 아닙니다. 공통점은 Bean 등록이고, 차이점은 역할과 사용 위치 입니다. 이번 글에서는 네 어노테이션의 공통점과 차이점, 그리고 왜 구분해서 사용하는",
       "pubDate": "Fri, 10 Apr 2026 11:14:11 +0900",
-      "views": 1061,
       "readMin": 4,
+      "views": 0,
       "date": "2026-04-10"
     },
     {
       "title": "var, const, let의 차이",
       "link": "https://codingtips.tistory.com/27",
-      "description": "<p data-ke-size=\"size16\">자바스크립트를 공부하며 가장 먼저 이해해야 하는 변수 선언 방식</p> <p data-ke-size=\"size16\"> </p> <p data-ke-size=\"size16\">자바스크립트를 처음 공부하다 보면 가장 먼저 마주치게 되는 것이 var, let, const입니다.<br />문법 자체만 보면 셋 다 변수를 선언하는 키워드처럼 보이기 때문에, ",
+      "description": "자바스크립트를 공부하며 가장 먼저 이해해야 하는 변수 선언 방식 자바스크립트를 처음 공부하다 보면 가장 먼저 마주치게 되는 것이 var, let, const입니다. 문법 자체만 보면 셋 다 변수를 선언하는 키워드처럼 보이기 때문에, 처음에는 &ldquo;어차피 변수 만드는 거 아닌가?&rdquo;라는 생각이 들기 쉽습니다. 저 역시 강의를 듣다가, 자바스크립트를 깊게 파고들 계획은 아니더라도",
       "pubDate": "Tue, 7 Apr 2026 18:40:45 +0900",
-      "views": 1061,
       "readMin": 5,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "Js 문법을 어떻게 학습할 것인가?",
       "link": "https://codingtips.tistory.com/26",
-      "description": "<p data-ke-size=\"size16\"><span>JavaScript는 프론트엔드를 공부할 때 결국 한 번은 반드시 마주하게 되는 언어입니다. </span><br /><span>하지만 지금의 저는 이 언어를 깊이 있게 파고들기보다는, </span><br /><span>필요한 만큼 이해하고 다음 단계로 넘어가는 쪽에 더 무게를 두고 있습니다.</span><br /><br /><span>애",
+      "description": "JavaScript는 프론트엔드를 공부할 때 결국 한 번은 반드시 마주하게 되는 언어입니다. 하지만 지금의 저는 이 언어를 깊이 있게 파고들기보다는, 필요한 만큼 이해하고 다음 단계로 넘어가는 쪽에 더 무게를 두고 있습니다. 애초에 JavaScript는 제 메인 언어가 아니기도 하고, 현재 목표 역시 프론트엔드 자체를 주력으로 삼는 것이 아니라 기본적인 화면 구조와 동작 방식을 이해하는 데 ",
       "pubDate": "Tue, 7 Apr 2026 12:30:30 +0900",
-      "views": 1061,
       "readMin": 1,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "Front Sandbox 소개",
       "link": "https://codingtips.tistory.com/25",
-      "description": "<p data-ke-size=\"size16\"><b>Front Sandbox는 클라이언트와의 원활한 협업을 위해 프론트엔드 기본 역량을 학습하고 정리하는 레</b></p> <p data-ke-size=\"size16\"><b>포지토리입니다.</b></p> <p data-ke-size=\"size16\"> </p> <p data-ke-size=\"size16\">주력 분야는 Spring Backend이지만",
+      "description": "Front Sandbox는 클라이언트와의 원활한 협업을 위해 프론트엔드 기본 역량을 학습하고 정리하는 레 포지토리입니다. 주력 분야는 Spring Backend이지만, 실제 개발에서는 프론트엔드에 대한 이해 역시 협업의 완성도를 높이는 중요한 요소라고 생각합니다. 이 레포는 프론트엔드를 깊이 있게 다루기 위한 공간이라기보다는, 화면 구조와 기본적인 동작 방식을 이해하고 클라이언트와 더 정확하",
       "pubDate": "Tue, 7 Apr 2026 11:07:41 +0900",
-      "views": 1061,
       "readMin": 1,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "프로젝트에서 서버 시간을 UTC로 관리하기로 한 이유",
       "link": "https://codingtips.tistory.com/24",
-      "description": "<p data-ke-size=\"size16\">최근에 시간을 다루는 글을 두 편에 걸쳐 정리하면서, 절대 시각과 지역 시각을 구분해 바라보는 기준이</p> <p data-ke-size=\"size16\">왜 중요한지도 함께 정리할 수 있었습니다.</p> <p data-ke-size=\"size16\"> </p> <p data-end=\"722\" data-start=\"616\" data-ke-size=\"s",
+      "description": "최근에 시간을 다루는 글을 두 편에 걸쳐 정리하면서, 절대 시각과 지역 시각을 구분해 바라보는 기준이 왜 중요한지도 함께 정리할 수 있었습니다. 다만 개념을 이해했다고 해서 바로 설계 기준이 정해지는 것은 아니었습니다. 실제 프로젝트에서는 결국 하나의 기준을 선택해야 했고, 그 과정에서 자연스럽게 이런 질문에 도달하게 되었습니다. 실제 프로젝트에서는 시간을 어떤 기준으로 저장하고 관리해야 할",
       "pubDate": "Mon, 6 Apr 2026 18:30:02 +0900",
-      "views": 1061,
       "readMin": 3,
+      "views": 0,
       "date": "2026-04-06"
     }
   ],
@@ -61,48 +61,48 @@
     {
       "title": "@Component, @Controller, @Service, @Repository의 차이점은 무엇일까",
       "link": "https://codingtips.tistory.com/28",
-      "description": "<p data-ke-size=\"size16\">스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게</p> <p data-ke-size=\"size16\">됩니다.</p> <p data-ke-size=\"size16\"> </p> <p data-end=\"448\" data-start=\"402\" data-ke-size=\"size16\">처음",
+      "description": "스프링을 공부하다 보면 @Component, @Service, @Controller, @Repository를 자주 보게 됩니다. 처음 보면 비슷합니다. 모두 스프링이 관리하는 Bean으로 등록되기 때문입니다. 하지만 이들은 완전히 같은 의미가 아닙니다. 공통점은 Bean 등록이고, 차이점은 역할과 사용 위치 입니다. 이번 글에서는 네 어노테이션의 공통점과 차이점, 그리고 왜 구분해서 사용하는",
       "pubDate": "Fri, 10 Apr 2026 11:14:11 +0900",
-      "views": 1061,
       "readMin": 4,
+      "views": 0,
       "date": "2026-04-10"
     },
     {
       "title": "var, const, let의 차이",
       "link": "https://codingtips.tistory.com/27",
-      "description": "<p data-ke-size=\"size16\">자바스크립트를 공부하며 가장 먼저 이해해야 하는 변수 선언 방식</p> <p data-ke-size=\"size16\"> </p> <p data-ke-size=\"size16\">자바스크립트를 처음 공부하다 보면 가장 먼저 마주치게 되는 것이 var, let, const입니다.<br />문법 자체만 보면 셋 다 변수를 선언하는 키워드처럼 보이기 때문에, ",
+      "description": "자바스크립트를 공부하며 가장 먼저 이해해야 하는 변수 선언 방식 자바스크립트를 처음 공부하다 보면 가장 먼저 마주치게 되는 것이 var, let, const입니다. 문법 자체만 보면 셋 다 변수를 선언하는 키워드처럼 보이기 때문에, 처음에는 &ldquo;어차피 변수 만드는 거 아닌가?&rdquo;라는 생각이 들기 쉽습니다. 저 역시 강의를 듣다가, 자바스크립트를 깊게 파고들 계획은 아니더라도",
       "pubDate": "Tue, 7 Apr 2026 18:40:45 +0900",
-      "views": 1061,
       "readMin": 5,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "Js 문법을 어떻게 학습할 것인가?",
       "link": "https://codingtips.tistory.com/26",
-      "description": "<p data-ke-size=\"size16\"><span>JavaScript는 프론트엔드를 공부할 때 결국 한 번은 반드시 마주하게 되는 언어입니다. </span><br /><span>하지만 지금의 저는 이 언어를 깊이 있게 파고들기보다는, </span><br /><span>필요한 만큼 이해하고 다음 단계로 넘어가는 쪽에 더 무게를 두고 있습니다.</span><br /><br /><span>애",
+      "description": "JavaScript는 프론트엔드를 공부할 때 결국 한 번은 반드시 마주하게 되는 언어입니다. 하지만 지금의 저는 이 언어를 깊이 있게 파고들기보다는, 필요한 만큼 이해하고 다음 단계로 넘어가는 쪽에 더 무게를 두고 있습니다. 애초에 JavaScript는 제 메인 언어가 아니기도 하고, 현재 목표 역시 프론트엔드 자체를 주력으로 삼는 것이 아니라 기본적인 화면 구조와 동작 방식을 이해하는 데 ",
       "pubDate": "Tue, 7 Apr 2026 12:30:30 +0900",
-      "views": 1061,
       "readMin": 1,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "Front Sandbox 소개",
       "link": "https://codingtips.tistory.com/25",
-      "description": "<p data-ke-size=\"size16\"><b>Front Sandbox는 클라이언트와의 원활한 협업을 위해 프론트엔드 기본 역량을 학습하고 정리하는 레</b></p> <p data-ke-size=\"size16\"><b>포지토리입니다.</b></p> <p data-ke-size=\"size16\"> </p> <p data-ke-size=\"size16\">주력 분야는 Spring Backend이지만",
+      "description": "Front Sandbox는 클라이언트와의 원활한 협업을 위해 프론트엔드 기본 역량을 학습하고 정리하는 레 포지토리입니다. 주력 분야는 Spring Backend이지만, 실제 개발에서는 프론트엔드에 대한 이해 역시 협업의 완성도를 높이는 중요한 요소라고 생각합니다. 이 레포는 프론트엔드를 깊이 있게 다루기 위한 공간이라기보다는, 화면 구조와 기본적인 동작 방식을 이해하고 클라이언트와 더 정확하",
       "pubDate": "Tue, 7 Apr 2026 11:07:41 +0900",
-      "views": 1061,
       "readMin": 1,
+      "views": 0,
       "date": "2026-04-07"
     },
     {
       "title": "프로젝트에서 서버 시간을 UTC로 관리하기로 한 이유",
       "link": "https://codingtips.tistory.com/24",
-      "description": "<p data-ke-size=\"size16\">최근에 시간을 다루는 글을 두 편에 걸쳐 정리하면서, 절대 시각과 지역 시각을 구분해 바라보는 기준이</p> <p data-ke-size=\"size16\">왜 중요한지도 함께 정리할 수 있었습니다.</p> <p data-ke-size=\"size16\"> </p> <p data-end=\"722\" data-start=\"616\" data-ke-size=\"s",
+      "description": "최근에 시간을 다루는 글을 두 편에 걸쳐 정리하면서, 절대 시각과 지역 시각을 구분해 바라보는 기준이 왜 중요한지도 함께 정리할 수 있었습니다. 다만 개념을 이해했다고 해서 바로 설계 기준이 정해지는 것은 아니었습니다. 실제 프로젝트에서는 결국 하나의 기준을 선택해야 했고, 그 과정에서 자연스럽게 이런 질문에 도달하게 되었습니다. 실제 프로젝트에서는 시간을 어떤 기준으로 저장하고 관리해야 할",
       "pubDate": "Mon, 6 Apr 2026 18:30:02 +0900",
-      "views": 1061,
       "readMin": 3,
+      "views": 0,
       "date": "2026-04-06"
     }
   ],
-  "updatedAt": "2026-05-20T01:28:18.299Z"
+  "updatedAt": "2026-05-20T01:39:00.944Z"
 }
