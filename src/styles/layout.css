@@ -391,6 +391,60 @@
 .card-link::after { content: "→"; transition: transform var(--t-fast); }
 .card-link:hover::after { transform: translateX(2px); }
 
+/* Projects filter tabs — All / Live / Code-only */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-pill);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.filter-tab:hover { color: var(--text); background: var(--bg-pill-active); }
+.filter-tab[aria-selected="true"] {
+  color: var(--text);
+  background: var(--bg-card);
+  border-color: var(--border-accent);
+}
+
+/* Live project — accent border + subtle top gradient so live-shipped repos
+   stand apart from code-only ones at a glance. */
+.project-card--live {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 6%, var(--bg-card)) 0%,
+    var(--bg-card) 100%
+  );
+}
+.project-card--live:hover { border-color: var(--accent); }
+.project-live-link {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.project-live-link:hover { color: var(--accent-strong); }
+
 .project-list-link {
   min-width: 0;
   display: inline-flex;
