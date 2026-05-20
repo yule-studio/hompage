@@ -36,8 +36,8 @@ export default function Skills() {
           <div className="page-eyebrow">/ skills</div>
           <h1 className="page-title">Skills</h1>
           <p className="page-subtitle">
-            Languages 비중은 GitHub 의 실제 코드 바이트 합산. Backend / DevOps / AI 는
-            GitHub repo 토픽 누적 — 토픽이 안 달린 카테고리는 자기 평가로 fallback.
+            Languages 비중은 GitHub 의 실제 코드 바이트 합산. <br />
+            Backend / DevOps / AI 는 GitHub repo 토픽 누적 — 토픽이 안 달린 카테고리는 자기 평가로 fallback.
           </p>
         </div>
       </header>
@@ -73,7 +73,7 @@ export default function Skills() {
                 <div className="bar" aria-hidden>
                   <span
                     style={{
-                      width: `${Math.min(100, lang.percent)}%`,
+                      width: `${Math.max(1.5, Math.min(100, lang.percent))}%`,
                       background: lang.color ?? "var(--accent)",
                     }}
                   />
