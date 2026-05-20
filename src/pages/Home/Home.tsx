@@ -206,34 +206,46 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card span="sm" hoverable ariaLabel="skills">
+        <Card span="sm" hoverable ariaLabel="skills" className="home-stack-card">
           <div className="card-head">
             <span className="label">/ skills · top langs</span>
           </div>
           <h3 className="card-title">Stack</h3>
-          <p className="card-sub">GitHub 코드 바이트 기준 상위 언어.</p>
           <div className="card-body">
-            <div className="chip-row">
-              {(topLanguages.length ? topLanguages.slice(0, 6) : skills[0].items.slice(0, 6).map((s) => ({
-                name: s.name.split(" /")[0].split(" (")[0],
-                percent: 0,
-                color: null as string | null,
-              }))).map((lang) => (
-                <span key={lang.name} className="chip lang-chip">
-                  <span
-                    className="lang-dot"
-                    aria-hidden
-                    style={{ background: lang.color ?? "var(--text-muted)" }}
-                  />
-                  {lang.name}
+            <ul className="stack-list">
+              {(topLanguages.length
+                ? topLanguages.slice(0, 4)
+                : skills[0].items.slice(0, 4).map((s) => ({
+                    name: s.name.split(" /")[0].split(" (")[0],
+                    percent: 0,
+                    color: null as string | null,
+                  }))
+              ).map((lang) => (
+                <li key={lang.name} className="stack-row">
+                  <span className="stack-row-head">
+                    <span
+                      className="lang-dot"
+                      aria-hidden
+                      style={{ background: lang.color ?? "var(--text-muted)" }}
+                    />
+                    <span className="stack-row-name">{lang.name}</span>
+                    {lang.percent > 0 ? (
+                      <span className="mono faint stack-row-pct">{lang.percent.toFixed(1)}%</span>
+                    ) : null}
+                  </span>
                   {lang.percent > 0 ? (
-                    <span className="mono faint" style={{ marginLeft: 4 }}>
-                      {lang.percent.toFixed(0)}%
-                    </span>
+                    <span
+                      className="stack-row-bar"
+                      aria-hidden
+                      style={{
+                        width: `${Math.max(2, Math.min(100, lang.percent))}%`,
+                        background: lang.color ?? "var(--accent)",
+                      }}
+                    />
                   ) : null}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
           <div className="card-footer">
             <Link to="/skills" className="card-link">view skills</Link>
