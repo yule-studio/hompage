@@ -62,6 +62,10 @@ jobs:
           # GH_STATS_TOKEN (fine-grained PAT) is the only one that works.
           GITHUB_TOPICS_SEARCH_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
           GITHUB_TOPICS_SOURCES: user:codwithyc,org:yule-studio
+      - name: Sync Tistory blog (RSS + per-post view scrape)
+        run: npm run blog:sync
+        env:
+          BLOG_URL: https://codingtips.tistory.com
       - run: npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5

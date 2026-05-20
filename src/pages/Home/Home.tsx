@@ -8,6 +8,7 @@ import { profile } from "../../data/profile";
 import { githubStatItems, githubStatsFallback, type GithubStats } from "../../data/githubStats";
 import { useProjects } from "../../hooks/useProjects";
 import { useGithubLanguages } from "../../hooks/useGithubLanguages";
+import { useBlog } from "../../hooks/useBlog";
 import { posts } from "../../data/posts";
 import { hosts, services } from "../../data/homelab";
 import { events } from "../../data/events";
@@ -30,6 +31,7 @@ export default function Home() {
   const [githubStats, setGithubStats] = useState<GithubStats>(githubStatsFallback);
   const { projects } = useProjects();
   const { languages: topLanguages } = useGithubLanguages();
+  const blog = useBlog();
   const featured = posts[0];
   const okHosts = hosts.filter((h) => h.status === "ok").length;
   const warnHosts = hosts.filter((h) => h.status === "warn").length;
@@ -187,23 +189,39 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* row 7-9 : Blog (md) + Skills (sm) */}
+        {/* row 7-9 : Blog (top-viewed from Tistory) + Skills (sm) */}
         <Card span="md" hoverable ariaLabel="featured writing">
           <div className="card-head">
-            <span className="label">/ blog</span>
-            <span className="chip">{posts.length} posts</span>
+            <span className="label">/ blog · latest</span>
+            <span className="chip">{blog.totalPosts || posts.length} posts</span>
           </div>
-          <span className="featured-eyebrow">FEATURED · {featured.date}</span>
-          <h3 className="card-title" style={{ whiteSpace: "normal", fontSize: "var(--text-lg)" }}>
-            {featured.title}
-          </h3>
-          <p className="card-sub">{featured.summary}</p>
-          <div className="card-footer">
-            <a className="card-link" href={profile.links.blog} target="_blank" rel="noreferrer">
-              read on blog
-            </a>
-            <span className="mono faint">{featured.readMin} min · codingtips.tistory</span>
-          </div>
+          {(() => {
+            const post = blog.featured ?? {
+              title: featured.title,
+              link: profile.links.blog,
+              description: featured.summary,
+              date: featured.date,
+              views: 0,
+              readMin: featured.readMin,
+            };
+            return (
+              <>
+                <span className="featured-eyebrow">
+                  FEATURED · {post.date}
+                </span>
+                <h3 className="card-title" style={{ whiteSpace: "normal", fontSize: "var(--text-lg)" }}>
+                  {post.title}
+                </h3>
+                <p className="card-sub">{post.description}</p>
+                <div className="card-footer">
+                  <a className="card-link" href={post.link} target="_blank" rel="noreferrer">
+                    read on blog
+                  </a>
+                  <span className="mono faint">{post.readMin} min · codingtips.tistory</span>
+                </div>
+              </>
+            );
+          })()}
         </Card>
 
         <Card span="sm" hoverable ariaLabel="skills" className="home-stack-card">
