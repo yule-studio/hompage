@@ -1445,3 +1445,253 @@
   .cal-toolbar { gap: var(--space-2); }
   .cal-month-nav { gap: var(--space-2); }
 }
+
+
+/* ─────────────────────────────────────────────────────────────
+ * Today plan section (agent → hompage 의 plan snapshot)
+ * ───────────────────────────────────────────────────────────── */
+.cal-plan {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cal-plan-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.cal-plan-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.cal-plan-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cal-plan-meta {
+  display: flex;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cal-plan-warn {
+  color: var(--warn);
+}
+
+/* KPI strip */
+.cal-plan-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.cal-plan-kpi {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--bg-pill);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cal-plan-kpi-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text);
+}
+.cal-plan-kpi-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .cal-plan-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* section labels */
+.cal-plan-section-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* morning briefing */
+.cal-plan-briefing {
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 12px;
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.cal-plan-briefing-body {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text);
+  word-break: keep-all;
+}
+
+.cal-plan-block { }
+
+/* rows (fixed / suggested / tasks) */
+.cal-plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cal-plan-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  background: var(--bg-pill);
+  transition: background var(--t-fast);
+}
+.cal-plan-row:hover { background: var(--bg-pill-active); }
+.cal-plan-row.muted {
+  background: transparent;
+  border: 1px dashed var(--border);
+}
+
+.cal-plan-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.cal-plan-row-title {
+  color: var(--text);
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-plan-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.cal-plan-row-est {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* priority chip */
+.cal-plan-prio {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  white-space: nowrap;
+  justify-self: start;
+  width: max-content;
+  min-width: 56px;
+  text-align: center;
+}
+.cal-plan-prio--high {
+  color: color-mix(in srgb, var(--err) 80%, var(--text));
+  border-color: color-mix(in srgb, var(--err) 42%, transparent);
+  background: color-mix(in srgb, var(--err) 6%, transparent);
+}
+.cal-plan-prio--medium {
+  color: color-mix(in srgb, var(--warn) 80%, var(--text));
+  border-color: color-mix(in srgb, var(--warn) 42%, transparent);
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+.cal-plan-prio--low {
+  color: color-mix(in srgb, var(--info) 80%, var(--text));
+  border-color: color-mix(in srgb, var(--info) 42%, transparent);
+  background: color-mix(in srgb, var(--info) 6%, transparent);
+}
+
+/* checkpoints */
+.cal-plan-checkpoints li {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-3);
+  padding: 6px 8px;
+  font-size: var(--text-sm);
+}
+.cal-plan-cp-time {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+.cal-plan-cp-title { color: var(--text); }
+.cal-plan-cp-note {
+  grid-column: 2;
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+/* source status bar */
+.cal-plan-sources {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--border);
+}
+.cal-plan-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--bg-pill);
+}
+.cal-plan-source-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.cal-plan-source.ok {
+  color: color-mix(in srgb, var(--ok) 80%, var(--text));
+  border-color: color-mix(in srgb, var(--ok) 42%, transparent);
+}
+.cal-plan-source.ok .cal-plan-source-dot { background: var(--ok); }
+.cal-plan-source.err {
+  color: color-mix(in srgb, var(--err) 80%, var(--text));
+  border-color: color-mix(in srgb, var(--err) 42%, transparent);
+}
+.cal-plan-source.err .cal-plan-source-dot { background: var(--err); }

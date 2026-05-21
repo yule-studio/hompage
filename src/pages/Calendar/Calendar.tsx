@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import Navigation from "../../components/Navigation/Navigation";
 import { events as ALL_EVENTS, type Event, type EventKind } from "../../data/events";
+import { usePlanSnapshot } from "../../hooks/usePlanSnapshot";
+import {
+  formatTimeRange,
+  isPlanForToday,
+  type PlanSnapshot,
+  type PlanTimeBlock,
+  type PlanTaskCandidate,
+} from "../../data/planSnapshot";
 
 /* ─────────────────────────────────────────────────────────────
  * Calendar — 월간 grid + agenda 토글 + 날짜 클릭 시 split-view
@@ -103,6 +111,8 @@ export default function CalendarPage() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [view, setView] = useState<View>("month");
   const [openEvent, setOpenEvent] = useState<Event | null>(null);
+  const plan = usePlanSnapshot();
+  const showPlan = plan.isAvailable && isPlanForToday(plan, TODAY);
   const weekStart = 0; // 일요일 시작
 
   const year = cursor.getFullYear();
@@ -165,6 +175,8 @@ export default function CalendarPage() {
       </header>
 
       <Navigation />
+
+      {showPlan && <TodayPlanSection plan={plan} />}
 
       {/* toolbar */}
       <div className="cal-toolbar">
@@ -524,5 +536,149 @@ function EventModal({ event, onClose }: { event: Event; onClose: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * TodayPlanSection — yule-studio-agent 가 push 한 오늘 플랜 카드.
+ * snapshot 이 오늘 날짜 가 아니거나 없으면 부모에서 안 렌더.
+ * ───────────────────────────────────────────────────────────── */
+function TodayPlanSection({ plan }: { plan: PlanSnapshot }) {
+  const generated = plan.generated_at ? new Date(plan.generated_at) : null;
+  const generatedStr = generated && !Number.isNaN(generated.getTime())
+    ? `${generated.getFullYear()}-${String(generated.getMonth() + 1).padStart(2, "0")}-${String(generated.getDate()).padStart(2, "0")} ${String(generated.getHours()).padStart(2, "0")}:${String(generated.getMinutes()).padStart(2, "0")}`
+    : null;
+
+  return (
+    <section className="cal-plan" aria-label="오늘 플랜">
+      <div className="cal-plan-head">
+        <div>
+          <div className="cal-plan-eyebrow">/ today plan · {plan.plan_date}</div>
+          <h2 className="cal-plan-title">오늘 플랜</h2>
+        </div>
+        <div className="cal-plan-meta">
+          {generatedStr ? <span>generated {generatedStr}</span> : null}
+          {plan.warnings.length > 0 ? (
+            <span className="cal-plan-warn">⚠ {plan.warnings.length} warning{plan.warnings.length > 1 ? "s" : ""}</span>
+          ) : null}
+        </div>
+      </div>
+
+      {/* summary KPIs */}
+      <div className="cal-plan-kpis">
+        <PlanKpi label="fixed" value={plan.summary.fixed_event_count} />
+        <PlanKpi label="all-day" value={plan.summary.all_day_event_count} />
+        <PlanKpi label="todo" value={plan.summary.todo_count} />
+        <PlanKpi label="github" value={plan.summary.github_issue_count} />
+        <PlanKpi label="reminder" value={plan.summary.reminder_count} />
+        <PlanKpi label="focus" value={`${plan.summary.available_focus_minutes}m`} />
+      </div>
+
+      {/* morning briefing */}
+      {plan.morning_briefing ? (
+        <div className="cal-plan-briefing">
+          <div className="cal-plan-section-label">MORNING BRIEFING</div>
+          <p className="cal-plan-briefing-body">{plan.morning_briefing}</p>
+        </div>
+      ) : null}
+
+      {/* fixed schedule */}
+      {plan.fixed_schedule.length > 0 ? (
+        <div className="cal-plan-block">
+          <div className="cal-plan-section-label">고정 일정</div>
+          <ul className="cal-plan-list">
+            {plan.fixed_schedule.map((b, i) => (
+              <PlanBlockRow key={i} block={b} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* suggested time blocks */}
+      {plan.suggested_time_blocks.length > 0 ? (
+        <div className="cal-plan-block">
+          <div className="cal-plan-section-label">제안 블록</div>
+          <ul className="cal-plan-list">
+            {plan.suggested_time_blocks.map((b, i) => (
+              <PlanBlockRow key={i} block={b} muted />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* prioritized tasks */}
+      {plan.prioritized_tasks.length > 0 ? (
+        <div className="cal-plan-block">
+          <div className="cal-plan-section-label">우선순위 작업 · {plan.prioritized_tasks.length}</div>
+          <ul className="cal-plan-list">
+            {plan.prioritized_tasks.slice(0, 6).map((t) => (
+              <PlanTaskRow key={t.task_id} task={t} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* checkpoints */}
+      {plan.checkpoints.length > 0 ? (
+        <div className="cal-plan-block">
+          <div className="cal-plan-section-label">체크포인트</div>
+          <ul className="cal-plan-list cal-plan-checkpoints">
+            {plan.checkpoints.map((c, i) => (
+              <li key={i}>
+                <span className="cal-plan-cp-time">{c.time}</span>
+                <span className="cal-plan-cp-title">{c.title}</span>
+                {c.note ? <span className="cal-plan-cp-note">{c.note}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* source status */}
+      {plan.source_statuses.length > 0 ? (
+        <div className="cal-plan-sources">
+          {plan.source_statuses.map((s, i) => (
+            <span
+              key={i}
+              className={`cal-plan-source ${s.ok ? "ok" : "err"}`}
+              title={s.detail ?? ""}
+            >
+              <span className="cal-plan-source-dot" aria-hidden />
+              {s.source}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function PlanKpi({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="cal-plan-kpi">
+      <div className="cal-plan-kpi-value">{value}</div>
+      <div className="cal-plan-kpi-label">{label}</div>
+    </div>
+  );
+}
+
+function PlanBlockRow({ block, muted = false }: { block: PlanTimeBlock; muted?: boolean }) {
+  return (
+    <li className={`cal-plan-row ${muted ? "muted" : ""}`}>
+      <span className="cal-plan-time">{formatTimeRange(block.start, block.end)}</span>
+      <span className="cal-plan-row-title">{block.title}</span>
+      {block.locked ? <span className="cal-plan-tag">locked</span> : null}
+    </li>
+  );
+}
+
+function PlanTaskRow({ task }: { task: PlanTaskCandidate }) {
+  const lvl = task.priority_level.toLowerCase();
+  return (
+    <li className="cal-plan-row">
+      <span className={`cal-plan-prio cal-plan-prio--${lvl}`}>{task.priority_level}</span>
+      <span className="cal-plan-row-title">{task.title}</span>
+      <span className="cal-plan-row-est mono">{task.estimated_minutes}m</span>
+    </li>
   );
 }

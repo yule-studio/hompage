@@ -1,0 +1,23 @@
+{
+  "plan_date": "",
+  "timezone": "Asia/Seoul",
+  "generated_at": null,
+  "source_statuses": [],
+  "warnings": [],
+  "summary": {
+    "fixed_event_count": 0,
+    "all_day_event_count": 0,
+    "todo_count": 0,
+    "github_issue_count": 0,
+    "reminder_count": 0,
+    "recommended_task_count": 0,
+    "available_focus_minutes": 0
+  },
+  "fixed_schedule": [],
+  "execution_blocks": [],
+  "prioritized_tasks": [],
+  "suggested_time_blocks": [],
+  "checkpoints": [],
+  "morning_briefing": "",
+  "discord_briefing": ""
+}
