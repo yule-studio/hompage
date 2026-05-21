@@ -955,13 +955,6 @@
   margin-left: auto;
   color: var(--text-faint);
 }
-.cal-split .cal-legend {
-  font-size: 10.5px;
-  padding: 10px var(--space-3);
-  gap: var(--space-3);
-}
-.cal-split .cal-legend-hint { display: none; }
-
 /* ── month card / grid ───────────────────────────────────── */
 .cal-month-card {
   border: 1px solid var(--border);
@@ -1082,41 +1075,7 @@
 .cal-dot--maintenance  { background: var(--warn); }
 .cal-dot--personal     { background: var(--text-muted); }
 
-/* ── split layout ────────────────────────────────────────── */
-.cal-split {
-  display: grid;
-  grid-template-columns: minmax(340px, 420px) 1fr;
-  gap: var(--space-5);
-  align-items: start;
-}
-.cal-split > .cal-legend { grid-column: 1; }
-.cal-split > .cal-month-card { grid-column: 1; }
-.cal-split > .cal-detail {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: stretch;
-}
-.cal-split .cal-grid {
-  grid-auto-rows: minmax(32px, 1fr);
-}
-.cal-split .cal-cell {
-  min-height: 32px;
-  padding: 3px 4px;
-  gap: 1px;
-}
-.cal-split .cal-daynum-wrap { width: 14px; height: 14px; }
-.cal-split .cal-daynum { font-size: 9.5px; }
-.cal-split .cal-weekday { padding: 4px 0; font-size: 9.5px; }
-.cal-split .cal-markers { display: none; }
-
-@media (max-width: 960px) {
-  .cal-split {
-    grid-template-columns: 1fr;
-  }
-  .cal-split > .cal-detail { grid-column: 1; grid-row: auto; }
-}
-
-/* ── detail panel ────────────────────────────────────────── */
+/* ── detail panel (달력 아래로) ───────────────────────────── */
 .cal-detail {
   margin-top: var(--space-4);
   border: 1px solid var(--border);
@@ -1125,13 +1084,12 @@
   overflow: hidden;
   position: relative;
 }
-.cal-split > .cal-detail {
-  margin-top: 0;
+.cal-detail {
   animation: cal-detail-in 0.22s ease-out;
 }
 @keyframes cal-detail-in {
-  from { opacity: 0; transform: translateX(8px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .cal-detail-close {
   position: absolute; top: 14px; right: 14px;
@@ -1158,12 +1116,6 @@
   gap: var(--space-4);
   flex-wrap: wrap;
 }
-.cal-split .cal-detail-head {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: 20px 22px 16px;
-}
 .cal-detail-date {
   display: flex; align-items: baseline; gap: 14px;
   flex-wrap: wrap;
@@ -1174,7 +1126,6 @@
 }
 .cal-detail-num.sun { color: var(--cal-sun); }
 .cal-detail-num.sat { color: var(--cal-sat); }
-.cal-split .cal-detail-num { font-size: 30px; }
 .cal-detail-meta {
   font-family: var(--font-mono); font-size: var(--text-xs);
   color: var(--text-muted);
@@ -1256,16 +1207,6 @@
   color: var(--text-muted);
   transform: translateX(2px);
 }
-.cal-split .cal-event-row {
-  grid-template-columns: 64px 1fr auto;
-  padding: 14px 18px;
-}
-.cal-split .cal-event-row .cal-chev { display: none; }
-.cal-split .cal-event-time-t { font-size: 12px; }
-.cal-split .cal-event-title { font-size: 14px; }
-.cal-split .cal-event-meta { font-size: 11px; flex-direction: column; gap: 4px; }
-.cal-split .cal-event-meta .cal-sep { display: none; }
-
 /* badge (이벤트 타입 색 pill) */
 .cal-badge {
   font-family: var(--font-mono); font-size: 11px;

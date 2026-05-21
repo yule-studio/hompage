@@ -212,7 +212,7 @@ export default function CalendarPage() {
       </div>
 
       {view === "month" && (
-        <div className={panelOpen ? "cal-split" : undefined}>
+        <>
           <div className="cal-legend">
             {(["ship", "stream", "talk", "maintenance"] as const).map((k) => (
               <span key={k} className="cal-legend-item">
@@ -220,7 +220,7 @@ export default function CalendarPage() {
                 {k}
               </span>
             ))}
-            <span className="cal-legend-hint">날짜 클릭 → 상세 패널</span>
+            <span className="cal-legend-hint">날짜 클릭 → 아래에 상세</span>
           </div>
 
           <div className="cal-month-card">
@@ -258,22 +258,14 @@ export default function CalendarPage() {
                       <span className="cal-daynum">{d.getDate()}</span>
                     </span>
                     {dayEvents.length > 0 && (
-                      panelOpen ? (
-                        <div className="cal-dots">
-                          {dayEvents.map((ev, i) => (
-                            <span key={i} className={`cal-dot cal-dot--${ev.kind}`} aria-hidden />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="cal-markers">
-                          {dayEvents.map((ev, i) => (
-                            <span key={i} className={`cal-marker cal-marker--${ev.kind}`}>
-                              <span className="cal-marker-dot" aria-hidden />
-                              <span className="cal-marker-text">{shortTitle(ev)}</span>
-                            </span>
-                          ))}
-                        </div>
-                      )
+                      <div className="cal-markers">
+                        {dayEvents.map((ev, i) => (
+                          <span key={i} className={`cal-marker cal-marker--${ev.kind}`}>
+                            <span className="cal-marker-dot" aria-hidden />
+                            <span className="cal-marker-text">{shortTitle(ev)}</span>
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </button>
                 );
@@ -290,7 +282,7 @@ export default function CalendarPage() {
               onClose={() => setPanelOpen(false)}
             />
           )}
-        </div>
+        </>
       )}
 
       {view === "agenda" && (
