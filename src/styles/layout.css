@@ -1804,13 +1804,18 @@
 .profile-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, #000 60%, transparent);
-  backdrop-filter: blur(2px);
-  z-index: 200;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(6, 8, 7, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: profile-modal-fade 160ms ease-out;
 }
 @keyframes profile-modal-fade {
@@ -1820,13 +1825,12 @@
 .profile-modal {
   position: relative;
   width: min(640px, 100%);
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
+  margin: auto;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 28px 28px 24px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
   animation: profile-modal-rise 180ms ease-out;
 }
 @keyframes profile-modal-rise {
