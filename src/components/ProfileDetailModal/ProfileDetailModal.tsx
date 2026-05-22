@@ -48,7 +48,19 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
           onClick={onClose}
           aria-label="close profile"
         >
-          ×
+          <svg
+            viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            aria-hidden
+          >
+            <path d="M6 6 L18 18" />
+            <path d="M18 6 L6 18" />
+          </svg>
         </button>
 
         <header className="profile-modal-head">
