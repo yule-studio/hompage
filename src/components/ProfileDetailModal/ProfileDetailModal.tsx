@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { profile } from "../../data/profile";
 
 type Props = {
@@ -8,7 +9,9 @@ type Props = {
 
 /**
  * ProfileDetailModal — about / 경력 / 학력 / 연락처 소개 팝업.
- * Backdrop click & Esc 로 닫힘.
+ * Backdrop click & Esc 로 닫힘. Portal 로 `document.body` 에 mount —
+ * `.page-anim > *` 의 `will-change: transform` 같은 ancestor 때문에
+ * fixed positioning 이 깨지는 걸 피한다.
  */
 export default function ProfileDetailModal({ open, onClose }: Props) {
   useEffect(() => {
@@ -17,17 +20,20 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handle);
-    const prevOverflow = document.body.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", handle);
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
     };
   }, [open, onClose]);
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       className="profile-modal-backdrop"
       role="dialog"
@@ -152,6 +158,7 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
           </section>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
