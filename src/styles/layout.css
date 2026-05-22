@@ -1873,7 +1873,7 @@
 .profile-modal-id {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 .profile-modal-name {
@@ -1888,7 +1888,7 @@
   font-size: 13px;
   color: var(--text-muted);
 }
-.profile-modal-loc { margin: 2px 0 0; font-size: 11px; }
+.profile-modal-loc { margin: 4px 0 0; font-size: 11px; }
 .profile-modal-body {
   display: flex;
   flex-direction: column;
@@ -1897,7 +1897,7 @@
 .profile-modal-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 .profile-modal-section-title {
   margin: 0;
@@ -1914,7 +1914,7 @@
   margin: 0; padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 }
 .profile-modal-entry {
   display: grid;
@@ -1924,28 +1924,29 @@
   background: transparent;
 }
 .profile-modal-entry-side {
-  padding-top: 3px;
+  padding-top: 4px;
 }
 .profile-modal-period {
   font-size: 11px;
   color: var(--text-muted);
   letter-spacing: 0.02em;
   white-space: nowrap;
+  line-height: 1.4;
 }
 .profile-modal-entry-main {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 .profile-modal-entry-title {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   font-size: 14px;
 }
-.profile-modal-entry-org { color: var(--text); font-weight: 600; line-height: 1.3; }
-.profile-modal-entry-role { color: var(--text-muted); font-size: 12.5px; }
+.profile-modal-entry-org { color: var(--text); font-weight: 600; line-height: 1.4; }
+.profile-modal-entry-role { color: var(--text-muted); font-size: 12.5px; line-height: 1.4; }
 .profile-modal-link {
   align-self: flex-start;
   font-size: 12px;
@@ -1960,7 +1961,7 @@
   margin: 0; padding: 0;
   display: grid;
   grid-template-columns: 110px 1fr;
-  row-gap: 8px;
+  row-gap: 12px;
   column-gap: 16px;
   align-items: baseline;
 }
