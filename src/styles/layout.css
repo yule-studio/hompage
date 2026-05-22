@@ -1873,7 +1873,7 @@
 .profile-modal-id {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 .profile-modal-name {
@@ -1888,25 +1888,25 @@
   font-size: 13px;
   color: var(--text-muted);
 }
-.profile-modal-loc { margin: 4px 0 0; font-size: 11px; }
+.profile-modal-loc { margin: 6px 0 0; font-size: 11px; }
 .profile-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 36px;
 }
 .profile-modal-section {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
 }
 .profile-modal-section-title {
   margin: 0;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--text-muted);
   font-weight: 600;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
 .profile-modal-list {
@@ -1914,7 +1914,7 @@
   margin: 0; padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 26px;
 }
 .profile-modal-entry {
   display: grid;
@@ -1961,7 +1961,7 @@
   margin: 0; padding: 0;
   display: grid;
   grid-template-columns: 110px 1fr;
-  row-gap: 12px;
+  row-gap: 18px;
   column-gap: 16px;
   align-items: baseline;
 }
