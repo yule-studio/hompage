@@ -1938,6 +1938,7 @@
   flex-direction: column;
   gap: 8px;
   min-width: 0;
+  padding-top: 3px;
 }
 .profile-modal-entry-title {
   display: flex;
