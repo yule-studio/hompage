@@ -1866,7 +1866,7 @@
   text-align: center;
 }
 .profile-modal-avatar {
-  width: 96px; height: 96px;
+  width: 84px; height: 84px;
   border-radius: 999px;
   object-fit: cover;
   border: 1px solid var(--border);
@@ -1887,9 +1887,9 @@
 .profile-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
-.profile-modal-section { display: flex; flex-direction: column; gap: 10px; }
+.profile-modal-section { display: flex; flex-direction: column; gap: 14px; }
 .profile-modal-section-title {
   margin: 0;
   font-size: 12px;
@@ -1903,17 +1903,15 @@
   margin: 0; padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 .profile-modal-entry {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0 0 0 14px;
-  border-left: 2px solid var(--border);
+  gap: 4px;
+  padding: 0;
   background: transparent;
 }
-.profile-modal-entry:hover { border-left-color: var(--border-strong); }
 .profile-modal-entry-head {
   display: flex;
   flex-wrap: wrap;
@@ -1969,18 +1967,25 @@
 .profile-modal-contact {
   list-style: none;
   margin: 0; padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  row-gap: 6px;
+  column-gap: 12px;
+  align-items: baseline;
 }
 .profile-modal-contact li {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 10px 0;
-  border-bottom: 1px dashed var(--border);
+  display: contents;
 }
-.profile-modal-contact li:last-child { border-bottom: 0; }
 .profile-modal-contact .label {
-  min-width: 60px;
   font-size: 11px;
+  align-self: baseline;
+}
+.profile-modal-contact .profile-modal-link {
+  border-bottom: 0;
+  padding-bottom: 0;
+  font-size: 13px;
+}
+.profile-modal-contact .profile-modal-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
