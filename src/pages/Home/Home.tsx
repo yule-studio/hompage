@@ -107,7 +107,6 @@ export default function Home() {
             <StatusBadge status="ok" label="active" />
           </div>
           <h3 className="card-title">GitHub</h3>
-          <p className="card-sub">개인 프로젝트와 실험 코드.</p>
           <div className="card-body">
             <div className="kpi-row github-kpi-row">
               {githubStatItems.map((item) => (
@@ -124,25 +123,28 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card span="sm" hoverable ariaLabel="awards">
+        <Card span="sm" hoverable ariaLabel="awards" className="home-awards-card">
           <div className="card-head">
             <span className="label">/ awards</span>
-            <span className="chip">{awards.length}</span>
           </div>
-          <h3 className="card-title">Awards</h3>
-          <div className="card-body">
-            <p className="card-sub mono">LATEST · {lastAward.year}</p>
-            <p style={{ fontSize: "var(--text-sm)" }}>{lastAward.title}</p>
-          </div>
+          <h3 className="card-title">{lastAward.title}</h3>
+          <p className="card-meta">
+            <span className="mono faint">{lastAward.year}</span>
+            <span className="dim"> · most recent</span>
+          </p>
           <div className="card-footer">
             <Link to="/awards" className="card-link">all awards</Link>
+            <span className="mono faint">{awards.length} total</span>
           </div>
         </Card>
 
         {/* row 4-6 : Certifications + Projects */}
         <Card span="sm" hoverable ariaLabel="certifications">
           <div className="card-head">
-            <span className="label">/ certs · {certs.filter((c) => c.status === "active").length} active</span>
+            <span className="label">/ certs</span>
+            <span className="mono faint">
+              {certs.filter((c) => c.status === "active").length} active
+            </span>
           </div>
           <h3 className="card-title">Certifications</h3>
           <div className="card-body">
@@ -163,23 +165,21 @@ export default function Home() {
         <Card span="sm" hoverable ariaLabel="projects">
           <div className="card-head">
             <span className="label">/ projects</span>
-            <span className="chip">{projects.length}</span>
+            <span className="mono faint">{projects.length} total</span>
           </div>
           <h3 className="card-title">Selected</h3>
           <div className="card-body">
             <ul className="card-list">
-              {selectedProjects.length ? selectedProjects.map((p, i) => (
+              {selectedProjects.length ? selectedProjects.map((p) => (
                 <li key={p.slug}>
                   <Link to={`/projects/${p.slug}`} className="project-list-link">
-                    <span className="mono faint" style={{ marginRight: 8 }}>{String(i + 1).padStart(2, "0")}</span>
                     <span>{p.name}</span>
                   </Link>
                   <span className="mono faint">{p.year}</span>
                 </li>
               )) : (
                 <li>
-                  <span className="mono faint">sync pending</span>
-                  <span className="mono faint">--</span>
+                  <span className="dim">아직 동기화된 프로젝트가 없어요.</span>
                 </li>
               )}
             </ul>
@@ -192,8 +192,8 @@ export default function Home() {
         {/* row 7-9 : Blog (top-viewed from Tistory) + Skills (sm) */}
         <Card span="md" hoverable ariaLabel="featured writing">
           <div className="card-head">
-            <span className="label">/ blog · latest</span>
-            <span className="chip">{blog.totalPosts || posts.length} posts</span>
+            <span className="label">/ blog</span>
+            <span className="mono faint">latest</span>
           </div>
           {(() => {
             const post = blog.featured ?? {
@@ -206,16 +206,15 @@ export default function Home() {
             };
             return (
               <>
-                <span className="featured-eyebrow">
-                  FEATURED · {post.date}
-                </span>
                 <h3 className="card-title blog-featured-title">{post.title}</h3>
                 <p className="card-sub blog-featured-desc">{post.description}</p>
                 <div className="card-footer">
                   <a className="card-link" href={post.link} target="_blank" rel="noreferrer">
                     read on blog
                   </a>
-                  <span className="mono faint">{post.readMin} min · codingtips.tistory</span>
+                  <span className="mono faint">
+                    {post.date ? `${post.date} · ` : ""}{post.readMin} min
+                  </span>
                 </div>
               </>
             );
@@ -224,7 +223,8 @@ export default function Home() {
 
         <Card span="sm" hoverable ariaLabel="skills" className="home-stack-card">
           <div className="card-head">
-            <span className="label">/ skills · top langs</span>
+            <span className="label">/ stack</span>
+            <span className="mono faint">top langs</span>
           </div>
           <h3 className="card-title">Stack</h3>
           <div className="card-body">
@@ -259,27 +259,22 @@ export default function Home() {
         {/* row 10-12 : Homelab + Calendar + Services snapshot */}
         <Card span="sm" hoverable ariaLabel="homelab">
           <div className="card-head">
-            <span className="label">/ homelab · healthy</span>
+            <span className="label">/ homelab</span>
             <StatusBadge
               status={errHosts ? "err" : warnHosts ? "warn" : "ok"}
               label={`${okHosts}/${hosts.length} ok`}
             />
           </div>
           <h3 className="card-title">Homelab</h3>
-          <p className="card-sub">자가 호스팅 인프라.</p>
           <div className="card-body">
-            <ul className="card-list">
+            <ul className="card-list home-host-list">
               {hosts.slice(0, 3).map((h) => (
                 <li key={h.name}>
-                  <span className="mono">
-                    <span style={{
-                      display: "inline-block", width: 6, height: 6, borderRadius: 999,
-                      background: h.status === "ok" ? "var(--ok)" : h.status === "warn" ? "var(--warn)" : "var(--err)",
-                      marginRight: 8,
-                    }} />
+                  <span className="host-name">
+                    <span className={`host-dot host-dot--${h.status}`} aria-hidden />
                     {h.name}
                   </span>
-                  <span className="mono faint">{h.cpu}C · {h.mem}G</span>
+                  <span className="mono faint">{h.cpu}c · {h.mem}g</span>
                 </li>
               ))}
             </ul>
@@ -289,15 +284,17 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card span="sm" hoverable ariaLabel="calendar">
+        <Card span="sm" hoverable ariaLabel="calendar" className="home-calendar-card">
           <div className="card-head">
-            <span className="label">/ calendar · upcoming</span>
+            <span className="label">/ calendar</span>
+            <span className="mono faint">
+              {nextEvent.date}{nextEvent.time ? ` · ${nextEvent.time}` : ""}
+            </span>
           </div>
-          <h3 className="card-title">Next up</h3>
-          <p className="card-sub mono">{nextEvent.date}{nextEvent.time ? ` · ${nextEvent.time}` : ""}</p>
-          <div className="card-body">
-            <p style={{ fontSize: "var(--text-sm)" }}>{nextEvent.title}</p>
-          </div>
+          <h3 className="card-title">{nextEvent.title}</h3>
+          <p className="card-meta">
+            <span className="dim">next up</span>
+          </p>
           <div className="card-footer">
             <Link to="/calendar" className="card-link">open calendar</Link>
           </div>
@@ -306,14 +303,14 @@ export default function Home() {
         <Card span="sm" hoverable ariaLabel="services" className="home-services-card">
           <div className="card-head">
             <span className="label">/ services</span>
-            <span className="chip">{services.length} live</span>
+            <span className="mono faint">{services.length} live</span>
           </div>
           <h3 className="card-title">Services</h3>
           <div className="card-body">
             <ul className="card-list">
               {services.slice(0, 2).map((s) => (
                 <li key={s.name}>
-                  <span className="mono">{s.name}</span>
+                  <span>{s.name}</span>
                   <StatusBadge status={s.status} label={s.status === "ok" ? "ok" : s.status} />
                 </li>
               ))}
@@ -321,7 +318,6 @@ export default function Home() {
           </div>
           <div className="card-footer">
             <Link to="/homelab" className="card-link">view all</Link>
-            <span className="mono faint">99.98%</span>
           </div>
         </Card>
       </div>
