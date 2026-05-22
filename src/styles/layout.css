@@ -1920,7 +1920,7 @@
 .profile-modal-entry {
   display: grid;
   grid-template-columns: 110px 1fr;
-  column-gap: 16px;
+  column-gap: 32px;
   align-items: start;
   background: transparent;
 }
@@ -1964,7 +1964,7 @@
   display: grid;
   grid-template-columns: 110px 1fr;
   row-gap: 18px;
-  column-gap: 16px;
+  column-gap: 32px;
   align-items: baseline;
 }
 .profile-modal-contact li {
