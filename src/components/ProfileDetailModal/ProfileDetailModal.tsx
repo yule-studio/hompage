@@ -79,11 +79,6 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
                       <span className="profile-modal-entry-org">{exp.org}</span>
                       <span className="profile-modal-entry-role">{exp.role}</span>
                     </div>
-                    <ul className="profile-modal-bullets">
-                      {exp.bullets.map((b) => (
-                        <li key={b}>{b}</li>
-                      ))}
-                    </ul>
                     {exp.link ? (
                       <a
                         className="profile-modal-link"
@@ -112,9 +107,6 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
                     <div className="profile-modal-entry-title">
                       <span className="profile-modal-entry-org">{edu.org}</span>
                     </div>
-                    <ul className="profile-modal-bullets">
-                      <li>{edu.bullet}</li>
-                    </ul>
                     {edu.link ? (
                       <a
                         className="profile-modal-link"
