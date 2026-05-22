@@ -71,29 +71,30 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
             <ul className="profile-modal-list">
               {profile.experience.map((exp) => (
                 <li className="profile-modal-entry" key={`${exp.org}-${exp.period}`}>
-                  <div className="profile-modal-entry-head">
-                    <div className="profile-modal-entry-title">
-                      <span className="profile-modal-entry-org">{exp.org}</span>
-                      <span className="profile-modal-entry-sep">·</span>
-                      <span className="profile-modal-entry-role">{exp.role}</span>
-                    </div>
+                  <div className="profile-modal-entry-side">
                     <span className="profile-modal-period mono">{exp.period}</span>
                   </div>
-                  <ul className="profile-modal-bullets">
-                    {exp.bullets.map((b) => (
-                      <li key={b}>{b}</li>
-                    ))}
-                  </ul>
-                  {exp.link ? (
-                    <a
-                      className="profile-modal-link"
-                      href={exp.link}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      notion ↗
-                    </a>
-                  ) : null}
+                  <div className="profile-modal-entry-main">
+                    <div className="profile-modal-entry-title">
+                      <span className="profile-modal-entry-org">{exp.org}</span>
+                      <span className="profile-modal-entry-role">{exp.role}</span>
+                    </div>
+                    <ul className="profile-modal-bullets">
+                      {exp.bullets.map((b) => (
+                        <li key={b}>{b}</li>
+                      ))}
+                    </ul>
+                    {exp.link ? (
+                      <a
+                        className="profile-modal-link"
+                        href={exp.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        notion ↗
+                      </a>
+                    ) : null}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -104,25 +105,27 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
             <ul className="profile-modal-list">
               {profile.education.map((edu) => (
                 <li className="profile-modal-entry" key={`${edu.org}-${edu.period}`}>
-                  <div className="profile-modal-entry-head">
+                  <div className="profile-modal-entry-side">
+                    <span className="profile-modal-period mono">{edu.period}</span>
+                  </div>
+                  <div className="profile-modal-entry-main">
                     <div className="profile-modal-entry-title">
                       <span className="profile-modal-entry-org">{edu.org}</span>
                     </div>
-                    <span className="profile-modal-period mono">{edu.period}</span>
+                    <ul className="profile-modal-bullets">
+                      <li>{edu.bullet}</li>
+                    </ul>
+                    {edu.link ? (
+                      <a
+                        className="profile-modal-link"
+                        href={edu.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        notion ↗
+                      </a>
+                    ) : null}
                   </div>
-                  <ul className="profile-modal-bullets">
-                    <li>{edu.bullet}</li>
-                  </ul>
-                  {edu.link ? (
-                    <a
-                      className="profile-modal-link"
-                      href={edu.link}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      notion ↗
-                    </a>
-                  ) : null}
                 </li>
               ))}
             </ul>
