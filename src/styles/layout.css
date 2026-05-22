@@ -1903,17 +1903,17 @@
   margin: 0; padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 .profile-modal-entry {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--bg-card) 60%, transparent);
+  padding: 0 0 0 14px;
+  border-left: 2px solid var(--border);
+  background: transparent;
 }
+.profile-modal-entry:hover { border-left-color: var(--border-strong); }
 .profile-modal-entry-head {
   display: flex;
   flex-wrap: wrap;
@@ -1971,16 +1971,15 @@
   margin: 0; padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 .profile-modal-contact li {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
 }
+.profile-modal-contact li:last-child { border-bottom: 0; }
 .profile-modal-contact .label {
   min-width: 60px;
   font-size: 11px;
