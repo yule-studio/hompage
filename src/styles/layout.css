@@ -1924,14 +1924,14 @@
   background: transparent;
 }
 .profile-modal-entry-side {
-  padding-top: 4px;
+  padding-top: 0;
 }
 .profile-modal-period {
   font-size: 11px;
   color: var(--text-muted);
   letter-spacing: 0.02em;
   white-space: nowrap;
-  line-height: 1.4;
+  line-height: 1.25;
 }
 .profile-modal-entry-main {
   display: flex;
@@ -1945,8 +1945,8 @@
   gap: 4px;
   font-size: 14px;
 }
-.profile-modal-entry-org { color: var(--text); font-weight: 600; line-height: 1.4; }
-.profile-modal-entry-role { color: var(--text-muted); font-size: 12.5px; line-height: 1.4; }
+.profile-modal-entry-org { color: var(--text); font-weight: 600; line-height: 1.25; }
+.profile-modal-entry-role { color: var(--text-muted); font-size: 12.5px; line-height: 1.3; }
 .profile-modal-link {
   align-self: flex-start;
   font-size: 12px;
