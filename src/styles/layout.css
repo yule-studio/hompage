@@ -78,7 +78,10 @@
   justify-content: flex-start;
 }
 .nav-pill {
-  display: flex; gap: 2px; padding: 4px;
+  /* width:100% + space-between 으로 8개 항목을 긴 nav 바 전체에 고르게 분산.
+     gap(4px) 은 모바일에서 항목 폭 합이 바를 넘쳐 overflow-x 로 스크롤될 때의
+     최소 간격이다 — 그때는 분산할 여백이 없어 gap 만 적용된다. */
+  display: flex; justify-content: space-between; gap: 4px; padding: 4px;
   width: 100%;
   background: var(--bg-pill);
   border: 1px solid var(--border); border-radius: var(--radius-pill);
