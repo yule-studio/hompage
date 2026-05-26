@@ -1771,8 +1771,7 @@
   border-radius: inherit;
 }
 .profile-avatar-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: none;
 }
 .profile-avatar-button .profile-avatar {
   transition: transform 200ms ease, filter 200ms ease;
@@ -1795,8 +1794,7 @@
   opacity: 0;
   transition: opacity 200ms ease;
 }
-.profile-avatar-button:hover .profile-avatar-hint,
-.profile-avatar-button:focus-visible .profile-avatar-hint {
+.profile-avatar-button:hover .profile-avatar-hint {
   opacity: 1;
 }
 
