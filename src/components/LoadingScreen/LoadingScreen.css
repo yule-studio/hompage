@@ -99,72 +99,41 @@
   animation: cat-wheel-run 3.6s steps(1) infinite;
 }
 
-/* 64 frames — x/y step through 0/14.286/…/100 across 8 cols x 8 rows */
+/* 32 frames — every 2nd of the 64-frame sheet (calmer, fewer in-betweens).
+   The sheet is still 8x8; these keyframes just visit half the cells. */
 @keyframes cat-wheel-run {
   0.0000% { background-position: 0.000% 0.000%; }
-  1.5625% { background-position: 14.286% 0.000%; }
   3.1250% { background-position: 28.571% 0.000%; }
-  4.6875% { background-position: 42.857% 0.000%; }
   6.2500% { background-position: 57.143% 0.000%; }
-  7.8125% { background-position: 71.429% 0.000%; }
   9.3750% { background-position: 85.714% 0.000%; }
-  10.9375% { background-position: 100.000% 0.000%; }
   12.5000% { background-position: 0.000% 14.286%; }
-  14.0625% { background-position: 14.286% 14.286%; }
   15.6250% { background-position: 28.571% 14.286%; }
-  17.1875% { background-position: 42.857% 14.286%; }
   18.7500% { background-position: 57.143% 14.286%; }
-  20.3125% { background-position: 71.429% 14.286%; }
   21.8750% { background-position: 85.714% 14.286%; }
-  23.4375% { background-position: 100.000% 14.286%; }
   25.0000% { background-position: 0.000% 28.571%; }
-  26.5625% { background-position: 14.286% 28.571%; }
   28.1250% { background-position: 28.571% 28.571%; }
-  29.6875% { background-position: 42.857% 28.571%; }
   31.2500% { background-position: 57.143% 28.571%; }
-  32.8125% { background-position: 71.429% 28.571%; }
   34.3750% { background-position: 85.714% 28.571%; }
-  35.9375% { background-position: 100.000% 28.571%; }
   37.5000% { background-position: 0.000% 42.857%; }
-  39.0625% { background-position: 14.286% 42.857%; }
   40.6250% { background-position: 28.571% 42.857%; }
-  42.1875% { background-position: 42.857% 42.857%; }
   43.7500% { background-position: 57.143% 42.857%; }
-  45.3125% { background-position: 71.429% 42.857%; }
   46.8750% { background-position: 85.714% 42.857%; }
-  48.4375% { background-position: 100.000% 42.857%; }
   50.0000% { background-position: 0.000% 57.143%; }
-  51.5625% { background-position: 14.286% 57.143%; }
   53.1250% { background-position: 28.571% 57.143%; }
-  54.6875% { background-position: 42.857% 57.143%; }
   56.2500% { background-position: 57.143% 57.143%; }
-  57.8125% { background-position: 71.429% 57.143%; }
   59.3750% { background-position: 85.714% 57.143%; }
-  60.9375% { background-position: 100.000% 57.143%; }
   62.5000% { background-position: 0.000% 71.429%; }
-  64.0625% { background-position: 14.286% 71.429%; }
   65.6250% { background-position: 28.571% 71.429%; }
-  67.1875% { background-position: 42.857% 71.429%; }
   68.7500% { background-position: 57.143% 71.429%; }
-  70.3125% { background-position: 71.429% 71.429%; }
   71.8750% { background-position: 85.714% 71.429%; }
-  73.4375% { background-position: 100.000% 71.429%; }
   75.0000% { background-position: 0.000% 85.714%; }
-  76.5625% { background-position: 14.286% 85.714%; }
   78.1250% { background-position: 28.571% 85.714%; }
-  79.6875% { background-position: 42.857% 85.714%; }
   81.2500% { background-position: 57.143% 85.714%; }
-  82.8125% { background-position: 71.429% 85.714%; }
   84.3750% { background-position: 85.714% 85.714%; }
-  85.9375% { background-position: 100.000% 85.714%; }
   87.5000% { background-position: 0.000% 100.000%; }
-  89.0625% { background-position: 14.286% 100.000%; }
   90.6250% { background-position: 28.571% 100.000%; }
-  92.1875% { background-position: 42.857% 100.000%; }
   93.7500% { background-position: 57.143% 100.000%; }
-  95.3125% { background-position: 71.429% 100.000%; }
   96.8750% { background-position: 85.714% 100.000%; }
-  98.4375% { background-position: 100.000% 100.000%; }
   100% { background-position: 0% 0%; }
 }
 
