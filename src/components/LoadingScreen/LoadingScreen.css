@@ -81,7 +81,9 @@
 }
 
 /*
- * cat-wheel.png is a 2 row x 4 col sprite sheet (8 frames).
+ * cat-wheel.png is a 2 row x 4 col sprite sheet (8 frames) — white
+ * line-art on a transparent background (keyed from the source sprite),
+ * so it sits directly on the dark UI with no square behind it.
  * background-size 400% 200% scales one cell to fill the element, and
  * `steps(1)` on each keyframe interval holds a single frame — so only
  * one frame is ever visible and the cat appears to run.
@@ -93,7 +95,6 @@
   background-repeat: no-repeat;
   background-size: 400% 200%;
   background-position: 0% 0%;
-  mix-blend-mode: screen;
   animation: cat-wheel-run 0.8s steps(1) infinite;
 }
 
