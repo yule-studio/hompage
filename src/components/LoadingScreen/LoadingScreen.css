@@ -1,9 +1,8 @@
 /* ─────────────────────────────────────────────────────────────
- * LoadingScreen — full-viewport intro overlay.
- * homelab-console aesthetic: dot grid, thin border, mono micro-labels,
- * quiet green accent. Colors come from tokens.css variables so it
- * follows dark / light automatically — except the cat sprite panel,
- * which stays dark in both themes so the white asset stays visible.
+ * LoadingScreen — full-viewport intro overlay (dark-only).
+ * homelab-console aesthetic: dot grid, mono micro-labels, quiet green
+ * accent. Colors come from tokens.css (dark) variables. The center
+ * block is the hero — large wheel + oversized percent number.
  * ───────────────────────────────────────────────────────────── */
 
 .loading-screen {
@@ -65,23 +64,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
+  width: min(600px, 90vw);
+  margin: 0 auto;
   text-align: center;
 }
 
-/* cat wheel panel — stays dark in both themes (white sprite visibility) */
+/* cat wheel — sits directly on the dark background (no panel box).
+   mix-blend-mode: screen on the sprite drops its black backdrop, so the
+   white cat reads cleanly on the dot-grid dark surface. */
 .loading-cat {
   display: grid;
   place-items: center;
-  width: clamp(160px, 42vw, 240px);
+  width: clamp(160px, 24vw, 280px);
   aspect-ratio: 1 / 1;
-  padding: var(--space-4);
-  /* intentional fixed dark surface — matches the sprite's black backdrop
-     so it reads as a console screen even under the light theme. */
-  background: #0b0d0c;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.04);
 }
 
 /*
@@ -89,8 +85,6 @@
  * background-size 400% 200% scales one cell to fill the element, and
  * `steps(1)` on each keyframe interval holds a single frame — so only
  * one frame is ever visible and the cat appears to run.
- * mix-blend-mode: screen drops the sprite's black backdrop, leaving the
- * white cat on the dark panel.
  */
 .loading-cat-sprite {
   width: 100%;
@@ -100,7 +94,7 @@
   background-size: 400% 200%;
   background-position: 0% 0%;
   mix-blend-mode: screen;
-  animation: cat-wheel-run 0.72s steps(1) infinite;
+  animation: cat-wheel-run 0.8s steps(1) infinite;
 }
 
 @keyframes cat-wheel-run {
@@ -115,11 +109,11 @@
   100%  { background-position: 0% 0%; }
 }
 
-/* percent number */
+/* percent number — the hero element */
 .loading-percent {
-  font-size: clamp(40px, 12vw, 64px);
+  font-size: clamp(64px, 11vw, 150px);
   font-weight: 600;
-  line-height: 1;
+  line-height: 0.9;
   letter-spacing: var(--tracking-mono);
   color: var(--text);
   font-variant-numeric: tabular-nums;
@@ -127,7 +121,7 @@
 
 /* thin progress track */
 .loading-track {
-  width: clamp(180px, 60vw, 320px);
+  width: clamp(200px, 60vw, 380px);
   height: 3px;
   background: var(--bg-pill);
   border: 1px solid var(--border);
@@ -143,13 +137,14 @@
 
 .loading-title {
   font-family: var(--font-mono);
-  font-size: clamp(15px, 4vw, 20px);
+  font-size: clamp(18px, 2.4vw, 30px);
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text);
 }
 .loading-subtitle {
+  font-size: clamp(10px, 0.9vw, 13px);
   color: var(--text-muted);
 }
 
@@ -174,7 +169,7 @@
   50%      { opacity: 1; }
 }
 
-/* ── responsive — trim edge labels on small screens ────────── */
+/* ── responsive — scale down the hero on small screens ─────── */
 @media (max-width: 520px) {
   .loading-sys,
   .loading-uptime {
@@ -182,6 +177,15 @@
   }
   .loading-bottombar {
     justify-content: center;
+  }
+  .loading-center {
+    gap: var(--space-4);
+  }
+  .loading-cat {
+    width: clamp(140px, 40vw, 180px);
+  }
+  .loading-percent {
+    font-size: clamp(60px, 18vw, 88px);
   }
   /* tighter tracking so the title never touches the viewport edge */
   .loading-title {
