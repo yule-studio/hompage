@@ -101,7 +101,10 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <div className="loading-cat-sprite" />
         </div>
 
-        <div className="loading-percent mono">{progress}%</div>
+        <div className="loading-percent mono">
+          {progress}
+          <span className="loading-percent-sign">%</span>
+        </div>
 
         <div className="loading-track" aria-hidden>
           <div className="loading-bar" style={{ width: `${progress}%` }} />

@@ -109,14 +109,25 @@
   100%  { background-position: 0% 0%; }
 }
 
-/* percent number — the hero element */
+/* percent number — the hero element. The digits dominate; the % sits
+   smaller and raised toward the top so it reads like the reference. */
 .loading-percent {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
   font-size: clamp(64px, 11vw, 150px);
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: var(--tracking-mono);
   color: var(--text);
   font-variant-numeric: tabular-nums;
+}
+.loading-percent-sign {
+  font-size: 0.4em;
+  font-weight: 600;
+  margin-top: 0.14em;
+  margin-left: 0.05em;
+  color: var(--text-muted);
 }
 
 /* thin progress track */
@@ -137,15 +148,16 @@
 
 .loading-title {
   font-family: var(--font-mono);
-  font-size: clamp(18px, 2.4vw, 30px);
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-size: clamp(18px, 2.2vw, 32px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text);
 }
 .loading-subtitle {
   font-size: clamp(10px, 0.9vw, 13px);
-  color: var(--text-muted);
+  color: var(--text-faint);
 }
 
 /* ── bottom status dots ────────────────────────────────────── */
