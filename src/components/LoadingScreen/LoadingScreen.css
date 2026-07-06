@@ -81,10 +81,11 @@
 }
 
 /*
- * cat-wheel.png is a 4 row x 4 col sprite sheet (16 frames) — white cat
- * on a transparent background (keyed from a white-on-black source), so
- * it sits directly on the dark UI with no square behind it.
- * background-size 400% 400% scales one cell to fill the element, and
+ * cat-wheel.png is a 4 row x 6 col sprite sheet (24 frames) — white cat
+ * on a transparent background. The source frames were re-packed onto a
+ * clean uniform grid (each frame centered on its wheel), so slicing at
+ * exact sixths/quarters shows one frame with no neighbor bleed.
+ * background-size 600% 400% scales one cell to fill the element, and
  * `steps(1)` on each keyframe interval holds a single frame — so only
  * one frame is ever visible and the cat appears to run.
  */
@@ -93,29 +94,37 @@
   height: 100%;
   background-image: url("/assets/cat-wheel.png");
   background-repeat: no-repeat;
-  background-size: 400% 400%;
+  background-size: 600% 400%;
   background-position: 0% 0%;
-  animation: cat-wheel-run 1.2s steps(1) infinite;
+  animation: cat-wheel-run 2.4s steps(1) infinite;
 }
 
-/* 16 frames — x: 0/33.333/66.667/100 (4 cols), y: same (4 rows) */
+/* 24 frames — x: 0/20/40/60/80/100 (6 cols), y: 0/33.333/66.667/100 (4 rows) */
 @keyframes cat-wheel-run {
   0%      { background-position: 0% 0%; }
-  6.25%   { background-position: 33.333% 0%; }
-  12.5%   { background-position: 66.667% 0%; }
-  18.75%  { background-position: 100% 0%; }
+  4.1667% { background-position: 20% 0%; }
+  8.3333% { background-position: 40% 0%; }
+  12.5%   { background-position: 60% 0%; }
+  16.667% { background-position: 80% 0%; }
+  20.833% { background-position: 100% 0%; }
   25%     { background-position: 0% 33.333%; }
-  31.25%  { background-position: 33.333% 33.333%; }
-  37.5%   { background-position: 66.667% 33.333%; }
-  43.75%  { background-position: 100% 33.333%; }
+  29.167% { background-position: 20% 33.333%; }
+  33.333% { background-position: 40% 33.333%; }
+  37.5%   { background-position: 60% 33.333%; }
+  41.667% { background-position: 80% 33.333%; }
+  45.833% { background-position: 100% 33.333%; }
   50%     { background-position: 0% 66.667%; }
-  56.25%  { background-position: 33.333% 66.667%; }
-  62.5%   { background-position: 66.667% 66.667%; }
-  68.75%  { background-position: 100% 66.667%; }
+  54.167% { background-position: 20% 66.667%; }
+  58.333% { background-position: 40% 66.667%; }
+  62.5%   { background-position: 60% 66.667%; }
+  66.667% { background-position: 80% 66.667%; }
+  70.833% { background-position: 100% 66.667%; }
   75%     { background-position: 0% 100%; }
-  81.25%  { background-position: 33.333% 100%; }
-  87.5%   { background-position: 66.667% 100%; }
-  93.75%  { background-position: 100% 100%; }
+  79.167% { background-position: 20% 100%; }
+  83.333% { background-position: 40% 100%; }
+  87.5%   { background-position: 60% 100%; }
+  91.667% { background-position: 80% 100%; }
+  95.833% { background-position: 100% 100%; }
   100%    { background-position: 0% 0%; }
 }
 
