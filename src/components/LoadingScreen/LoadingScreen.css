@@ -1,0 +1,201 @@
+/* ─────────────────────────────────────────────────────────────
+ * LoadingScreen — full-viewport intro overlay.
+ * homelab-console aesthetic: dot grid, thin border, mono micro-labels,
+ * quiet green accent. Colors come from tokens.css variables so it
+ * follows dark / light automatically — except the cat sprite panel,
+ * which stays dark in both themes so the white asset stays visible.
+ * ───────────────────────────────────────────────────────────── */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(16px, 4vw, 32px);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  /* same quiet dot grid as the body */
+  background-image: radial-gradient(
+    var(--dot-color) var(--dot-size),
+    transparent var(--dot-size)
+  );
+  background-size: var(--dot-spacing) var(--dot-spacing);
+  opacity: 1;
+  transition: opacity 420ms ease;
+}
+.loading-screen.is-exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── top / bottom micro-label bars ─────────────────────────── */
+.loading-topbar,
+.loading-bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.loading-bottombar {
+  align-items: flex-end;
+}
+
+.loading-brand {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: var(--tracking-mono);
+  color: var(--text);
+}
+.loading-caret {
+  margin-right: 4px;
+}
+.loading-sys {
+  color: var(--text-muted);
+}
+.loading-sep {
+  color: var(--text-faint);
+  margin: 0 4px;
+}
+
+/* ── center block ──────────────────────────────────────────── */
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+/* cat wheel panel — stays dark in both themes (white sprite visibility) */
+.loading-cat {
+  display: grid;
+  place-items: center;
+  width: clamp(160px, 42vw, 240px);
+  aspect-ratio: 1 / 1;
+  padding: var(--space-4);
+  /* intentional fixed dark surface — matches the sprite's black backdrop
+     so it reads as a console screen even under the light theme. */
+  background: #0b0d0c;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.04);
+}
+
+/*
+ * cat-wheel.png is a 2 row x 4 col sprite sheet (8 frames).
+ * background-size 400% 200% scales one cell to fill the element, and
+ * `steps(1)` on each keyframe interval holds a single frame — so only
+ * one frame is ever visible and the cat appears to run.
+ * mix-blend-mode: screen drops the sprite's black backdrop, leaving the
+ * white cat on the dark panel.
+ */
+.loading-cat-sprite {
+  width: 100%;
+  height: 100%;
+  background-image: url("/assets/cat-wheel.png");
+  background-repeat: no-repeat;
+  background-size: 400% 200%;
+  background-position: 0% 0%;
+  mix-blend-mode: screen;
+  animation: cat-wheel-run 0.72s steps(1) infinite;
+}
+
+@keyframes cat-wheel-run {
+  0%    { background-position: 0% 0%; }        /* r0 c0 */
+  12.5% { background-position: 33.333% 0%; }   /* r0 c1 */
+  25%   { background-position: 66.667% 0%; }   /* r0 c2 */
+  37.5% { background-position: 100% 0%; }      /* r0 c3 */
+  50%   { background-position: 0% 100%; }      /* r1 c0 */
+  62.5% { background-position: 33.333% 100%; } /* r1 c1 */
+  75%   { background-position: 66.667% 100%; } /* r1 c2 */
+  87.5% { background-position: 100% 100%; }    /* r1 c3 */
+  100%  { background-position: 0% 0%; }
+}
+
+/* percent number */
+.loading-percent {
+  font-size: clamp(40px, 12vw, 64px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking-mono);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* thin progress track */
+.loading-track {
+  width: clamp(180px, 60vw, 320px);
+  height: 3px;
+  background: var(--bg-pill);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.loading-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 120ms ease;
+}
+
+.loading-title {
+  font-family: var(--font-mono);
+  font-size: clamp(15px, 4vw, 20px);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.loading-subtitle {
+  color: var(--text-muted);
+}
+
+/* ── bottom status dots ────────────────────────────────────── */
+.loading-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.35;
+  animation: loading-dot-pulse 1.2s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes loading-dot-pulse {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; }
+}
+
+/* ── responsive — trim edge labels on small screens ────────── */
+@media (max-width: 520px) {
+  .loading-sys,
+  .loading-uptime {
+    display: none;
+  }
+  .loading-bottombar {
+    justify-content: center;
+  }
+  /* tighter tracking so the title never touches the viewport edge */
+  .loading-title {
+    letter-spacing: 0.12em;
+  }
+}
+
+/* ── accessibility — no motion for reduced-motion users ────── */
+@media (prefers-reduced-motion: reduce) {
+  .loading-cat-sprite,
+  .loading-dot,
+  .loading-screen {
+    animation: none;
+    transition: none;
+  }
+  .loading-dot { opacity: 0.7; }
+}
