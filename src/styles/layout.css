@@ -47,21 +47,8 @@
   background: var(--accent);
   box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent);
 }
-.theme-toggle {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid var(--border); border-radius: var(--radius-pill);
-  background: var(--bg-pill);
-  color: var(--text-muted);
-  font-family: var(--font-mono); font-size: var(--text-xs);
-  letter-spacing: 0.04em;
-  transition: color var(--t-fast), border-color var(--t-fast);
-}
-.theme-toggle:hover { color: var(--text); border-color: var(--border-strong); }
 @media (max-width: 640px) {
   .topbar-status { display: none; }
-  .theme-toggle span { display: none; }
-  .theme-toggle { padding: 6px; }
 }
 
 /* ── pill nav ─────────────────────────────────────────────── */
@@ -1023,7 +1010,6 @@
 }
 .cal-cell:nth-child(7n) { border-right: 0; }
 .cal-cell:hover { background: rgba(255,255,255,0.018); }
-[data-theme="light"] .cal-cell:hover { background: rgba(0,0,0,0.025); }
 .cal-cell.out .cal-daynum { color: var(--text-faint); }
 .cal-cell.selected {
   background: color-mix(in srgb, var(--accent) 5%, transparent);
@@ -1190,7 +1176,6 @@
 .cal-event-row:hover {
   background: rgba(255,255,255,0.015);
 }
-[data-theme="light"] .cal-event-row:hover { background: rgba(0,0,0,0.022); }
 .cal-event-row:hover .cal-event-title { color: var(--accent); }
 .cal-event-time {
   font-family: var(--font-mono); font-size: var(--text-xs);

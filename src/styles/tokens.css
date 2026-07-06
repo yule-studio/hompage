@@ -1,6 +1,6 @@
 /* ─────────────────────────────────────────────────────────────
  * Design tokens — single source of truth.
- * Switch theme by setting `data-theme="light"` on <html>.
+ * Dark-only site: the theme is fixed via `data-theme="dark"` on <html>.
  * ───────────────────────────────────────────────────────────── */
 
 :root,
@@ -39,35 +39,6 @@
   --dot-color: rgba(255, 255, 255, 0.045);
   --dot-size: 1px;
   --dot-spacing: 24px;
-}
-
-:root[data-theme="light"] {
-  --bg: #f7f8f6;
-  --bg-elevated: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f3ef;
-  --bg-pill: #eef1ec;
-  --bg-pill-active: #e3ebe5;
-
-  --border: #e2e6e0;
-  --border-strong: #cfd6cd;
-  --border-accent: #b4d3c1;
-
-  --text: #161a18;
-  --text-muted: #5b6360;
-  --text-faint: #8a9290;
-  --text-inverse: #ffffff;
-
-  --accent: #16a34a;
-  --accent-soft: rgba(22, 163, 74, 0.10);
-  --accent-strong: #15803d;
-
-  --ok: #16a34a;
-  --warn: #ca8a04;
-  --err: #dc2626;
-  --info: #2563eb;
-
-  --dot-color: rgba(0, 0, 0, 0.06);
 }
 
 /* ── spacing / radius / radius / shadow ───────────────────── */
