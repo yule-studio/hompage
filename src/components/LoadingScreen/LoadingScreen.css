@@ -76,7 +76,7 @@
 .loading-cat {
   display: grid;
   place-items: center;
-  width: clamp(130px, 19vw, 220px);
+  width: clamp(96px, 13vw, 150px);
   aspect-ratio: 1 / 1;
 }
 
@@ -96,7 +96,7 @@
   background-repeat: no-repeat;
   background-size: 800% 800%;
   background-position: 0% 0%;
-  animation: cat-wheel-run 2.4s steps(1) infinite;
+  animation: cat-wheel-run 3.6s steps(1) infinite;
 }
 
 /* 64 frames — x/y step through 0/14.286/…/100 across 8 cols x 8 rows */
@@ -253,7 +253,7 @@
     gap: var(--space-4);
   }
   .loading-cat {
-    width: clamp(140px, 40vw, 180px);
+    width: clamp(84px, 26vw, 116px);
   }
   .loading-percent {
     font-size: clamp(44px, 14vw, 64px);
