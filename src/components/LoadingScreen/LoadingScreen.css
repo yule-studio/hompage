@@ -71,21 +71,21 @@
 }
 
 /* cat wheel — sits directly on the dark background (no panel box).
-   mix-blend-mode: screen on the sprite drops its black backdrop, so the
-   white cat reads cleanly on the dot-grid dark surface. */
+   The sprite is white-on-transparent, so it reads cleanly on the
+   dot-grid dark surface with no filter/blend needed. */
 .loading-cat {
   display: grid;
   place-items: center;
-  width: clamp(160px, 24vw, 280px);
+  width: clamp(130px, 19vw, 220px);
   aspect-ratio: 1 / 1;
 }
 
 /*
- * cat-wheel.png is a 4 row x 6 col sprite sheet (24 frames) — white cat
+ * cat-wheel.png is an 8 row x 8 col sprite sheet (64 frames) — white cat
  * on a transparent background. The source frames were re-packed onto a
  * clean uniform grid (each frame centered on its wheel), so slicing at
- * exact sixths/quarters shows one frame with no neighbor bleed.
- * background-size 600% 400% scales one cell to fill the element, and
+ * exact eighths shows one frame with no neighbor bleed.
+ * background-size 800% 800% scales one cell to fill the element, and
  * `steps(1)` on each keyframe interval holds a single frame — so only
  * one frame is ever visible and the cat appears to run.
  */
@@ -94,38 +94,78 @@
   height: 100%;
   background-image: url("/assets/cat-wheel.png");
   background-repeat: no-repeat;
-  background-size: 600% 400%;
+  background-size: 800% 800%;
   background-position: 0% 0%;
   animation: cat-wheel-run 2.4s steps(1) infinite;
 }
 
-/* 24 frames — x: 0/20/40/60/80/100 (6 cols), y: 0/33.333/66.667/100 (4 rows) */
+/* 64 frames — x/y step through 0/14.286/…/100 across 8 cols x 8 rows */
 @keyframes cat-wheel-run {
-  0%      { background-position: 0% 0%; }
-  4.1667% { background-position: 20% 0%; }
-  8.3333% { background-position: 40% 0%; }
-  12.5%   { background-position: 60% 0%; }
-  16.667% { background-position: 80% 0%; }
-  20.833% { background-position: 100% 0%; }
-  25%     { background-position: 0% 33.333%; }
-  29.167% { background-position: 20% 33.333%; }
-  33.333% { background-position: 40% 33.333%; }
-  37.5%   { background-position: 60% 33.333%; }
-  41.667% { background-position: 80% 33.333%; }
-  45.833% { background-position: 100% 33.333%; }
-  50%     { background-position: 0% 66.667%; }
-  54.167% { background-position: 20% 66.667%; }
-  58.333% { background-position: 40% 66.667%; }
-  62.5%   { background-position: 60% 66.667%; }
-  66.667% { background-position: 80% 66.667%; }
-  70.833% { background-position: 100% 66.667%; }
-  75%     { background-position: 0% 100%; }
-  79.167% { background-position: 20% 100%; }
-  83.333% { background-position: 40% 100%; }
-  87.5%   { background-position: 60% 100%; }
-  91.667% { background-position: 80% 100%; }
-  95.833% { background-position: 100% 100%; }
-  100%    { background-position: 0% 0%; }
+  0.0000% { background-position: 0.000% 0.000%; }
+  1.5625% { background-position: 14.286% 0.000%; }
+  3.1250% { background-position: 28.571% 0.000%; }
+  4.6875% { background-position: 42.857% 0.000%; }
+  6.2500% { background-position: 57.143% 0.000%; }
+  7.8125% { background-position: 71.429% 0.000%; }
+  9.3750% { background-position: 85.714% 0.000%; }
+  10.9375% { background-position: 100.000% 0.000%; }
+  12.5000% { background-position: 0.000% 14.286%; }
+  14.0625% { background-position: 14.286% 14.286%; }
+  15.6250% { background-position: 28.571% 14.286%; }
+  17.1875% { background-position: 42.857% 14.286%; }
+  18.7500% { background-position: 57.143% 14.286%; }
+  20.3125% { background-position: 71.429% 14.286%; }
+  21.8750% { background-position: 85.714% 14.286%; }
+  23.4375% { background-position: 100.000% 14.286%; }
+  25.0000% { background-position: 0.000% 28.571%; }
+  26.5625% { background-position: 14.286% 28.571%; }
+  28.1250% { background-position: 28.571% 28.571%; }
+  29.6875% { background-position: 42.857% 28.571%; }
+  31.2500% { background-position: 57.143% 28.571%; }
+  32.8125% { background-position: 71.429% 28.571%; }
+  34.3750% { background-position: 85.714% 28.571%; }
+  35.9375% { background-position: 100.000% 28.571%; }
+  37.5000% { background-position: 0.000% 42.857%; }
+  39.0625% { background-position: 14.286% 42.857%; }
+  40.6250% { background-position: 28.571% 42.857%; }
+  42.1875% { background-position: 42.857% 42.857%; }
+  43.7500% { background-position: 57.143% 42.857%; }
+  45.3125% { background-position: 71.429% 42.857%; }
+  46.8750% { background-position: 85.714% 42.857%; }
+  48.4375% { background-position: 100.000% 42.857%; }
+  50.0000% { background-position: 0.000% 57.143%; }
+  51.5625% { background-position: 14.286% 57.143%; }
+  53.1250% { background-position: 28.571% 57.143%; }
+  54.6875% { background-position: 42.857% 57.143%; }
+  56.2500% { background-position: 57.143% 57.143%; }
+  57.8125% { background-position: 71.429% 57.143%; }
+  59.3750% { background-position: 85.714% 57.143%; }
+  60.9375% { background-position: 100.000% 57.143%; }
+  62.5000% { background-position: 0.000% 71.429%; }
+  64.0625% { background-position: 14.286% 71.429%; }
+  65.6250% { background-position: 28.571% 71.429%; }
+  67.1875% { background-position: 42.857% 71.429%; }
+  68.7500% { background-position: 57.143% 71.429%; }
+  70.3125% { background-position: 71.429% 71.429%; }
+  71.8750% { background-position: 85.714% 71.429%; }
+  73.4375% { background-position: 100.000% 71.429%; }
+  75.0000% { background-position: 0.000% 85.714%; }
+  76.5625% { background-position: 14.286% 85.714%; }
+  78.1250% { background-position: 28.571% 85.714%; }
+  79.6875% { background-position: 42.857% 85.714%; }
+  81.2500% { background-position: 57.143% 85.714%; }
+  82.8125% { background-position: 71.429% 85.714%; }
+  84.3750% { background-position: 85.714% 85.714%; }
+  85.9375% { background-position: 100.000% 85.714%; }
+  87.5000% { background-position: 0.000% 100.000%; }
+  89.0625% { background-position: 14.286% 100.000%; }
+  90.6250% { background-position: 28.571% 100.000%; }
+  92.1875% { background-position: 42.857% 100.000%; }
+  93.7500% { background-position: 57.143% 100.000%; }
+  95.3125% { background-position: 71.429% 100.000%; }
+  96.8750% { background-position: 85.714% 100.000%; }
+  98.4375% { background-position: 100.000% 100.000%; }
+  100% { background-position: 0% 0%; }
 }
 
 /* percent number — the hero element. The digits dominate; the % sits
