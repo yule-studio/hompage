@@ -5,11 +5,13 @@
  * ───────────────────────────────────────────────────────────── */
 
 .home-hero {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--space-7);
   align-items: center;
-  padding-block: var(--space-6) var(--space-8);
+  /* extra top space is a lane for the walking cat, above the name */
+  padding-block: 82px var(--space-8);
   border-bottom: 1px dashed var(--border);
   margin-bottom: var(--space-6);
 }
@@ -81,11 +83,14 @@
   color: var(--text-faint);
 }
 
-/* the walking cat spans the full hero width, just above the divider */
+/* the walking cat crosses the empty band at the top of the hero, above the
+   name (its own layer, so it never affects the layout) */
 .home-hero > .walk-cat {
-  grid-column: 1 / -1;
-  align-self: end;
-  margin-top: var(--space-2);
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
 
 .home-hero-badge {
@@ -95,7 +100,8 @@
      hanging from the very top of the page (topbar is z-above, so the nav
      stays legible over the thin strap) */
   align-self: start;
-  margin-top: calc(-1 * (var(--topbar-h) + 64px));
+  /* keep the lanyard anchored at the very top despite the hero's top lane */
+  margin-top: calc(-1 * (var(--topbar-h) + 122px));
 }
 
 /* ── reveal (gated by intro completion) ─────────────────────── */

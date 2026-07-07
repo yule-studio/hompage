@@ -21,8 +21,8 @@
   background-position: 0% 0%;
   opacity: 0.9;
   animation:
-    cat-walk-frames 4.4s steps(1) infinite,
-    cat-walk-cross 22s linear infinite;
+    cat-walk-frames 3.6s steps(1) infinite,
+    cat-walk-cross 15s linear infinite;
 }
 
 /* translate across the strip, looping */
