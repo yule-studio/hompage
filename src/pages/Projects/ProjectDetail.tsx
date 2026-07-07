@@ -30,7 +30,7 @@ export default function ProjectDetail() {
         </header>
 
         <Navigation />
-        <Link to="/projects" className="back-link">프로젝트 목록으로</Link>
+        <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
       </>
     );
   }
@@ -47,7 +47,7 @@ export default function ProjectDetail() {
       </header>
 
       <Navigation />
-      <Link to="/projects" className="back-link">프로젝트 목록으로</Link>
+      <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
 
       <article className="project-detail-card">
         <div className="project-detail-head">

@@ -15,7 +15,7 @@ const chips = skills[0].items
  */
 export default function HomeHero() {
   return (
-    <section className="home-hero" aria-label="intro">
+    <section id="home" className="home-hero" aria-label="intro">
       <div className="home-hero-text">
         <span className="hh-eyebrow hh-reveal accent" style={d(0)}>
           ✦ AVAILABLE · Q3 2026
