@@ -55,11 +55,11 @@ export function Nametag() {
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
-        <svg className="nametag-strap" viewBox="0 0 120 90" preserveAspectRatio="none" aria-hidden>
-          <path d="M12 4 L54 82" className="nametag-strap-line" />
-          <path d="M108 4 L66 82" className="nametag-strap-line" />
-        </svg>
-        <div className="nametag-clip" />
+        <div className="nametag-lanyard" aria-hidden>
+          <span className="nametag-lanyard-text">YUCHAN LAB</span>
+          <span className="nametag-lanyard-text">HOME · LAB</span>
+          <span className="nametag-clasp" />
+        </div>
 
         <div className="nametag-card">
           <span className="nametag-hole" />

@@ -38,49 +38,73 @@
   cursor: grabbing;
 }
 
-/* ── lanyard straps + clip ──────────────────────────────────── */
-.nametag-strap {
+/* ── lanyard ribbon + clasp ─────────────────────────────────── */
+.nametag-lanyard {
+  position: relative;
+  width: 34px;
+  height: 132px; /* longer strap */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  /* dark fabric with a soft vertical sheen down the middle */
+  background: linear-gradient(
+    90deg,
+    var(--bg) 0%,
+    var(--bg-elevated) 42%,
+    var(--bg-card-hover) 50%,
+    var(--bg-elevated) 58%,
+    var(--bg) 100%
+  );
+  border: 1px solid var(--border-strong);
+  border-radius: 4px 4px 2px 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+/* repeated woven branding, running up the strap */
+.nametag-lanyard-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+/* metal clasp that hooks into the card */
+.nametag-clasp {
   position: absolute;
-  top: 0;
+  bottom: -14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 120px;
-  height: 84px;
-  pointer-events: none;
+  width: 22px;
+  height: 18px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--border-strong), var(--bg-elevated));
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
-.nametag-strap-line {
-  fill: none;
-  stroke: var(--border-strong);
-  stroke-width: 6;
-  stroke-linecap: round;
-}
-.nametag-clip {
-  position: relative;
-  z-index: 1;
-  width: 16px;
-  height: 22px;
-  margin: 74px auto 0;
-  border: 2px solid var(--border-strong);
-  border-radius: 4px;
-  background: var(--bg-elevated);
-}
-.nametag-clip::after {
+.nametag-clasp::after {
   content: "";
   position: absolute;
   left: 50%;
-  top: -5px;
+  bottom: -9px;
   transform: translateX(-50%);
-  width: 10px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border: 2px solid var(--border-strong);
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  background: transparent;
 }
 
 /* ── card ───────────────────────────────────────────────────── */
 .nametag-card {
   position: relative;
-  margin-top: -2px;
+  margin-top: 24px; /* clear the clasp + hook below the ribbon */
   width: 100%;
   padding: 16px 16px 14px;
   display: flex;
