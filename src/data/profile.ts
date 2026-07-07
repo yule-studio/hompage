@@ -20,8 +20,9 @@ export const profile = {
   location: "Seoul, KR",
   status: { label: "Available · Q3 2026", tone: "ok" as const },
   bio:
-    "백엔드 / 인프라 / 자율 에이전트를 짓습니다. " +
-    "최근에는 LLM 코딩 에이전트와 self-host 홈랩 자동화에 시간을 쏟고 있어요.",
+    "백엔드와 인프라를 기반으로 개발 자동화 시스템을 만들고 있습니다. " +
+    "최근에는 AI를 활용한 자율 개발 에이전트와 self-host 홈랩 자동화를 실험하며, " +
+    "여러 기술 분야를 넘나드는 경험을 쌓고 있습니다.",
   phone: "",
   phoneDisplay: "",
   emailDisplay: "oyuchan50@gmail.com",
