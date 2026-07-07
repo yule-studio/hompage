@@ -84,6 +84,11 @@
 .home-hero-badge {
   display: flex;
   justify-content: center;
+  /* pull the lanyard up behind the transparent topbar so the strap reads as
+     hanging from the very top of the page (topbar is z-above, so the nav
+     stays legible over the thin strap) */
+  align-self: start;
+  margin-top: calc(-1 * (var(--topbar-h) + var(--space-4)));
 }
 
 /* ── reveal (gated by intro completion) ─────────────────────── */
@@ -118,6 +123,9 @@
   }
   .home-hero-badge {
     justify-self: center;
+    /* stacked below the text on mobile — don't pull it up under the topbar */
+    align-self: auto;
+    margin-top: var(--space-4);
   }
   .hh-desc { max-width: 100%; }
 }
