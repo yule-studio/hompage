@@ -88,7 +88,7 @@
      hanging from the very top of the page (topbar is z-above, so the nav
      stays legible over the thin strap) */
   align-self: start;
-  margin-top: calc(-1 * (var(--topbar-h) + var(--space-4)));
+  margin-top: calc(-1 * (var(--topbar-h) + 64px));
 }
 
 /* ── reveal (gated by intro completion) ─────────────────────── */

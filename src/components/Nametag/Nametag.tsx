@@ -2,67 +2,107 @@ import { useEffect, useRef } from "react";
 import { profile } from "../../data/profile";
 import "./Nametag.css";
 
-// damped-pendulum constants — lower DAMPING = more springy bounce
-const STIFFNESS = 62; // rotational restoring pull toward rest (snappiness)
-const DAMPING = 3.1; // rotational energy loss per swing (bounciness)
-const DRAG_FACTOR = 0.16; // px of horizontal drag → deg of tilt
-const MAX_ANGLE = 44;
-const IDLE_AMP = 1.6; // gentle idle sway amplitude (deg)
-const IDLE_FREQ = 1.1; // idle sway speed
+/* ── rope + card geometry ───────────────────────────────────── */
+const W = 230; // container width
+const ANCHOR_X = W / 2;
+const N = 16; // rope points
+const ROPE_LEN = 235; // hang length
+const SEG = ROPE_LEN / (N - 1);
+const CARD_W = 190;
+const CARD_H = 232;
+const H = ROPE_LEN + CARD_H + 24; // container height
 
-// vertical bob spring (up/down) — the strap stretches elastically
-const STIFF_Y = 96;
-const DAMP_Y = 3.4;
-const DRAG_FACTOR_Y = 0.5; // px of vertical drag → px of bob
-const MAX_Y = 28;
-const IDLE_AMP_Y = 2.2; // gentle idle bob amplitude (px)
-const IDLE_FREQ_Y = 0.8;
+const GRAVITY = 1500; // px/s²
+const DAMP = 0.965; // velocity retention (bounciness)
+const ITER = 20; // constraint solver passes
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
+type Pt = { x: number; y: number; ox: number; oy: number };
+
 /**
- * Nametag — a hanging ID badge on a lanyard (our dark + green theme).
- *
- * A real damped-pendulum simulation (requestAnimationFrame): idle it sways
- * gently, drag it and it follows your pointer, release and it swings back and
- * forth with decaying bounce — like a real lanyard. A lightweight 2D take on
- * portofoliov1's 3D physics lanyard, no 3D deps.
+ * Nametag — a hanging ID badge whose lanyard is a real flexible cord
+ * (Verlet-integrated rope). The top point is pinned; the cord bends and
+ * swings, dragging the card with it and settling under gravity — a 2D take
+ * on portofoliov1's 3D physics lanyard, no 3D deps.
  */
 export function Nametag() {
-  const hangRef = useRef<HTMLDivElement>(null);
-  const phys = useRef({
-    angle: 0, vel: 0, // rotation
-    posY: 0, velY: 0, // vertical bob
-    dragging: false, startX: 0, startY: 0, grabAngle: 0, grabY: 0, lastT: 0,
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ribbonRef = useRef<SVGPathElement>(null);
+  const ribbonEdgeRef = useRef<SVGPathElement>(null);
+  const textPathRef = useRef<SVGPathElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const state = useRef({
+    pts: Array.from({ length: N }, (_, i): Pt => ({ x: ANCHOR_X, y: i * SEG, ox: ANCHOR_X, oy: i * SEG })),
+    dragging: false,
+    tx: ANCHOR_X,
+    ty: ROPE_LEN,
+    offX: 0,
+    offY: 0,
   });
 
   useEffect(() => {
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const idleAmp = reduce ? 0 : IDLE_AMP;
-    const idleAmpY = reduce ? 0 : IDLE_AMP_Y;
-
+    const s = state.current;
     let raf = 0;
     let prev = performance.now();
+
     const tick = (now: number) => {
-      const s = phys.current;
-      const dt = Math.min(0.033, (now - prev) / 1000);
+      const dt = Math.min(0.032, (now - prev) / 1000);
       prev = now;
-      if (!s.dragging) {
-        // rotational swing
-        const rest = idleAmp * Math.sin((now / 1000) * IDLE_FREQ);
-        const acc = -STIFFNESS * (s.angle - rest) - DAMPING * s.vel;
-        s.vel += acc * dt;
-        s.angle += s.vel * dt;
-        // vertical bob (offset phase so it feels independent)
-        const restY = idleAmpY * Math.sin((now / 1000) * IDLE_FREQ_Y + 1.3);
-        const accY = -STIFF_Y * (s.posY - restY) - DAMP_Y * s.velY;
-        s.velY += accY * dt;
-        s.posY += s.velY * dt;
+      const pts = s.pts;
+
+      if (!reduce || s.dragging) {
+        // Verlet integrate (skip the fixed anchor point 0)
+        for (let i = 1; i < N; i++) {
+          const p = pts[i];
+          const vx = (p.x - p.ox) * DAMP;
+          const vy = (p.y - p.oy) * DAMP;
+          p.ox = p.x;
+          p.oy = p.y;
+          p.x += vx;
+          p.y += vy + GRAVITY * dt * dt;
+        }
+        // satisfy distance constraints
+        for (let k = 0; k < ITER; k++) {
+          pts[0].x = ANCHOR_X;
+          pts[0].y = 0;
+          if (s.dragging) {
+            pts[N - 1].x = s.tx;
+            pts[N - 1].y = s.ty;
+          }
+          for (let i = 0; i < N - 1; i++) {
+            const a = pts[i];
+            const b = pts[i + 1];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const d = Math.hypot(dx, dy) || 0.0001;
+            const diff = ((SEG - d) / d) * 0.5;
+            const ox = dx * diff;
+            const oy = dy * diff;
+            if (i !== 0) { a.x -= ox; a.y -= oy; }
+            if (!(s.dragging && i + 1 === N - 1)) { b.x += ox; b.y += oy; }
+          }
+        }
       }
-      if (hangRef.current) {
-        hangRef.current.style.transform = `translateY(${s.posY.toFixed(2)}px) rotate(${s.angle.toFixed(3)}deg)`;
+
+      // build the cord path
+      let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+      for (let i = 1; i < N; i++) d += ` L ${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)}`;
+      ribbonRef.current?.setAttribute("d", d);
+      ribbonEdgeRef.current?.setAttribute("d", d);
+      textPathRef.current?.setAttribute("d", d);
+
+      // place the card at the cord's end, tilted to the last segment
+      const last = pts[N - 1];
+      const prevP = pts[N - 2];
+      const ang = (Math.atan2(last.x - prevP.x, last.y - prevP.y) * 180) / Math.PI;
+      if (cardRef.current) {
+        cardRef.current.style.transform =
+          `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${ang.toFixed(2)}deg)`;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -70,91 +110,90 @@ export function Nametag() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  const toLocal = (e: React.PointerEvent) => {
+    const r = containerRef.current!.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
   const onDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
-    const s = phys.current;
+    const s = state.current;
+    const l = toLocal(e);
+    const last = s.pts[N - 1];
+    s.offX = last.x - l.x;
+    s.offY = last.y - l.y;
+    s.tx = last.x;
+    s.ty = last.y;
     s.dragging = true;
-    s.startX = e.clientX;
-    s.startY = e.clientY;
-    s.grabAngle = s.angle;
-    s.grabY = s.posY;
-    s.lastT = performance.now();
-    s.vel = 0;
-    s.velY = 0;
   };
   const onMove = (e: React.PointerEvent) => {
-    const s = phys.current;
+    const s = state.current;
     if (!s.dragging) return;
-    const target = clamp(s.grabAngle + (e.clientX - s.startX) * DRAG_FACTOR, -MAX_ANGLE, MAX_ANGLE);
-    const targetY = clamp(s.grabY + (e.clientY - s.startY) * DRAG_FACTOR_Y, -MAX_Y, MAX_Y);
-    const now = performance.now();
-    const dt = Math.max(0.001, (now - s.lastT) / 1000);
-    s.vel = (target - s.angle) / dt; // carry throw velocity into the release
-    s.velY = (targetY - s.posY) / dt;
-    s.angle = target;
-    s.posY = targetY;
-    s.lastT = now;
+    const l = toLocal(e);
+    s.tx = clamp(l.x + s.offX, 10, W - 10);
+    s.ty = clamp(l.y + s.offY, 30, H);
   };
   const onUp = (e: React.PointerEvent) => {
-    const s = phys.current;
-    if (!s.dragging) return;
+    if (!state.current.dragging) return;
     e.currentTarget.releasePointerCapture(e.pointerId);
-    s.dragging = false;
-    s.vel = clamp(s.vel, -520, 520); // cap a wild flick
-    s.velY = clamp(s.velY, -640, 640);
+    state.current.dragging = false;
   };
 
   return (
-    <div className="nametag" aria-hidden>
+    <div
+      className="nametag"
+      style={{ width: W, height: H }}
+      ref={containerRef}
+      aria-hidden
+    >
+      <svg className="nametag-rope" width={W} height={H} aria-hidden>
+        <path ref={ribbonEdgeRef} className="nametag-ribbon-edge" />
+        <path ref={ribbonRef} id="nt-rope-path" className="nametag-ribbon" />
+        <defs>
+          <path ref={textPathRef} id="nt-text-path" />
+        </defs>
+        <text className="nametag-ribbon-text">
+          <textPath href="#nt-text-path" startOffset="14">
+            YUCHAN · LAB · HOME · LAB · YUCHAN · LAB · HOME · LAB
+          </textPath>
+        </text>
+      </svg>
+
       <div
-        ref={hangRef}
-        className="nametag-hang"
+        className="nametag-card"
+        ref={cardRef}
+        style={{ width: CARD_W }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
-        <div className="nametag-pin" />
-        <div className="nametag-lanyard" aria-hidden>
-          <span className="nametag-lanyard-text">YUCHAN LAB</span>
-          <span className="nametag-lanyard-text">HOME · LAB</span>
-          <span className="nametag-clasp" />
+        <span className="nametag-hole" />
+        <div className="nametag-head">
+          <span className="mono">HOME-LAB-01</span>
+          <span className="nametag-live">
+            <i />LIVE
+          </span>
         </div>
 
-        <div className="nametag-card">
-          <span className="nametag-hole" />
-          <div className="nametag-head">
-            <span className="mono">HOME-LAB-01</span>
-            <span className="nametag-live">
-              <i />LIVE
-            </span>
-          </div>
+        <img className="nametag-avatar" src={profile.avatarUrl} alt="" draggable={false} />
 
-          <img
-            className="nametag-avatar"
-            src={profile.avatarUrl}
-            alt=""
-            draggable={false}
-          />
+        <div className="nametag-name">{profile.name}</div>
+        <a
+          className="nametag-handle mono"
+          href={profile.links.github}
+          target="_blank"
+          rel="noreferrer"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <GhMark /> {profile.githubUsername}
+        </a>
+        <div className="nametag-role">Backend · DevOps</div>
 
-          <div className="nametag-name">{profile.name}</div>
-          <a
-            className="nametag-handle mono"
-            href={profile.links.github}
-            target="_blank"
-            rel="noreferrer"
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            <GhMark /> {profile.githubUsername}
-          </a>
-          <div className="nametag-role">Backend · DevOps</div>
-
-          <div className="nametag-foot">
-            <span className="nametag-access mono">
-              ACCESS <b className="accent">GRANTED</b>
-            </span>
-            <span className="nametag-barcode" aria-hidden />
-          </div>
+        <div className="nametag-foot">
+          <span className="nametag-access mono">
+            ACCESS <b className="accent">GRANTED</b>
+          </span>
+          <span className="nametag-barcode" aria-hidden />
         </div>
       </div>
     </div>
