@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import Navigation from "../../components/Navigation/Navigation";
 import { events as ALL_EVENTS, type Event, type EventKind } from "../../data/events";
 import { usePlanSnapshot } from "../../hooks/usePlanSnapshot";
 import {
@@ -173,8 +172,6 @@ export default function CalendarPage() {
         </div>
         <span className="chip mono">{ALL_EVENTS.length}</span>
       </header>
-
-      <Navigation />
 
       {showPlan && <TodayPlanSection plan={plan} />}
 

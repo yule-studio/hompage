@@ -1,5 +1,4 @@
 import Card from "../../components/Card/Card";
-import Navigation from "../../components/Navigation/Navigation";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import { skills } from "../../data/skills";
 import { useGithubLanguages } from "../../hooks/useGithubLanguages";
@@ -41,8 +40,6 @@ export default function Skills() {
           </p>
         </div>
       </header>
-
-      <Navigation />
 
       {/* Languages — dynamic from GitHub (bytes) */}
       <section>

@@ -1,5 +1,4 @@
 import Card from "../../components/Card/Card";
-import Navigation from "../../components/Navigation/Navigation";
 import TerminalCard from "../../components/TerminalCard/TerminalCard";
 import { profile } from "../../data/profile";
 
@@ -13,8 +12,6 @@ export default function Contact() {
           <p className="page-subtitle">짧은 문의 / 협업 / 발표 — 어디로든 환영.</p>
         </div>
       </header>
-
-      <Navigation />
 
       <div className="grid">
         <Card span="sm" ariaLabel="reach">

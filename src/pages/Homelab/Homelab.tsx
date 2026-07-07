@@ -1,5 +1,4 @@
 import Card from "../../components/Card/Card";
-import Navigation from "../../components/Navigation/Navigation";
 import SectionHeader from "../../components/SectionHeader/SectionHeader";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { hosts, services } from "../../data/homelab";
@@ -18,8 +17,6 @@ export default function Homelab() {
         </div>
         <StatusBadge status={ok === total ? "ok" : "warn"} label={`${ok}/${total} healthy`} />
       </header>
-
-      <Navigation />
 
       <SectionHeader title="Hosts" meta={`${hosts.length} nodes`} />
       <div className="section-grid">

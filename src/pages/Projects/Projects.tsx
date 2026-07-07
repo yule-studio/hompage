@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../components/Card/Card";
-import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { type Project } from "../../data/projects";
 import { useProjects } from "../../hooks/useProjects";
@@ -51,8 +50,6 @@ export default function Projects() {
           {isLoading ? "sync" : `${liveCount} live · ${projects.length} total`}
         </span>
       </header>
-
-      <Navigation />
 
       <div className="filter-bar" role="tablist" aria-label="프로젝트 필터">
         {FILTERS.map((f) => {
