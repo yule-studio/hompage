@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import Navigation from "../../components/Navigation/Navigation";
 import StatusBadge from "../../components/StatusBadge/StatusBadge";
 import { type Project } from "../../data/projects";
 import { useProjects } from "../../hooks/useProjects";
@@ -28,8 +27,6 @@ export default function ProjectDetail() {
             </p>
           </div>
         </header>
-
-        <Navigation />
         <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
       </>
     );
@@ -45,8 +42,6 @@ export default function ProjectDetail() {
         </div>
         <StatusBadge status={statusTone[project.status]} label={project.status} />
       </header>
-
-      <Navigation />
       <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
 
       <article className="project-detail-card">

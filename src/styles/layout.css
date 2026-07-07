@@ -1978,11 +1978,53 @@
 .scroll-home { display: block; }
 
 .scroll-section {
-  /* clear the sticky topbar (56px) + sticky nav when jumped to */
-  scroll-margin-top: 116px;
+  /* clear the sticky topbar (the nav lives in it) when jumped to */
+  scroll-margin-top: 84px;
   padding-top: var(--space-8);
   margin-top: var(--space-7);
   border-top: 1px dashed var(--border);
+}
+
+/* ── top-nav (lives in the topbar, right side) ──────────────── */
+.topnav {
+  margin-left: auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topnav::-webkit-scrollbar { display: none; }
+.topnav-list {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.topnav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.topnav-item:hover { color: var(--text); background: var(--bg-pill); }
+.topnav-item[aria-current="page"] { color: var(--text); }
+.topnav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--text-faint);
+  transition: background var(--t-fast);
+}
+.topnav-item:hover .topnav-dot,
+.topnav-item[aria-current="page"] .topnav-dot { background: var(--accent); }
+
+@media (max-width: 560px) {
+  /* keep labels compact on small screens; nav scrolls horizontally */
+  .topnav-item { padding: 6px 8px; font-size: var(--text-xs); gap: 5px; }
 }
 
 /* scroll-reveal — hidden until it enters view, then fades/rises in */

@@ -60,21 +60,22 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="nav scroll-nav" aria-label="Primary">
-      <div className="nav-pill" role="tablist">
+    <nav className="topnav" aria-label="Primary">
+      <ul className="topnav-list" role="tablist">
         {ITEMS.map((it) => (
-          <a
-            key={it.id}
-            href={`/#${it.id}`}
-            className="nav-item"
-            aria-current={onHome && active === it.id ? "page" : undefined}
-            onClick={(e) => handleClick(e, it.id)}
-          >
-            <span className="nav-mark" aria-hidden />
-            <span>{it.label}</span>
-          </a>
+          <li key={it.id}>
+            <a
+              href={`/#${it.id}`}
+              className="topnav-item"
+              aria-current={onHome && active === it.id ? "page" : undefined}
+              onClick={(e) => handleClick(e, it.id)}
+            >
+              <span className="topnav-dot" aria-hidden />
+              <span>{it.label}</span>
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </nav>
   );
 }

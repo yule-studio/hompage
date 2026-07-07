@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { profile } from "../../data/profile";
+import Navigation from "../Navigation/Navigation";
 
 /**
- * Topbar — brand + system status. The site is dark-only, so there is no
- * theme toggle; the theme is fixed via `data-theme="dark"` on <html>.
+ * Topbar — brand on the left, primary scroll-nav on the right (single-page
+ * style). Dark-only, so no theme toggle.
  */
 export default function Topbar() {
   return (
@@ -14,12 +15,7 @@ export default function Topbar() {
           <span className="brand-handle">{profile.handle}</span>
         </Link>
 
-        <div className="topbar-spacer" />
-
-        <span className="topbar-status" role="status" aria-live="polite">
-          <span className="topbar-status-dot" aria-hidden />
-          <span>{profile.status.label}</span>
-        </span>
+        <Navigation />
       </div>
     </header>
   );

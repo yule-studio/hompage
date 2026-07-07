@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Navigation from "../components/Navigation/Navigation";
 
 export default function NotFound() {
   return (
@@ -11,8 +10,6 @@ export default function NotFound() {
           <p className="page-subtitle">URL 을 확인하시거나, 홈으로 돌아가 주세요.</p>
         </div>
       </header>
-
-      <Navigation />
       <p className="mono">
         <Link to="/" className="card-link">return home</Link>
       </p>
