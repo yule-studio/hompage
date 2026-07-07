@@ -16,6 +16,10 @@ const GRAVITY = 1500; // px/s²
 const DAMP = 0.965; // velocity retention (bounciness)
 const ITER = 20; // constraint solver passes
 
+// the card has its own rotational spring so it visibly swings/wobbles
+const CARD_STIFF = 78;
+const CARD_DAMP = 4.4;
+
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 type Pt = { x: number; y: number; ox: number; oy: number };
@@ -40,6 +44,8 @@ export function Nametag() {
     ty: ROPE_LEN,
     offX: 0,
     offY: 0,
+    cardAngle: 0,
+    cardVel: 0,
   });
 
   useEffect(() => {
@@ -96,13 +102,21 @@ export function Nametag() {
       ribbonEdgeRef.current?.setAttribute("d", d);
       textPathRef.current?.setAttribute("d", d);
 
-      // place the card at the cord's end, tilted to the last segment
+      // place the card at the cord's end; its rotation is a spring toward the
+      // lower-rope direction with its own momentum, so it swings/wobbles
       const last = pts[N - 1];
-      const prevP = pts[N - 2];
-      const ang = (Math.atan2(last.x - prevP.x, last.y - prevP.y) * 180) / Math.PI;
+      const base = pts[N - 4];
+      const targetAng = (Math.atan2(last.x - base.x, last.y - base.y) * 180) / Math.PI;
+      if (!reduce || s.dragging) {
+        const torque = -CARD_STIFF * (s.cardAngle - targetAng) - CARD_DAMP * s.cardVel;
+        s.cardVel += torque * dt;
+        s.cardAngle += s.cardVel * dt;
+      } else {
+        s.cardAngle = targetAng;
+      }
       if (cardRef.current) {
         cardRef.current.style.transform =
-          `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${ang.toFixed(2)}deg)`;
+          `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${s.cardAngle.toFixed(2)}deg)`;
       }
       raf = requestAnimationFrame(tick);
     };
