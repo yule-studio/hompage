@@ -166,8 +166,8 @@ export function Nametag() {
           <path ref={textPathRef} id="nt-text-path" />
         </defs>
         <text className="nametag-ribbon-text">
-          <textPath href="#nt-text-path" startOffset="14">
-            YUCHAN · LAB · HOME · LAB · YUCHAN · LAB · HOME · LAB
+          <textPath href="#nt-text-path" startOffset="8">
+            YUCHAN · LAB · HOME · LAB · YUCHAN · LAB · HOME · LAB · YUCHAN · LAB · HOME · LAB
           </textPath>
         </text>
       </svg>
@@ -181,6 +181,7 @@ export function Nametag() {
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
+        <span className="nametag-clip" />
         <span className="nametag-hole" />
         <div className="nametag-head">
           <span className="mono">HOME-LAB-01</span>
