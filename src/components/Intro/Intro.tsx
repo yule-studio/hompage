@@ -7,7 +7,7 @@ type IntroProps = {
   onComplete?: () => void;
 };
 
-const HOLD_MS = 2800; // entrance cascade 후 유지
+const HOLD_MS = 3000; // entrance cascade 후 유지
 const WIPE_MS = 1000; // slide-up wipe
 
 /**
@@ -49,11 +49,14 @@ export function Intro({ onComplete }: IntroProps) {
         </div>
 
         <div className="intro-text">
-          <span className="intro-welcome">WELCOME TO</span>
+          <h2 className="intro-welcome-line">
+            <span className="intro-word intro-word--r">Welcome</span>
+            <span className="intro-word intro-word--l">to my</span>
+          </h2>
           <h1 className="intro-brand">
-            <span className="intro-word intro-word--l">YULE</span>
-            <span className="intro-word intro-word--r">STUDIO</span>
-            <span className="intro-word intro-word--l accent">LAB</span>
+            <span className="intro-word intro-word--l">Yule</span>
+            <span className="intro-word intro-word--r">Studio</span>
+            <span className="intro-word intro-word--l accent">Lab</span>
           </h1>
         </div>
 

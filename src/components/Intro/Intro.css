@@ -63,14 +63,17 @@
   align-items: center;
   gap: 4px;
 }
-.intro-welcome {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
+/* "Welcome to my" — smaller line above the brand */
+.intro-welcome-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.3em;
+  font-size: clamp(20px, 3.6vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   color: var(--text-muted);
-  animation: intro-slide-down 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 900ms;
 }
 .intro-brand {
   display: flex;
@@ -83,7 +86,7 @@
   line-height: 1.05;
   color: var(--text);
 }
-/* brand words fly in from alternating sides (portofoliov1 feel) */
+/* words fly in from alternating sides (portofoliov1 feel) */
 .intro-word {
   display: inline-block;
   opacity: 0;
@@ -94,9 +97,11 @@
 .intro-word--r {
   animation: intro-slide-r 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.intro-brand .intro-word:nth-child(1) { animation-delay: 1050ms; }
-.intro-brand .intro-word:nth-child(2) { animation-delay: 1250ms; }
-.intro-brand .intro-word:nth-child(3) { animation-delay: 1450ms; }
+.intro-welcome-line .intro-word:nth-child(1) { animation-delay: 750ms; }
+.intro-welcome-line .intro-word:nth-child(2) { animation-delay: 950ms; }
+.intro-brand .intro-word:nth-child(1) { animation-delay: 1200ms; }
+.intro-brand .intro-word:nth-child(2) { animation-delay: 1400ms; }
+.intro-brand .intro-word:nth-child(3) { animation-delay: 1600ms; }
 
 .intro-capsule {
   padding: 6px 14px;
@@ -107,7 +112,7 @@
   letter-spacing: 0.14em;
   color: var(--text-muted);
   animation: intro-slide-down 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 1650ms;
+  animation-delay: 1850ms;
 }
 
 /* ── keyframes ──────────────────────────────────────────────── */
@@ -140,7 +145,7 @@
   .intro,
   .intro-inner,
   .intro-badge,
-  .intro-welcome,
+  .intro-welcome-line,
   .intro-brand,
   .intro-word,
   .intro-capsule {
