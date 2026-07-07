@@ -26,11 +26,13 @@
 .nametag-hang {
   position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   transform-origin: top center;
   cursor: grab;
   touch-action: pan-y;
-  margin-top: -3px;
-  will-change: transform; /* rotation is driven every frame by JS physics */
+  will-change: transform; /* rotation + bob are driven every frame by JS physics */
 }
 .nametag-hang:active {
   cursor: grabbing;
@@ -41,7 +43,7 @@
   position: relative;
   width: 34px;
   height: 132px; /* longer strap */
-  margin: 0 auto;
+  margin: -2px auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;

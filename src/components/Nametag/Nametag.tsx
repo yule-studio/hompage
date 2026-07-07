@@ -3,12 +3,20 @@ import { profile } from "../../data/profile";
 import "./Nametag.css";
 
 // damped-pendulum constants — lower DAMPING = more springy bounce
-const STIFFNESS = 62; // restoring pull toward rest (snappiness)
-const DAMPING = 3.1; // energy loss per swing (bounciness)
-const DRAG_FACTOR = 0.16; // px of drag → deg of tilt
+const STIFFNESS = 62; // rotational restoring pull toward rest (snappiness)
+const DAMPING = 3.1; // rotational energy loss per swing (bounciness)
+const DRAG_FACTOR = 0.16; // px of horizontal drag → deg of tilt
 const MAX_ANGLE = 44;
 const IDLE_AMP = 1.6; // gentle idle sway amplitude (deg)
 const IDLE_FREQ = 1.1; // idle sway speed
+
+// vertical bob spring (up/down) — the strap stretches elastically
+const STIFF_Y = 96;
+const DAMP_Y = 3.4;
+const DRAG_FACTOR_Y = 0.5; // px of vertical drag → px of bob
+const MAX_Y = 28;
+const IDLE_AMP_Y = 2.2; // gentle idle bob amplitude (px)
+const IDLE_FREQ_Y = 0.8;
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
@@ -22,13 +30,18 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
  */
 export function Nametag() {
   const hangRef = useRef<HTMLDivElement>(null);
-  const phys = useRef({ angle: 0, vel: 0, dragging: false, startX: 0, grabAngle: 0, lastT: 0 });
+  const phys = useRef({
+    angle: 0, vel: 0, // rotation
+    posY: 0, velY: 0, // vertical bob
+    dragging: false, startX: 0, startY: 0, grabAngle: 0, grabY: 0, lastT: 0,
+  });
 
   useEffect(() => {
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const idleAmp = reduce ? 0 : IDLE_AMP;
+    const idleAmpY = reduce ? 0 : IDLE_AMP_Y;
 
     let raf = 0;
     let prev = performance.now();
@@ -37,12 +50,20 @@ export function Nametag() {
       const dt = Math.min(0.033, (now - prev) / 1000);
       prev = now;
       if (!s.dragging) {
+        // rotational swing
         const rest = idleAmp * Math.sin((now / 1000) * IDLE_FREQ);
         const acc = -STIFFNESS * (s.angle - rest) - DAMPING * s.vel;
         s.vel += acc * dt;
         s.angle += s.vel * dt;
+        // vertical bob (offset phase so it feels independent)
+        const restY = idleAmpY * Math.sin((now / 1000) * IDLE_FREQ_Y + 1.3);
+        const accY = -STIFF_Y * (s.posY - restY) - DAMP_Y * s.velY;
+        s.velY += accY * dt;
+        s.posY += s.velY * dt;
       }
-      if (hangRef.current) hangRef.current.style.transform = `rotate(${s.angle.toFixed(3)}deg)`;
+      if (hangRef.current) {
+        hangRef.current.style.transform = `translateY(${s.posY.toFixed(2)}px) rotate(${s.angle.toFixed(3)}deg)`;
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -54,18 +75,24 @@ export function Nametag() {
     const s = phys.current;
     s.dragging = true;
     s.startX = e.clientX;
+    s.startY = e.clientY;
     s.grabAngle = s.angle;
+    s.grabY = s.posY;
     s.lastT = performance.now();
     s.vel = 0;
+    s.velY = 0;
   };
   const onMove = (e: React.PointerEvent) => {
     const s = phys.current;
     if (!s.dragging) return;
     const target = clamp(s.grabAngle + (e.clientX - s.startX) * DRAG_FACTOR, -MAX_ANGLE, MAX_ANGLE);
+    const targetY = clamp(s.grabY + (e.clientY - s.startY) * DRAG_FACTOR_Y, -MAX_Y, MAX_Y);
     const now = performance.now();
     const dt = Math.max(0.001, (now - s.lastT) / 1000);
     s.vel = (target - s.angle) / dt; // carry throw velocity into the release
+    s.velY = (targetY - s.posY) / dt;
     s.angle = target;
+    s.posY = targetY;
     s.lastT = now;
   };
   const onUp = (e: React.PointerEvent) => {
@@ -74,11 +101,11 @@ export function Nametag() {
     e.currentTarget.releasePointerCapture(e.pointerId);
     s.dragging = false;
     s.vel = clamp(s.vel, -520, 520); // cap a wild flick
+    s.velY = clamp(s.velY, -640, 640);
   };
 
   return (
     <div className="nametag" aria-hidden>
-      <div className="nametag-pin" />
       <div
         ref={hangRef}
         className="nametag-hang"
@@ -87,6 +114,7 @@ export function Nametag() {
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
+        <div className="nametag-pin" />
         <div className="nametag-lanyard" aria-hidden>
           <span className="nametag-lanyard-text">YUCHAN LAB</span>
           <span className="nametag-lanyard-text">HOME · LAB</span>
