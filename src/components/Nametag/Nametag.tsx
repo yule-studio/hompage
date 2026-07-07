@@ -5,7 +5,7 @@ import "./Nametag.css";
 /* ── rope + card geometry ───────────────────────────────────── */
 const W = 230; // container width
 const ANCHOR_X = W / 2;
-const N = 16; // rope points
+const N = 7; // rope control points (few → smooth spline, like portofoliov1)
 const ROPE_LEN = 235; // hang length
 const SEG = ROPE_LEN / (N - 1);
 const CARD_W = 190;
@@ -26,7 +26,7 @@ const CARD_MAX = 62; // clamp (deg) — never spins past this
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
-type Pt = { x: number; y: number; ox: number; oy: number };
+type Pt = { x: number; y: number; ox: number; oy: number; lx: number; ly: number };
 
 /**
  * Nametag — a hanging ID badge whose lanyard is a real flexible cord
@@ -42,7 +42,7 @@ export function Nametag() {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const state = useRef({
-    pts: Array.from({ length: N }, (_, i): Pt => ({ x: ANCHOR_X, y: i * SEG, ox: ANCHOR_X, oy: i * SEG })),
+    pts: Array.from({ length: N }, (_, i): Pt => ({ x: ANCHOR_X, y: i * SEG, ox: ANCHOR_X, oy: i * SEG, lx: ANCHOR_X, ly: i * SEG })),
     dragging: false,
     tx: ANCHOR_X,
     ty: ROPE_LEN,
@@ -105,9 +105,32 @@ export function Nametag() {
         }
       }
 
-      // build the cord path
-      let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-      for (let i = 1; i < N; i++) d += ` L ${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)}`;
+      // lerp-smooth the middle points toward their physics positions for
+      // organic, trailing motion (velocity-scaled, like portofoliov1). The
+      // endpoints (anchor + card) track exactly.
+      const MINS = 6, MAXS = 26;
+      for (let i = 0; i < N; i++) {
+        const p = pts[i];
+        if (i === 0 || i === N - 1) { p.lx = p.x; p.ly = p.y; continue; }
+        const moved = Math.min(1, Math.hypot(p.x - p.lx, p.y - p.ly) / 40);
+        const f = Math.min(1, dt * (MINS + moved * (MAXS - MINS)));
+        p.lx += (p.x - p.lx) * f;
+        p.ly += (p.y - p.ly) * f;
+      }
+
+      // smooth Catmull-Rom → cubic-Bézier path through the render points
+      let d = `M ${pts[0].lx.toFixed(1)} ${pts[0].ly.toFixed(1)}`;
+      for (let i = 0; i < N - 1; i++) {
+        const p0 = pts[i === 0 ? 0 : i - 1];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[i + 2 < N ? i + 2 : N - 1];
+        const c1x = p1.lx + (p2.lx - p0.lx) / 6;
+        const c1y = p1.ly + (p2.ly - p0.ly) / 6;
+        const c2x = p2.lx - (p3.lx - p1.lx) / 6;
+        const c2y = p2.ly - (p3.ly - p1.ly) / 6;
+        d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.lx.toFixed(1)} ${p2.ly.toFixed(1)}`;
+      }
       ribbonRef.current?.setAttribute("d", d);
       ribbonEdgeRef.current?.setAttribute("d", d);
       textPathRef.current?.setAttribute("d", d);
