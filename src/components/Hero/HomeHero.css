@@ -81,6 +81,13 @@
   color: var(--text-faint);
 }
 
+/* the walking cat spans the full hero width, just above the divider */
+.home-hero > .walk-cat {
+  grid-column: 1 / -1;
+  align-self: end;
+  margin-top: var(--space-2);
+}
+
 .home-hero-badge {
   display: flex;
   justify-content: center;

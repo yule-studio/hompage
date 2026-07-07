@@ -1,6 +1,7 @@
 import { profile } from "../../data/profile";
 import { skills } from "../../data/skills";
 import Nametag from "../Nametag/Nametag";
+import WalkingCat from "../WalkingCat/WalkingCat";
 import TypeCycle from "./TypeCycle";
 import "./HomeHero.css";
 
@@ -81,6 +82,8 @@ export default function HomeHero() {
       <div className="home-hero-badge hh-reveal" style={d(320)}>
         <Nametag />
       </div>
+
+      <WalkingCat />
     </section>
   );
 }

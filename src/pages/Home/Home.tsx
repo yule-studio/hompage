@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import HomeHero from "../../components/Hero/HomeHero";
-import WalkingCat from "../../components/WalkingCat/WalkingCat";
 import { useReveal } from "../../hooks/useReveal";
 import Projects from "../Projects/Projects";
 import Skills from "../Skills/Skills";
@@ -31,8 +30,6 @@ export default function Home() {
   return (
     <div className="scroll-home">
       <HomeHero />
-
-      <WalkingCat />
 
       <section id="projects" className="scroll-section reveal" aria-label="projects">
         <Projects />
