@@ -32,7 +32,19 @@ export default function HomeHero() {
         </div>
 
         <p className="hh-desc hh-reveal" style={d(360)}>
-          {profile.bio}
+          {(() => {
+            const mark = "습니다. ";
+            const i = profile.bio.indexOf(mark);
+            if (i === -1) return profile.bio;
+            const cut = i + "습니다.".length;
+            return (
+              <>
+                {profile.bio.slice(0, cut)}
+                <br />
+                {profile.bio.slice(cut).trimStart()}
+              </>
+            );
+          })()}
         </p>
 
         <div className="hh-ctas hh-reveal" style={d(480)} aria-label="contact links">
