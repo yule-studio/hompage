@@ -12,15 +12,17 @@ const CARD_W = 190;
 const CARD_H = 232;
 const H = ROPE_LEN + CARD_H + 24; // container height
 
-const GRAVITY = 1500; // px/s²
-const DAMP = 0.965; // velocity retention (bounciness)
-const ITER = 20; // constraint solver passes
+const GRAVITY = 1150; // px/s² — gentler, more natural fall
+const DAMP = 0.972; // velocity retention (subtle, non-jittery catch)
+const ITER = 16; // constraint solver passes
 
-// how far up the rope the card reads its tilt from (bigger = more visible
-// swing) and how quickly it follows (no overshoot → never spins/detaches)
-const CARD_BASE = 6; // segments up from the end
-const CARD_FOLLOW = 9; // follow speed (per second)
-const CARD_MAX = 62; // clamp so it never flips past this
+// the card hangs from the rope end as a pendulum: gravity self-rights it to
+// vertical (so lifting = no rotation), and horizontal acceleration of the
+// pivot (the drop-catch snap) makes it swing/bounce. Clamped so it can't flip.
+const CARD_L = 72; // effective pendulum length (px)
+const CARD_G = 1750; // self-righting strength (px/s²)
+const CARD_DAMP = 2.0; // rotational damping (lower = bouncier)
+const CARD_MAX = 62; // clamp (deg) — never spins past this
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
@@ -46,7 +48,10 @@ export function Nametag() {
     ty: ROPE_LEN,
     offX: 0,
     offY: 0,
-    cardAngle: 0,
+    cardAngle: 0, // radians
+    cardVel: 0,
+    prevPivotX: ANCHOR_X,
+    prevPivotVX: 0,
   });
 
   useEffect(() => {
@@ -87,6 +92,10 @@ export function Nametag() {
             const dx = b.x - a.x;
             const dy = b.y - a.y;
             const d = Math.hypot(dx, dy) || 0.0001;
+            // ROPE (not rigid chain): only correct when stretched past SEG.
+            // Slack is allowed → lifting the card goes tension-free (no swing),
+            // dropping snaps it taut and bounces (like portofoliov1's ropeJoint).
+            if (d <= SEG) continue;
             const diff = ((SEG - d) / d) * 0.5;
             const ox = dx * diff;
             const oy = dy * diff;
@@ -103,21 +112,29 @@ export function Nametag() {
       ribbonEdgeRef.current?.setAttribute("d", d);
       textPathRef.current?.setAttribute("d", d);
 
-      // place the card at the cord's end; its tilt smoothly FOLLOWS the lower
-      // rope direction (stays glued to the strap, no independent spin) and is
-      // clamped so it never flips 360°.
+      // place the card at the cord's end; rotate it as a pendulum hanging from
+      // that pivot — self-rights via gravity, swings when the pivot accelerates
       const last = pts[N - 1];
-      const base = pts[Math.max(0, N - 1 - CARD_BASE)];
-      const targetAng = clamp(
-        (Math.atan2(last.x - base.x, last.y - base.y) * 180) / Math.PI,
-        -CARD_MAX,
-        CARD_MAX,
-      );
-      const follow = reduce && !s.dragging ? 1 : Math.min(1, dt * CARD_FOLLOW);
-      s.cardAngle += (targetAng - s.cardAngle) * follow;
+      const dtc = Math.max(dt, 0.001);
+      const pvx = (last.x - s.prevPivotX) / dtc;
+      const pax = clamp((pvx - s.prevPivotVX) / dtc, -5000, 5000); // pivot horiz. accel
+      s.prevPivotX = last.x;
+      s.prevPivotVX = pvx;
+      if (!reduce || s.dragging) {
+        const th = s.cardAngle;
+        const acc = -(CARD_G / CARD_L) * Math.sin(th) - (pax / CARD_L) * Math.cos(th) - CARD_DAMP * s.cardVel;
+        s.cardVel += acc * dt;
+        s.cardAngle += s.cardVel * dt;
+        const lim = (CARD_MAX * Math.PI) / 180;
+        if (s.cardAngle > lim) { s.cardAngle = lim; s.cardVel *= -0.3; }
+        if (s.cardAngle < -lim) { s.cardAngle = -lim; s.cardVel *= -0.3; }
+      } else {
+        s.cardAngle = 0;
+      }
+      const deg = (s.cardAngle * 180) / Math.PI;
       if (cardRef.current) {
         cardRef.current.style.transform =
-          `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${s.cardAngle.toFixed(2)}deg)`;
+          `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${deg.toFixed(2)}deg)`;
       }
       raf = requestAnimationFrame(tick);
     };
