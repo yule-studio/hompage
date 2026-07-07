@@ -30,11 +30,9 @@
   cursor: grab;
   touch-action: pan-y;
   margin-top: -3px;
+  will-change: transform; /* rotation is driven every frame by JS physics */
 }
-.nametag-hang.is-idle {
-  animation: nametag-sway 4.6s ease-in-out infinite alternate;
-}
-.nametag-hang.is-dragging {
+.nametag-hang:active {
   cursor: grabbing;
 }
 
@@ -213,16 +211,12 @@
 }
 
 /* ── keyframes ──────────────────────────────────────────────── */
-@keyframes nametag-sway {
-  from { transform: rotate(-2.6deg); }
-  to   { transform: rotate(2.6deg); }
-}
+/* the hang's sway/bounce is driven by JS physics (Nametag.tsx) */
 @keyframes nametag-pulse {
   0%, 100% { opacity: 0.4; }
   50%      { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nametag-hang.is-idle { animation: none; }
   .nametag-live i { animation: none; }
 }

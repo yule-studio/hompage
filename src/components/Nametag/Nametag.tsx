@@ -1,55 +1,87 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { profile } from "../../data/profile";
 import "./Nametag.css";
+
+// damped-pendulum constants — lower DAMPING = more springy bounce
+const STIFFNESS = 62; // restoring pull toward rest (snappiness)
+const DAMPING = 3.1; // energy loss per swing (bounciness)
+const DRAG_FACTOR = 0.16; // px of drag → deg of tilt
+const MAX_ANGLE = 44;
+const IDLE_AMP = 1.6; // gentle idle sway amplitude (deg)
+const IDLE_FREQ = 1.1; // idle sway speed
+
+const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 /**
  * Nametag — a hanging ID badge on a lanyard (our dark + green theme).
  *
- * Idle: gentle pendulum sway. Drag it and it swings with your pointer;
- * release and it springs back with a little overshoot. A lightweight
- * CSS/pointer take on portofoliov1's 3D physics lanyard — no 3D deps.
+ * A real damped-pendulum simulation (requestAnimationFrame): idle it sways
+ * gently, drag it and it follows your pointer, release and it swings back and
+ * forth with decaying bounce — like a real lanyard. A lightweight 2D take on
+ * portofoliov1's 3D physics lanyard, no 3D deps.
  */
 export function Nametag() {
-  const [angle, setAngle] = useState<number | null>(null); // null → idle sway
-  const [dragging, setDragging] = useState(false);
-  const startX = useRef(0);
-  const releaseTimer = useRef<number | null>(null);
+  const hangRef = useRef<HTMLDivElement>(null);
+  const phys = useRef({ angle: 0, vel: 0, dragging: false, startX: 0, grabAngle: 0, lastT: 0 });
+
+  useEffect(() => {
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const idleAmp = reduce ? 0 : IDLE_AMP;
+
+    let raf = 0;
+    let prev = performance.now();
+    const tick = (now: number) => {
+      const s = phys.current;
+      const dt = Math.min(0.033, (now - prev) / 1000);
+      prev = now;
+      if (!s.dragging) {
+        const rest = idleAmp * Math.sin((now / 1000) * IDLE_FREQ);
+        const acc = -STIFFNESS * (s.angle - rest) - DAMPING * s.vel;
+        s.vel += acc * dt;
+        s.angle += s.vel * dt;
+      }
+      if (hangRef.current) hangRef.current.style.transform = `rotate(${s.angle.toFixed(3)}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const onDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
-    if (releaseTimer.current !== null) window.clearTimeout(releaseTimer.current);
-    startX.current = e.clientX;
-    setDragging(true);
-    setAngle(0);
+    const s = phys.current;
+    s.dragging = true;
+    s.startX = e.clientX;
+    s.grabAngle = s.angle;
+    s.lastT = performance.now();
+    s.vel = 0;
   };
   const onMove = (e: React.PointerEvent) => {
-    if (!dragging) return;
-    const next = Math.max(-32, Math.min(32, (e.clientX - startX.current) * 0.12));
-    setAngle(next);
+    const s = phys.current;
+    if (!s.dragging) return;
+    const target = clamp(s.grabAngle + (e.clientX - s.startX) * DRAG_FACTOR, -MAX_ANGLE, MAX_ANGLE);
+    const now = performance.now();
+    const dt = Math.max(0.001, (now - s.lastT) / 1000);
+    s.vel = (target - s.angle) / dt; // carry throw velocity into the release
+    s.angle = target;
+    s.lastT = now;
   };
   const onUp = (e: React.PointerEvent) => {
-    if (!dragging) return;
+    const s = phys.current;
+    if (!s.dragging) return;
     e.currentTarget.releasePointerCapture(e.pointerId);
-    setDragging(false);
-    setAngle(0); // spring back (transition handled in CSS)
-    releaseTimer.current = window.setTimeout(() => setAngle(null), 1300); // resume idle
+    s.dragging = false;
+    s.vel = clamp(s.vel, -520, 520); // cap a wild flick
   };
-
-  const idle = angle === null;
 
   return (
     <div className="nametag" aria-hidden>
       <div className="nametag-pin" />
       <div
-        className={`nametag-hang${idle ? " is-idle" : ""}${dragging ? " is-dragging" : ""}`}
-        style={
-          idle
-            ? undefined
-            : {
-                transform: `rotate(${angle}deg)`,
-                transition: dragging ? "none" : "transform 1.3s cubic-bezier(0.34, 1.56, 0.5, 1)",
-              }
-        }
+        ref={hangRef}
+        className="nametag-hang"
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
