@@ -16,9 +16,11 @@ const GRAVITY = 1500; // px/s²
 const DAMP = 0.965; // velocity retention (bounciness)
 const ITER = 20; // constraint solver passes
 
-// the card has its own rotational spring so it visibly swings/wobbles
-const CARD_STIFF = 78;
-const CARD_DAMP = 4.4;
+// how far up the rope the card reads its tilt from (bigger = more visible
+// swing) and how quickly it follows (no overshoot → never spins/detaches)
+const CARD_BASE = 6; // segments up from the end
+const CARD_FOLLOW = 9; // follow speed (per second)
+const CARD_MAX = 62; // clamp so it never flips past this
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
@@ -45,7 +47,6 @@ export function Nametag() {
     offX: 0,
     offY: 0,
     cardAngle: 0,
-    cardVel: 0,
   });
 
   useEffect(() => {
@@ -102,18 +103,18 @@ export function Nametag() {
       ribbonEdgeRef.current?.setAttribute("d", d);
       textPathRef.current?.setAttribute("d", d);
 
-      // place the card at the cord's end; its rotation is a spring toward the
-      // lower-rope direction with its own momentum, so it swings/wobbles
+      // place the card at the cord's end; its tilt smoothly FOLLOWS the lower
+      // rope direction (stays glued to the strap, no independent spin) and is
+      // clamped so it never flips 360°.
       const last = pts[N - 1];
-      const base = pts[N - 4];
-      const targetAng = (Math.atan2(last.x - base.x, last.y - base.y) * 180) / Math.PI;
-      if (!reduce || s.dragging) {
-        const torque = -CARD_STIFF * (s.cardAngle - targetAng) - CARD_DAMP * s.cardVel;
-        s.cardVel += torque * dt;
-        s.cardAngle += s.cardVel * dt;
-      } else {
-        s.cardAngle = targetAng;
-      }
+      const base = pts[Math.max(0, N - 1 - CARD_BASE)];
+      const targetAng = clamp(
+        (Math.atan2(last.x - base.x, last.y - base.y) * 180) / Math.PI,
+        -CARD_MAX,
+        CARD_MAX,
+      );
+      const follow = reduce && !s.dragging ? 1 : Math.min(1, dt * CARD_FOLLOW);
+      s.cardAngle += (targetAng - s.cardAngle) * follow;
       if (cardRef.current) {
         cardRef.current.style.transform =
           `translate(-50%, 0) translate(${(last.x - ANCHOR_X).toFixed(1)}px, ${last.y.toFixed(1)}px) rotate(${s.cardAngle.toFixed(2)}deg)`;
