@@ -14,9 +14,16 @@
 /* ── topbar ───────────────────────────────────────────────── */
 .topbar {
   position: sticky; top: 0; z-index: 30;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  /* transparent by default so the lanyard reads as hanging from the top;
+     a subtle blur backdrop fades in once scrolled (keeps nav readable). */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background var(--t-base), border-color var(--t-base);
+}
+.topbar.is-scrolled {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  border-bottom-color: var(--border);
 }
 .topbar-inner {
   display: flex; align-items: center; gap: var(--space-3);
@@ -24,6 +31,11 @@
 }
 .brand {
   display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--bg-elevated) 65%, transparent);
+  backdrop-filter: blur(4px);
   font-family: var(--font-mono); font-weight: 600;
   font-size: var(--text-sm); letter-spacing: var(--tracking-mono);
   color: var(--text);
