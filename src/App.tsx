@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
-import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
+import Intro from "./components/Intro/Intro";
 import Home from "./pages/Home/Home";
 import Projects from "./pages/Projects/Projects";
 import ProjectDetail from "./pages/Projects/ProjectDetail";
@@ -13,47 +13,41 @@ import CalendarPage from "./pages/Calendar/Calendar";
 import Contact from "./pages/Contact/Contact";
 import NotFound from "./pages/NotFound";
 
-/**
- * MVP: intro 를 매 로드마다 보여준다(리뷰 / 개발 테스트 편의).
- * 첫 방문에만 보여주려면 `SHOW_INTRO_ONCE = true` 로 바꾸면 된다 —
- * 그때만 `yule.intro.seen` localStorage 키로 gating 한다.
- */
-const INTRO_SEEN_KEY = "yule.intro.seen";
-const SHOW_INTRO_ONCE = false;
-
-function shouldShowIntro(): boolean {
-  if (!SHOW_INTRO_ONCE) return true;
-  try {
-    return window.localStorage.getItem(INTRO_SEEN_KEY) !== "1";
-  } catch {
-    return true;
-  }
+/** true when this full page-load landed on the home route (intro plays there). */
+function isHomeStart(): boolean {
+  if (typeof window === "undefined") return true;
+  const base = import.meta.env.BASE_URL || "/";
+  const p = window.location.pathname;
+  return p === "/" || p === base || p === base.replace(/\/$/, "");
 }
 
-function markIntroSeen(): void {
-  if (!SHOW_INTRO_ONCE) return;
-  try {
-    window.localStorage.setItem(INTRO_SEEN_KEY, "1");
-  } catch {
-    /* localStorage unavailable — ignore, intro simply shows again next load */
-  }
+/** Signals HomeHero's cascade (gated by :root[data-intro="done"]) to play. */
+function markIntroDone(): void {
+  document.documentElement.dataset.intro = "done";
 }
 
 /**
- * Routes — Blog lives externally (Tistory), so there is no /blog route.
- * The Home page exposes the external Blog link as a CTA button instead.
+ * App — the intro overlay plays once per full load of the home route, then
+ * wipes up to reveal the hero. Blog lives externally (Tistory), so there is
+ * no /blog route; Home exposes the external Blog link as a CTA instead.
  */
 export default function App() {
-  const [introDone, setIntroDone] = useState(() => !shouldShowIntro());
+  const [homeStart] = useState(isHomeStart);
+  const [introDone, setIntroDone] = useState(!homeStart);
+
+  useEffect(() => {
+    // landing off-home: no intro, so unblock the hero cascade immediately.
+    if (!homeStart) markIntroDone();
+  }, [homeStart]);
 
   const handleIntroComplete = () => {
-    markIntroSeen();
+    markIntroDone();
     setIntroDone(true);
   };
 
   return (
     <>
-      {!introDone && <LoadingScreen onComplete={handleIntroComplete} />}
+      {!introDone && <Intro onComplete={handleIntroComplete} />}
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
