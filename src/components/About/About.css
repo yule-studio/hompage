@@ -458,6 +458,71 @@
   color: var(--text-muted);
 }
 
+/* ── résumé request form ────────────────────────────────────── */
+
+/* A form is a column of short rows, not an article — it reads badly at the
+   article's width. */
+.am--form {
+  width: min(100%, 520px);
+  gap: var(--space-6);
+}
+
+.rr-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rr-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rr-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.rr-input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-sm);
+  transition: border-color var(--t-fast);
+}
+.rr-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+.rr-input:disabled {
+  opacity: 0.55;
+}
+
+.rr-error {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--err);
+}
+
+.rr-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.rr-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 @keyframes am-fade {
   from { opacity: 0; }
   to   { opacity: 1; }

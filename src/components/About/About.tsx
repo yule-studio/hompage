@@ -3,6 +3,7 @@ import { activities, type Activity } from "../../data/activities";
 import { profile } from "../../data/profile";
 import { setShowcaseTab } from "../Showcase/showcaseTab";
 import ActivityModal from "./ActivityModal";
+import ResumeRequestModal from "./ResumeRequestModal";
 import "./About.css";
 
 /**
@@ -14,15 +15,19 @@ import "./About.css";
  * away in the showcase, and the record (which covers both jobs) isn't listed
  * anywhere else.
  *
- * The two PDFs are served straight from `public/docs/` under fixed names, so
- * refreshing either one is a file swap — no code change.
+ * The portfolio PDF is served straight from `public/docs/`, so refreshing it is
+ * a file swap — no code change.
+ *
+ * The résumé is not, and must not be: it carries a phone number. The button
+ * opens a form instead, and resume-api builds a masked, serial-stamped copy per
+ * request — see src/lib/resume.ts.
  */
 
-const RESUME_PDF = `${import.meta.env.BASE_URL}docs/resume.pdf`;
 const PORTFOLIO_PDF = `${import.meta.env.BASE_URL}docs/portfolio.pdf`;
 
 export default function About() {
   const [open, setOpen] = useState<Activity | null>(null);
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   const viewProjects = () => {
     setShowcaseTab("projects");
@@ -43,9 +48,9 @@ export default function About() {
           </div>
 
           <div className="about-actions">
-            <a className="about-btn" href={RESUME_PDF} download="오유찬_이력서.pdf">
+            <button type="button" className="about-btn" onClick={() => setResumeOpen(true)}>
               <FileIcon /> 이력서 PDF
-            </a>
+            </button>
             <a className="about-btn" href={PORTFOLIO_PDF} download="오유찬_포트폴리오.pdf">
               <FileIcon /> 포트폴리오 PDF
             </a>
@@ -100,6 +105,7 @@ export default function About() {
       </section>
 
       {open && <ActivityModal activity={open} onClose={() => setOpen(null)} />}
+      {resumeOpen && <ResumeRequestModal onClose={() => setResumeOpen(false)} />}
     </div>
   );
 }

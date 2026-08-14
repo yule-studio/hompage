@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# the résumé as authored — never served, never committed (see hompage-comments/resume-api)
+private/
