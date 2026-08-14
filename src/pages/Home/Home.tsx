@@ -1,18 +1,14 @@
 import { useEffect } from "react";
 import HomeHero from "../../components/Hero/HomeHero";
 import { useReveal } from "../../hooks/useReveal";
-import Projects from "../Projects/Projects";
-import Skills from "../Skills/Skills";
-import Awards from "../Awards/Awards";
-import Certs from "../Certs/Certs";
-import Homelab from "../Homelab/Homelab";
-import CalendarPage from "../Calendar/Calendar";
+import PortfolioShowcase from "../../components/Showcase/PortfolioShowcase";
 import Contact from "../Contact/Contact";
 
 /**
  * Home — a single-page scroll narrative. The hero leads, a sticky scroll-nav
- * jumps to each section, and every area (Projects → Contact) is rendered
- * inline as a `<section>` that reveals as it scrolls into view.
+ * jumps to each section, and every area reveals as it scrolls into view.
+ * Portfolio + Contact fade in as a block while their inner pieces rise in a
+ * short stagger (see `.reveal--fade` in layout.css).
  */
 export default function Home() {
   useReveal();
@@ -31,25 +27,12 @@ export default function Home() {
     <div className="scroll-home">
       <HomeHero />
 
-      <section id="projects" className="scroll-section reveal" aria-label="projects">
-        <Projects />
+      {/* Homelab is no longer its own section — it's a tab inside the showcase,
+          which also hosts the #homelab anchor the topbar links to. */}
+      <section id="portfolio" className="scroll-section reveal reveal--fade" aria-label="portfolio">
+        <PortfolioShowcase />
       </section>
-      <section id="skills" className="scroll-section reveal" aria-label="skills">
-        <Skills />
-      </section>
-      <section id="awards" className="scroll-section reveal" aria-label="awards">
-        <Awards />
-      </section>
-      <section id="certs" className="scroll-section reveal" aria-label="certs">
-        <Certs />
-      </section>
-      <section id="homelab" className="scroll-section reveal" aria-label="homelab">
-        <Homelab />
-      </section>
-      <section id="calendar" className="scroll-section reveal" aria-label="calendar">
-        <CalendarPage />
-      </section>
-      <section id="contact" className="scroll-section reveal" aria-label="contact">
+      <section id="contact" className="scroll-section reveal reveal--fade" aria-label="contact">
         <Contact />
       </section>
     </div>

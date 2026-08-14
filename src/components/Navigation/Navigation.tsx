@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  getShowcaseTab,
+  setShowcaseTab,
+  subscribeShowcaseTab,
+} from "../Showcase/showcaseTab";
 
 /**
  * Primary navigation — a single-page scroll nav.
@@ -12,50 +17,69 @@ import { useLocation, useNavigate } from "react-router-dom";
  */
 const ITEMS = [
   { id: "home", label: "Home" },
-  { id: "projects", label: "Projects" },
-  { id: "skills", label: "Skills" },
-  { id: "awards", label: "Awards" },
-  { id: "certs", label: "Certs" },
+  { id: "portfolio", label: "Portfolio" },
   { id: "homelab", label: "Homelab" },
-  { id: "calendar", label: "Calendar" },
   { id: "contact", label: "Contact" },
 ];
+
+/**
+ * Sections the scroll-spy can actually track. Homelab is a TAB inside
+ * #portfolio now, not a section of its own — spying on its anchor would make it
+ * win over Portfolio for the whole showcase, so the tab decides that one.
+ */
+const SPY_IDS = ["home", "portfolio", "contact"];
 
 export default function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const onHome = location.pathname === "/";
   const [active, setActive] = useState("home");
+  const [tab, setTab] = useState(getShowcaseTab);
 
-  // Track the section in view (home only).
+  useEffect(() => subscribeShowcaseTab(setTab), []);
+
+  // inside the showcase, the selected tab picks which item lights up
+  const current = active === "portfolio" && tab === "homelab" ? "homelab" : active;
+
+  // Track the section in view (home only). Scroll-spy: the active item is the
+  // last section whose top has scrolled above a line just under the topbar — so
+  // at the top the hero (#home) is active, not whatever peeks below it.
   useEffect(() => {
     if (!onHome) return;
-    const sections = ITEMS.map((it) => document.getElementById(it.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    const onScroll = () => {
+      const line = 140;
+      let seen = SPY_IDS[0];
+      for (const id of SPY_IDS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) seen = id;
+      }
+      setActive(seen);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [onHome]);
 
   const handleClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
-    setActive(id);
-    const hash = id === "home" ? "/" : `/#${id}`;
+
+    // Homelab and Portfolio share the #portfolio section — the item picks the tab
+    if (id === "homelab" || id === "portfolio") {
+      setShowcaseTab(id === "homelab" ? "homelab" : "projects");
+    }
+    setActive(id === "homelab" ? "portfolio" : id);
+
     if (onHome) {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      window.history.replaceState(null, "", hash);
+      // smooth-scroll but DON'T write the hash to the URL — otherwise a reload
+      // would deep-link back to that section instead of starting at Home.
+      const target = id === "homelab" ? "portfolio" : id;
+      document.getElementById(target)?.scrollIntoView({ behavior: "smooth" });
     } else {
-      navigate(hash);
+      navigate(id === "home" ? "/" : `/#${id}`);
     }
   };
 
@@ -67,7 +91,7 @@ export default function Navigation() {
             <a
               href={`/#${it.id}`}
               className="topnav-item"
-              aria-current={onHome && active === it.id ? "page" : undefined}
+              aria-current={onHome && current === it.id ? "page" : undefined}
               onClick={(e) => handleClick(e, it.id)}
             >
               <span className="topnav-dot" aria-hidden />

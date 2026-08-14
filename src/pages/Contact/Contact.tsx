@@ -1,68 +1,101 @@
-import Card from "../../components/Card/Card";
-import TerminalCard from "../../components/TerminalCard/TerminalCard";
-import { profile } from "../../data/profile";
+import { useState } from "react";
+import "./Contact.css";
+
+/**
+ * Contact — a single message form. Static-site friendly: Send composes a
+ * mailto: to oyuchan50@gmail.com so it opens the visitor's mail client
+ * addressed to me.
+ */
+
+const TO = "oyuchan50@gmail.com";
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`[Contact] ${name || "익명"}`);
+    const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` <${email}>` : ""}`);
+    window.location.href = `mailto:${TO}?subject=${subject}&body=${body}`;
+  };
+
   return (
-    <>
-      <header className="page-header">
-        <div>
-          <div className="page-eyebrow">/ contact</div>
-          <h1 className="page-title">Contact</h1>
-          <p className="page-subtitle">짧은 문의 / 협업 / 발표 — 어디로든 환영.</p>
-        </div>
+    <div className="contact">
+      <header className="contact-head">
+        <span className="contact-eyebrow mono">// CONTACT</span>
+        <h2 className="contact-title">Get in touch</h2>
+        <p className="contact-sub">협업 · 아이디어 · 그냥 인사 — 편하게 메시지 남겨주세요.</p>
       </header>
 
-      <div className="grid">
-        <Card span="sm" ariaLabel="reach">
-          <div className="card-head">
-            <span className="label">/ reach</span>
-          </div>
-          <div className="card-body">
-            <ul className="card-list">
-              <li>
-                <span>email</span>
-                <a className="mono" href="mailto:hi@yule.studio">hi@yule.studio</a>
-              </li>
-              <li>
-                <span>github</span>
-                <a className="mono" href="https://github.com/yule-studio" target="_blank" rel="noreferrer">
-                  @yule-studio
-                </a>
-              </li>
-              <li>
-                <span>schedule</span>
-                <span className="mono faint">async friendly · KR-time</span>
-              </li>
-            </ul>
-          </div>
-        </Card>
+      <form className="contact-form" onSubmit={onSubmit}>
+        <label className="contact-field">
+          <UserIcon />
+          <input
+            required
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+        <label className="contact-field">
+          <MailIcon />
+          <input
+            required
+            type="email"
+            placeholder="Your Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <label className="contact-field contact-field--area">
+          <MsgIcon />
+          <textarea
+            required
+            rows={5}
+            placeholder="Your Message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </label>
+        <button type="submit" className="contact-send">
+          <SendIcon /> Send Message
+        </button>
+      </form>
+    </div>
+  );
+}
 
-        <Card span="sm" ariaLabel="open to">
-          <div className="card-head">
-            <span className="label">/ open to</span>
-          </div>
-          <div className="card-body">
-            <ul className="card-list">
-              <li><span>backend / platform consulting</span><span className="mono faint">paid</span></li>
-              <li><span>llm agent 설계 리뷰</span><span className="mono faint">paid</span></li>
-              <li><span>오픈소스 co-maintain</span><span className="mono faint">case-by-case</span></li>
-              <li><span>talks / 발표</span><span className="mono faint">free</span></li>
-            </ul>
-          </div>
-        </Card>
-
-        <TerminalCard
-          span="sm"
-          title="~/contact"
-          lines={[
-            { kind: "comment", text: "shortest path" },
-            { kind: "cmd",     text: "echo \"hi yule, 협업 제안입니다\" | mail -s \"hello\" hi@yule.studio" },
-            { kind: "out",     text: "queued ✓" },
-            { kind: "comment", text: `region=${profile.region}` },
-          ]}
-        />
-      </div>
-    </>
+/* ── icons ──────────────────────────────────────────────────── */
+function UserIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+    </svg>
+  );
+}
+function MailIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" />
+    </svg>
+  );
+}
+function MsgIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+function SendIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <path d="M22 2 11 13" />
+      <path d="M22 2 15 22l-4-9-9-4 20-7z" />
+    </svg>
   );
 }

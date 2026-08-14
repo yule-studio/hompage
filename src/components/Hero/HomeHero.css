@@ -1,25 +1,51 @@
 /* ─────────────────────────────────────────────────────────────
- * HomeHero — cascading intro text + swinging nametag.
+ * HomeHero — portofoliov1's hero form: full-viewport section, intro
+ * cascade pinned left, 3D lanyard badge hanging across the whole
+ * area, scroll cue centred at the bottom.
  * Reveal is gated by :root[data-intro="done"] so it plays as the
  * intro overlay wipes away. Signature easing cubic-bezier(.22,1,.36,1).
  * ───────────────────────────────────────────────────────────── */
 
 .home-hero {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-7);
+  display: flex;
   align-items: center;
-  /* extra top space is a lane for the walking cat, above the name */
-  padding-block: 82px var(--space-8);
-  border-bottom: 1px dashed var(--border);
+  justify-content: flex-start;
+  min-height: 100vh;
+  overflow: hidden;
+  /* same edge line as the topbar and the poster grid */
+  padding-inline: var(--edge);
+
+  /* Full-bleed: break out of the 720px reading column (.page-shell) AND the
+     container, so the hero fills the viewport exactly like portofoliov1's.
+     `50%` resolves against .page-shell, which is centred in the viewport. */
+  /* scrollbar-corrected — see --sbw in Layout.tsx */
+  width: calc(100vw - var(--sbw, 0px));
+  margin-inline: calc(50% - 50vw + var(--sbw, 0px) / 2);
+  /* pull up under the sticky topbar + .page's top padding, so the hero starts
+     at y=0 and the topbar floats over it (portofoliov1's navbar is fixed) */
+  margin-top: calc(-1 * (var(--topbar-h) + var(--space-7)));
   margin-bottom: var(--space-6);
 }
+
+
+/* the lanyard canvas covers the hero and sits BEHIND the text column, so the
+   badge can swing anywhere while the CTA links stay clickable */
+.home-hero-band {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .home-hero-text {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
+  width: 100%;
+  max-width: 600px;
   min-width: 0;
 }
 
@@ -30,11 +56,17 @@
   text-transform: uppercase;
 }
 .hh-title {
-  font-size: clamp(36px, 7vw, 56px);
+  font-size: clamp(34px, 6vw, 58px);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.05;
   color: var(--text);
+  margin: 0;
+}
+/* second heading line reads back a step, like portofoliov1's Frontend/Developer */
+.hh-title--muted {
+  color: var(--text-muted);
+  margin-top: -8px;
 }
 .hh-type {
   min-height: 1.4em;
@@ -52,15 +84,22 @@
 .hh-desc {
   max-width: 460px;
   font-size: var(--text-sm);
-  line-height: 1.75;
+  line-height: 1.9;
   color: var(--text-muted);
 }
 .hh-ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-1);
   margin-top: var(--space-2);
 }
+/* compact so all links fit one row without wrapping/clipping */
+.hh-ctas .hero-cta {
+  padding: 7px 12px;
+  gap: 6px;
+  font-size: var(--text-xs);
+}
+.hh-ctas .hero-cta svg { width: 13px; height: 13px; }
 .hh-chips {
   display: flex;
   flex-wrap: wrap;
@@ -75,33 +114,44 @@
   padding: 5px 12px;
   background: var(--bg-card);
 }
-.hh-scroll {
-  margin-top: var(--space-3);
-  font-size: var(--text-xs);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.hh-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
   color: var(--text-faint);
 }
 
-/* the walking cat crosses the empty band at the top of the hero, above the
-   name (its own layer, so it never affects the layout) */
-.home-hero > .walk-cat {
+/* ── scroll cue (bottom centre) ─────────────────────────────── */
+.hh-scrollcue {
   position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  z-index: 1;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+.hh-scrollcue-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  animation: hh-bob 1.4s ease-in-out infinite;
+}
+.hh-scrollcue-inner > [aria-hidden] {
+  font-size: 19px;
+  letter-spacing: 0;
+  color: var(--text);
+  line-height: 1;
 }
 
-.home-hero-badge {
-  display: flex;
-  justify-content: center;
-  /* pull the lanyard up behind the transparent topbar so the strap reads as
-     hanging from the very top of the page (topbar is z-above, so the nav
-     stays legible over the thin strap) */
-  align-self: start;
-  /* keep the lanyard anchored at the very top despite the hero's top lane */
-  margin-top: calc(-1 * (var(--topbar-h) + 122px));
+/* the walking cat sits just above the "AVAILABLE" date mark, walking in place */
+.home-hero-text > .walk-cat {
+  margin-bottom: 2px;
 }
 
 /* ── reveal (gated by intro completion) ─────────────────────── */
@@ -110,9 +160,9 @@
   animation: hh-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--d, 0ms);
 }
-/* the badge drops in from above like it's being hung */
-:root[data-intro="done"] .home-hero-badge.hh-reveal {
-  animation: hh-drop 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
+/* the scroll cue keeps bobbing after it rises, so it only fades in */
+:root[data-intro="done"] .hh-scrollcue.hh-reveal {
+  animation: hh-fade 900ms ease both;
   animation-delay: var(--d, 0ms);
 }
 
@@ -120,9 +170,13 @@
   from { opacity: 0; transform: translateY(28px); filter: blur(8px); }
   to   { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
-@keyframes hh-drop {
-  from { opacity: 0; transform: translateY(-34px) rotate(-6deg); }
-  to   { opacity: 1; transform: translateY(0) rotate(0); }
+@keyframes hh-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes hh-bob {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%      { transform: translateY(6px); opacity: 0.65; }
 }
 @keyframes type-blink {
   50% { opacity: 0; }
@@ -131,23 +185,21 @@
 /* ── responsive ─────────────────────────────────────────────── */
 @media (max-width: 680px) {
   .home-hero {
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-  }
-  .home-hero-badge {
-    justify-self: center;
-    /* stacked below the text on mobile — don't pull it up under the topbar */
-    align-self: auto;
-    margin-top: var(--space-4);
+    min-height: auto;
+    padding-block: var(--space-6) var(--space-8);
   }
   .hh-desc { max-width: 100%; }
+  /* the lanyard is desktop-only (see Band.tsx) — reclaim the space */
+  .home-hero-band { display: none; }
+  .hh-scrollcue { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root[data-intro="done"] .hh-reveal,
-  :root[data-intro="done"] .home-hero-badge.hh-reveal {
+  :root[data-intro="done"] .hh-scrollcue.hh-reveal {
     animation: none;
     opacity: 1;
   }
+  .hh-scrollcue-inner { animation: none; }
   .type-cursor { animation: none; }
 }

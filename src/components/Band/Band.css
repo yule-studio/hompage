@@ -1,0 +1,17 @@
+/* ─────────────────────────────────────────────────────────────
+ * Band — the 3D lanyard canvas. It overlays the whole hero so the
+ * badge can swing freely across it; only the card itself is
+ * interactive (the canvas is transparent everywhere else).
+ * ───────────────────────────────────────────────────────────── */
+
+.band-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* the canvas element re-enables pointer events on desktop, so empty space
+     around the badge still scrolls/selects normally */
+  pointer-events: none;
+  z-index: 1;
+}

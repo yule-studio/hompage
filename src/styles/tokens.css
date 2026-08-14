@@ -92,6 +92,10 @@
   --container-max: 1180px;
   --container-pad: clamp(16px, 4vw, 32px);
 
+  /* The page's edge line. Every full-bleed block — topbar, hero, poster grid —
+     starts and ends here, so they all share one vertical alignment. */
+  --edge: clamp(20px, 4vw, 72px);
+
   --topbar-h: 56px;
   --nav-h: 52px;
 

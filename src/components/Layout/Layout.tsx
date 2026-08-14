@@ -1,8 +1,27 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import AnimatedBackground from "../Background/AnimatedBackground";
 import Topbar from "../Topbar/Topbar";
 
 type Props = { children: ReactNode };
+
+/**
+ * Publishes the scrollbar's width as `--sbw`. Full-bleed blocks size themselves
+ * off `100vw`, which INCLUDES the scrollbar, while their centred parents size
+ * off the body, which excludes it — without this correction they sit half a
+ * scrollbar off-centre and overhang the edge.
+ */
+function useScrollbarWidth() {
+  useEffect(() => {
+    const measure = () => {
+      const w = window.innerWidth - document.documentElement.clientWidth;
+      document.documentElement.style.setProperty("--sbw", `${Math.max(0, w)}px`);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+}
 
 /**
  * Layout — Topbar at top, page content fills the main column.
@@ -14,11 +33,13 @@ type Props = { children: ReactNode };
  */
 export default function Layout({ children }: Props) {
   const location = useLocation();
+  useScrollbarWidth();
   return (
     <>
       <a href="#main" className="skip-link">
         본문으로 건너뛰기
       </a>
+      <AnimatedBackground />
       <Topbar />
       <main id="main" className="page">
         <div className="container">

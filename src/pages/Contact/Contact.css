@@ -1,0 +1,111 @@
+/* ─────────────────────────────────────────────────────────────
+ * Contact — a single centered message form (dark + green theme).
+ * ───────────────────────────────────────────────────────────── */
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+.contact-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.contact-eyebrow {
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.contact-title {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.contact-sub {
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ── form ───────────────────────────────────────────────────── */
+.contact-form {
+  width: min(100%, 560px);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(180deg, rgba(20, 26, 23, 0.66), rgba(12, 16, 14, 0.66));
+}
+.contact-field {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+.contact-field > svg {
+  position: absolute;
+  left: 14px;
+  top: 15px;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  outline: none;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.contact-field textarea {
+  resize: vertical;
+  min-height: 130px;
+  line-height: 1.6;
+}
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: var(--text-faint);
+}
+.contact-field input:focus,
+.contact-field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.contact-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+.contact-send:hover {
+  background: rgba(74, 222, 128, 0.16);
+  border-color: var(--accent);
+}
+.contact-send:active {
+  transform: scale(0.98);
+}

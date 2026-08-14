@@ -1,0 +1,369 @@
+/* ─────────────────────────────────────────────────────────────
+ * Projects — "Lab Archive / Case File" view. Carries the hero's
+ * engineering-lab / ID-card language: dark grid panels, green accent,
+ * LIVE/ACTIVE dots, serial + barcode marks. Minimal motion.
+ * ───────────────────────────────────────────────────────────── */
+.lab-archive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── header ─────────────────────────────────────────────────── */
+.archive-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.archive-eyebrow {
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.archive-title {
+  margin-top: 8px;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.archive-sub {
+  margin-top: 8px;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+.archive-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.archive-status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.14em;
+}
+.archive-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-soft);
+  animation: archive-pulse 2s ease-in-out infinite;
+}
+.archive-count {
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+}
+
+/* ── case-file panel (base) ─────────────────────────────────── */
+.case-file {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  /* dark translucent panel + faint dot grid → continuous with the hero bg */
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(180deg, rgba(20, 26, 23, 0.66), rgba(12, 16, 14, 0.66));
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+}
+.case-file:hover {
+  border-color: rgba(74, 222, 128, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.12),
+    0 0 26px -8px rgba(74, 222, 128, 0.35),
+    0 10px 30px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* top strip: CASE id · flag · status */
+.case-file-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.case-id {
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.25);
+}
+.case-flag {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+.case-status {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+.case-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-faint);
+}
+.case-status--live,
+.case-status--active {
+  color: var(--accent);
+}
+.case-status--live i,
+.case-status--active i {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-soft);
+}
+.case-status--shipped {
+  color: var(--info);
+}
+.case-status--shipped i {
+  background: var(--info);
+}
+.case-status--paused {
+  color: var(--warn);
+}
+.case-status--paused i {
+  background: var(--warn);
+}
+.case-status--archived {
+  color: var(--text-faint);
+}
+.case-status--archived i {
+  background: var(--text-faint);
+}
+
+/* name / summary */
+.case-name {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.case-name--sm {
+  font-size: var(--text-md);
+}
+.case-name a {
+  color: var(--text);
+  transition: color var(--t-fast);
+}
+.case-name a:hover {
+  color: var(--accent);
+}
+.case-fullname {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+.case-summary {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.case-summary--clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* meta grid (featured) */
+.case-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.case-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.case-meta dt {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--text-faint);
+}
+.case-meta dd {
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text);
+}
+
+/* stack chips (cards) */
+.case-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.case-chip {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.25);
+}
+.case-scope {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+/* footer */
+.case-file-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+.case-open {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  transition: color var(--t-fast);
+}
+.case-open--sm {
+  font-size: 11px;
+}
+.case-open:hover {
+  color: var(--accent-strong);
+}
+.case-year {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+.case-serial {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+/* serial / barcode decoration */
+.case-barcode {
+  display: inline-block;
+  width: 58px;
+  height: 14px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--text-muted) 0 1px,
+    transparent 1px 2px,
+    var(--text-faint) 2px 3px,
+    transparent 3px 5px
+  );
+  opacity: 0.5;
+  border-radius: 1px;
+}
+.case-barcode--strip {
+  width: 100%;
+  height: 9px;
+  margin-top: 2px;
+  opacity: 0.16;
+}
+
+/* ── featured file ──────────────────────────────────────────── */
+.case-file--featured {
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-color: rgba(74, 222, 128, 0.18);
+}
+.case-file--featured::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), transparent 70%);
+}
+.case-featured-body {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+.case-featured-lead .case-name {
+  font-size: var(--text-xl);
+}
+/* 2×2 meta in the featured's right column → each field gets room to breathe */
+.case-file--featured .case-meta {
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3) var(--space-4);
+  border-top: 0;
+  padding-top: 4px;
+}
+
+/* ── grid of remaining files ────────────────────────────────── */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+/* ── responsive: stack the featured meta + cards on mobile ──── */
+@media (max-width: 620px) {
+  .archive-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .archive-status {
+    align-items: flex-start;
+  }
+  .case-featured-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .case-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes archive-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive-dot {
+    animation: none;
+  }
+}

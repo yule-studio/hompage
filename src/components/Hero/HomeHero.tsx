@@ -1,23 +1,43 @@
+import { Suspense, lazy, useEffect, useState } from "react";
 import { profile } from "../../data/profile";
-import { skills } from "../../data/skills";
-import Nametag from "../Nametag/Nametag";
 import WalkingCat from "../WalkingCat/WalkingCat";
 import TypeCycle from "./TypeCycle";
 import "./HomeHero.css";
 
-const chips = skills[0].items
-  .slice(0, 4)
-  .map((s) => s.name.split(" /")[0].split(" (")[0].trim());
+// three.js + rapier are heavy; keep them out of the initial bundle
+const Band = lazy(() => import("../Band/Band"));
+
+// main-language order (most-used first)
+const chips = ["Java", "Python", "Go", "JavaScript", "TypeScript"];
 
 /**
- * HomeHero — portfolio-style hero: cascading intro text on the left, a
- * swinging ID nametag on the right. The cascade is gated by
- * `:root[data-intro="done"]` so it plays as the intro overlay wipes away.
+ * HomeHero — portofoliov1's hero form: a full-viewport section with the intro
+ * cascade pinned left, the 3D lanyard badge hanging over the whole area, and a
+ * scroll cue centred at the bottom. The badge only mounts once the intro
+ * overlay has wiped away (`:root[data-intro="done"]`), mirroring portofoliov1's
+ * `showApp` gate.
  */
 export default function HomeHero() {
+  const introDone = useIntroDone();
+  // the lanyard is desktop-only, so mobile never pays for the three.js chunk
+  const isDesktop = useIsDesktop();
+  const showBand = introDone && isDesktop;
+
   return (
     <section id="home" className="home-hero" aria-label="intro">
+      {/* BAND LAYER — the lanyard swings across the whole hero */}
+      <div className="home-hero-band">
+        {showBand && (
+          <Suspense fallback={null}>
+            <Band />
+          </Suspense>
+        )}
+      </div>
+
+      {/* TEXT */}
       <div className="home-hero-text">
+        <WalkingCat />
+
         <span className="hh-eyebrow hh-reveal accent" style={d(0)}>
           ✦ AVAILABLE · Q3 2026
         </span>
@@ -25,30 +45,26 @@ export default function HomeHero() {
         <h1 className="hh-title hh-reveal" style={d(120)}>
           {profile.name}
         </h1>
+        <h1 className="hh-title hh-title--muted hh-reveal" style={d(240)}>
+          Backend Developer
+        </h1>
 
-        <div className="hh-type hh-reveal" style={d(240)}>
+        <div className="hh-type hh-reveal" style={d(360)}>
           <TypeCycle
             words={["Backend Developer", "DevOps Engineer", "Homelab Tinkerer", "Happy coding!"]}
           />
         </div>
 
-        <p className="hh-desc hh-reveal" style={d(360)}>
-          {(() => {
-            const mark = "습니다. ";
-            const i = profile.bio.indexOf(mark);
-            if (i === -1) return profile.bio;
-            const cut = i + "습니다.".length;
-            return (
-              <>
-                {profile.bio.slice(0, cut)}
-                <br />
-                {profile.bio.slice(cut).trimStart()}
-              </>
-            );
-          })()}
+        <p className="hh-desc hh-reveal" style={d(480)}>
+          {bioLines().map((line, idx, all) => (
+            <span key={idx}>
+              {line}
+              {idx < all.length - 1 ? <br /> : null}
+            </span>
+          ))}
         </p>
 
-        <div className="hh-ctas hh-reveal" style={d(480)} aria-label="contact links">
+        <div className="hh-ctas hh-reveal" style={d(600)} aria-label="contact links">
           <a className="hero-cta" href={profile.links.email}>
             <EmailIcon /> Email
           </a>
@@ -66,7 +82,7 @@ export default function HomeHero() {
           </a>
         </div>
 
-        <div className="hh-chips hh-reveal" style={d(600)}>
+        <div className="hh-chips hh-reveal" style={d(720)}>
           {chips.map((chip) => (
             <span className="hh-chip mono" key={chip}>
               {chip}
@@ -74,18 +90,82 @@ export default function HomeHero() {
           ))}
         </div>
 
-        <span className="hh-scroll hh-reveal mono" style={d(760)}>
-          ↓ scroll to explore
+        <div className="hh-foot hh-reveal" style={d(840)}>
+          <span className="mono">↓ explore my work below</span>
+          <span className="mono">↗ self-hosted homelab · seoul</span>
+        </div>
+      </div>
+
+      {/* SCROLL INDICATOR */}
+      <div className="hh-scrollcue hh-reveal" style={d(1000)}>
+        <span className="hh-scrollcue-inner">
+          <span className="mono">Scroll</span>
+          <span aria-hidden>↓</span>
         </span>
       </div>
-
-      <div className="home-hero-badge hh-reveal" style={d(320)}>
-        <Nametag />
-      </div>
-
-      <WalkingCat />
     </section>
   );
+}
+
+/**
+ * True once the intro overlay has finished (it stamps
+ * `document.documentElement.dataset.intro = "done"`). Off-home loads set it
+ * before mount, so this starts true there.
+ */
+function useIntroDone(): boolean {
+  const [done, setDone] = useState(
+    () => document.documentElement.dataset.intro === "done",
+  );
+
+  useEffect(() => {
+    if (done) return;
+    const observer = new MutationObserver(() => {
+      if (document.documentElement.dataset.intro === "done") {
+        setDone(true);
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-intro"],
+    });
+    return () => observer.disconnect();
+  }, [done]);
+
+  return done;
+}
+
+/** Matches Band's own 768px cutoff — below it the lanyard is not rendered. */
+function useIsDesktop(): boolean {
+  const [desktop, setDesktop] = useState(() => window.innerWidth >= 768);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return desktop;
+}
+
+/** Break the bio after the first sentence, and again before "여러". */
+function bioLines(): string[] {
+  let rest = profile.bio;
+  const lines: string[] = [];
+  const i1 = rest.indexOf("습니다. ");
+  if (i1 !== -1) {
+    lines.push(rest.slice(0, i1 + "습니다.".length));
+    rest = rest.slice(i1 + "습니다. ".length);
+  }
+  const i2 = rest.indexOf("여러");
+  if (i2 !== -1) {
+    lines.push(rest.slice(0, i2).trimEnd());
+    lines.push(rest.slice(i2));
+  } else {
+    lines.push(rest);
+  }
+  return lines;
 }
 
 function d(ms: number) {

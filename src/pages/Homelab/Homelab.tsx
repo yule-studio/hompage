@@ -9,12 +9,10 @@ export default function Homelab() {
 
   return (
     <>
-      <header className="page-header">
-        <div>
-          <div className="page-eyebrow">/ homelab</div>
-          <h1 className="page-title">Homelab</h1>
-          <p className="page-subtitle">self-host 인프라 상태 — Proxmox / k3s / 기타.</p>
-        </div>
+      <header className="showcase-head">
+        <span className="showcase-eyebrow mono">// HOMELAB</span>
+        <h2 className="showcase-title">Homelab</h2>
+        <p className="showcase-sub">self-host 인프라 상태 — Proxmox / k3s / 기타.</p>
         <StatusBadge status={ok === total ? "ok" : "warn"} label={`${ok}/${total} healthy`} />
       </header>
 

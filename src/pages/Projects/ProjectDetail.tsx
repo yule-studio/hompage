@@ -27,7 +27,7 @@ export default function ProjectDetail() {
             </p>
           </div>
         </header>
-        <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
+        <Link to="/#portfolio" className="back-link">포트폴리오로 돌아가기</Link>
       </>
     );
   }
@@ -42,7 +42,7 @@ export default function ProjectDetail() {
         </div>
         <StatusBadge status={statusTone[project.status]} label={project.status} />
       </header>
-      <Link to="/#projects" className="back-link">프로젝트 목록으로</Link>
+      <Link to="/#portfolio" className="back-link">포트폴리오로 돌아가기</Link>
 
       <article className="project-detail-card">
         <div className="project-detail-head">

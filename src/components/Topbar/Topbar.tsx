@@ -21,7 +21,7 @@ export default function Topbar() {
 
   return (
     <header className={`topbar${scrolled ? " is-scrolled" : ""}`}>
-      <div className="container topbar-inner">
+      <div className="topbar-inner">
         <Link to="/" className="brand" aria-label={`${profile.handle} — home`}>
           <span className="brand-dot" aria-hidden />
           <span className="brand-handle">{profile.handle}</span>

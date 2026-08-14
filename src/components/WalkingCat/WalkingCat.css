@@ -1,104 +1,55 @@
 /* ─────────────────────────────────────────────────────────────
- * WalkingCat — 7x9 (63 frame) line-art walk cycle that steps its frames
- * while translating across the strip. White-on-transparent sprite.
+ * WalkingCat — 5x5 (25 frame) line-art walk cycle, no ground line.
+ * Steps its frames in place (legs cycle, body stays put).
+ * White-on-transparent sprite. Cell aspect ≈ 1.508.
  * ───────────────────────────────────────────────────────────── */
 .walk-cat {
-  position: relative;
-  width: 100%;
-  height: 62px;
-  overflow: hidden;
+  width: 64px;
+  height: 42px; /* sheet cell aspect ≈ 1.508 */
   pointer-events: none;
 }
 .walk-cat-sprite {
-  position: absolute;
-  bottom: 0;
-  left: -90px;
-  width: 76px;
-  height: 60px; /* sheet cell aspect ≈ 1.27 */
+  width: 100%;
+  height: 100%;
   background-image: url("/assets/cat-walk.png");
   background-repeat: no-repeat;
-  background-size: 700% 900%;
+  background-size: 500% 500%;
   background-position: 0% 0%;
   opacity: 0.9;
-  animation:
-    cat-walk-frames 3.6s steps(1) infinite,
-    cat-walk-cross 15s linear infinite;
+  /* 25 frames · 2.5s = 100ms/frame — calm gait */
+  animation: cat-walk-frames 2.5s steps(1) infinite;
 }
 
-/* translate across the strip, looping */
-@keyframes cat-walk-cross {
-  from { left: -90px; }
-  to   { left: calc(100% + 90px); }
-}
-
-/* step through the 63 frames (7 cols x 9 rows) */
+/* step through the 25 frames (5 cols x 5 rows) */
 @keyframes cat-walk-frames {
-  0.0000% { background-position: 0.000% 0.000%; }
-  1.5873% { background-position: 16.667% 0.000%; }
-  3.1746% { background-position: 33.333% 0.000%; }
-  4.7619% { background-position: 50.000% 0.000%; }
-  6.3492% { background-position: 66.667% 0.000%; }
-  7.9365% { background-position: 83.333% 0.000%; }
-  9.5238% { background-position: 100.000% 0.000%; }
-  11.1111% { background-position: 0.000% 12.500%; }
-  12.6984% { background-position: 16.667% 12.500%; }
-  14.2857% { background-position: 33.333% 12.500%; }
-  15.8730% { background-position: 50.000% 12.500%; }
-  17.4603% { background-position: 66.667% 12.500%; }
-  19.0476% { background-position: 83.333% 12.500%; }
-  20.6349% { background-position: 100.000% 12.500%; }
-  22.2222% { background-position: 0.000% 25.000%; }
-  23.8095% { background-position: 16.667% 25.000%; }
-  25.3968% { background-position: 33.333% 25.000%; }
-  26.9841% { background-position: 50.000% 25.000%; }
-  28.5714% { background-position: 66.667% 25.000%; }
-  30.1587% { background-position: 83.333% 25.000%; }
-  31.7460% { background-position: 100.000% 25.000%; }
-  33.3333% { background-position: 0.000% 37.500%; }
-  34.9206% { background-position: 16.667% 37.500%; }
-  36.5079% { background-position: 33.333% 37.500%; }
-  38.0952% { background-position: 50.000% 37.500%; }
-  39.6825% { background-position: 66.667% 37.500%; }
-  41.2698% { background-position: 83.333% 37.500%; }
-  42.8571% { background-position: 100.000% 37.500%; }
-  44.4444% { background-position: 0.000% 50.000%; }
-  46.0317% { background-position: 16.667% 50.000%; }
-  47.6190% { background-position: 33.333% 50.000%; }
-  49.2063% { background-position: 50.000% 50.000%; }
-  50.7937% { background-position: 66.667% 50.000%; }
-  52.3810% { background-position: 83.333% 50.000%; }
-  53.9683% { background-position: 100.000% 50.000%; }
-  55.5556% { background-position: 0.000% 62.500%; }
-  57.1429% { background-position: 16.667% 62.500%; }
-  58.7302% { background-position: 33.333% 62.500%; }
-  60.3175% { background-position: 50.000% 62.500%; }
-  61.9048% { background-position: 66.667% 62.500%; }
-  63.4921% { background-position: 83.333% 62.500%; }
-  65.0794% { background-position: 100.000% 62.500%; }
-  66.6667% { background-position: 0.000% 75.000%; }
-  68.2540% { background-position: 16.667% 75.000%; }
-  69.8413% { background-position: 33.333% 75.000%; }
-  71.4286% { background-position: 50.000% 75.000%; }
-  73.0159% { background-position: 66.667% 75.000%; }
-  74.6032% { background-position: 83.333% 75.000%; }
-  76.1905% { background-position: 100.000% 75.000%; }
-  77.7778% { background-position: 0.000% 87.500%; }
-  79.3651% { background-position: 16.667% 87.500%; }
-  80.9524% { background-position: 33.333% 87.500%; }
-  82.5397% { background-position: 50.000% 87.500%; }
-  84.1270% { background-position: 66.667% 87.500%; }
-  85.7143% { background-position: 83.333% 87.500%; }
-  87.3016% { background-position: 100.000% 87.500%; }
-  88.8889% { background-position: 0.000% 100.000%; }
-  90.4762% { background-position: 16.667% 100.000%; }
-  92.0635% { background-position: 33.333% 100.000%; }
-  93.6508% { background-position: 50.000% 100.000%; }
-  95.2381% { background-position: 66.667% 100.000%; }
-  96.8254% { background-position: 83.333% 100.000%; }
-  98.4127% { background-position: 100.000% 100.000%; }
+  0% { background-position: 0% 0%; }
+  4% { background-position: 25% 0%; }
+  8% { background-position: 50% 0%; }
+  12% { background-position: 75% 0%; }
+  16% { background-position: 100% 0%; }
+  20% { background-position: 0% 25%; }
+  24% { background-position: 25% 25%; }
+  28% { background-position: 50% 25%; }
+  32% { background-position: 75% 25%; }
+  36% { background-position: 100% 25%; }
+  40% { background-position: 0% 50%; }
+  44% { background-position: 25% 50%; }
+  48% { background-position: 50% 50%; }
+  52% { background-position: 75% 50%; }
+  56% { background-position: 100% 50%; }
+  60% { background-position: 0% 75%; }
+  64% { background-position: 25% 75%; }
+  68% { background-position: 50% 75%; }
+  72% { background-position: 75% 75%; }
+  76% { background-position: 100% 75%; }
+  80% { background-position: 0% 100%; }
+  84% { background-position: 25% 100%; }
+  88% { background-position: 50% 100%; }
+  92% { background-position: 75% 100%; }
+  96% { background-position: 100% 100%; }
   100% { background-position: 0% 0%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk-cat-sprite { animation: none; left: 24px; }
+  .walk-cat-sprite { animation: none; }
 }

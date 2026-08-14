@@ -24,10 +24,15 @@ html {
 
 body {
   min-height: 100vh;
-  /* dot grid background — quiet, behind everything */
-  background-image: radial-gradient(var(--dot-color) var(--dot-size), transparent var(--dot-size));
-  background-size: var(--dot-spacing) var(--dot-spacing);
-  background-attachment: fixed;
+  /* The hero is full-bleed (width: 100vw), which is wider than the body once a
+     vertical scrollbar is present. `clip` swallows that overhang without
+     creating a scroll container, so the sticky topbar keeps working. */
+  overflow-x: clip;
+  /* Transparent so <AnimatedBackground> (z-index: -10) shows through: a body
+     background paints AFTER negative-z-index descendants and would cover it.
+     The page colour lives on <html>, which propagates to the canvas.
+     The old dot grid was replaced by that component's blobs + line grid. */
+  background: transparent;
 }
 
 a {
