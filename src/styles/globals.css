@@ -8,6 +8,10 @@
 html, body {
   margin: 0;
   padding: 0;
+  /* Korean wraps at any character by default, which splits words across lines
+     ("실 / 제 결과로"). keep-all breaks at spaces only, the way Korean prose is
+     meant to wrap; blocks that hold long URLs opt back in with overflow-wrap. */
+  word-break: keep-all;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);

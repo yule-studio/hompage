@@ -42,11 +42,13 @@ export default function HomeHero() {
           ✦ AVAILABLE · Q3 2026
         </span>
 
+        {/* the role leads, like portofoliov1's Frontend / Developer — the name
+            and the rest of the story belong to the About section below */}
         <h1 className="hh-title hh-reveal" style={d(120)}>
-          {profile.name}
+          Backend
         </h1>
         <h1 className="hh-title hh-title--muted hh-reveal" style={d(240)}>
-          Backend Developer
+          Developer
         </h1>
 
         <div className="hh-type hh-reveal" style={d(360)}>

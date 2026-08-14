@@ -141,10 +141,10 @@ function Tile({ mark, badge, name, color, status, extra, caption, sub, href, to,
 }
 
 /**
- * Grid — holds the tiles and, once it scrolls into view, flips `is-in` so they
+ * Grid — holds the tiles and, while it is in view, flips `is-in` so they
  * cascade in one after another (the stagger delay lives in CSS, keyed off each
- * tile's `--i`). Observed rather than played on mount, so the cards animate
- * when you actually reach them; remounting on tab change replays it.
+ * tile's `--i`). It replays every time the grid is scrolled back to, and on
+ * tab change, so arriving here always animates.
  */
 function Grid({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -159,10 +159,8 @@ function Grid({ children }: { children: ReactNode }) {
     }
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setInView(true);
-          io.disconnect();
-        }
+        // replays on every arrival, like the sections around it
+        setInView(entries.some((e) => e.isIntersecting));
       },
       { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
     );

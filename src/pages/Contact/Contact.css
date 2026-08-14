@@ -32,19 +32,11 @@
   color: var(--text-muted);
 }
 
-/* ── form ───────────────────────────────────────────────────── */
+/* ── form (now lives inside the left panel) ─────────────────── */
 .contact-form {
-  width: min(100%, 560px);
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 22px 22px,
-    linear-gradient(180deg, rgba(20, 26, 23, 0.66), rgba(12, 16, 14, 0.66));
 }
 .contact-field {
   position: relative;
@@ -108,4 +100,364 @@
 }
 .contact-send:active {
   transform: scale(0.98);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Two-panel layout (portofoliov1's Contact shape).
+ * Full-bleed on the page's shared --edge line, like every other
+ * section, so the panels' outer edges match the topbar and grid.
+ * ───────────────────────────────────────────────────────────── */
+.contact {
+  width: calc(100vw - var(--sbw, 0px));
+  margin-inline: calc(50% - 50vw + var(--sbw, 0px) / 2);
+  padding-inline: var(--edge);
+}
+
+.contact-panels {
+  /* portofoliov1 caps its contact block at 1500px; edge-to-edge here stretched
+     the comment cards into banners on a wide screen */
+  /* explicit width, not max-width: `.contact` is a column flex container, and
+     an auto inline margin there cancels stretch and shrinks to content */
+  width: min(100%, 1340px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: var(--space-6);
+  /* stretch, so both panels start and end on the same line */
+  align-items: stretch;
+}
+
+.contact-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-7);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+.contact-panel-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.contact-panel-sub {
+  margin-top: -6px;
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.contact-divider {
+  height: 1px;
+  margin-block: var(--space-3);
+  background: var(--border);
+}
+.contact-connect-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  color: var(--text-faint);
+}
+
+/* ── social links ───────────────────────────────────────────── */
+.contact-socials {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.contact-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: var(--text);
+  transition: transform var(--t-base), border-color var(--t-base), background var(--t-base);
+}
+.contact-social:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+  color: var(--text);
+}
+/* the primary link gets the full row, like portofoliov1's LinkedIn tile */
+.contact-social--wide {
+  grid-column: 1 / -1;
+}
+.contact-social-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: var(--accent);
+}
+.contact-social-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.contact-social-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.contact-social-handle {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1080px) {
+  .contact-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contact-panel {
+    padding: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-social:hover { transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Comment wall (portofoliov1's Comments panel).
+ * ───────────────────────────────────────────────────────────── */
+.cm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-7);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+
+.cm-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cm-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.cm-sub {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+/* stated plainly: nothing here reaches a server */
+.cm-note {
+  margin-top: 4px;
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+
+.cm-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.cm-input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.28);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--text);
+  transition: border-color var(--t-fast);
+}
+.cm-input::placeholder { color: var(--text-faint); }
+.cm-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.cm-input--area {
+  resize: vertical;
+  min-height: 108px;
+}
+
+.cm-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.28);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+.cm-upload:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.cm-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.cm-post {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background var(--t-base), opacity var(--t-base);
+}
+.cm-post:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.cm-post:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── list ───────────────────────────────────────────────────── */
+.cm-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 420px;
+  padding: var(--space-3);
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.22);
+  scrollbar-width: thin;
+}
+.cm-empty {
+  margin: auto;
+  font-size: var(--text-sm);
+  color: var(--text-faint);
+}
+
+.cm-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+}
+.cm-item--pinned {
+  border-color: var(--border-accent);
+  background: var(--accent-soft);
+}
+.cm-avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--bg-pill);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text);
+}
+.cm-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cm-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.cm-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+.cm-pin {
+  padding: 2px 8px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+.cm-text {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+.cm-image {
+  margin-top: 8px;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.cm-like {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+.cm-like:hover { color: var(--accent); }
+
+@media (max-width: 1080px) {
+  .cm { padding: var(--space-5); }
+}
+
+/* ── floating header (portofoliov1 animates these forever) ───── */
+.contact-title {
+  animation: contact-float 4s ease-in-out infinite;
+}
+.contact-sub {
+  animation: contact-float-sub 4.4s ease-in-out infinite;
+}
+
+@keyframes contact-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes contact-float-sub {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-title,
+  .contact-sub { animation: none; }
+}
+
+.cm-error {
+  font-size: var(--text-xs);
+  color: var(--err);
 }

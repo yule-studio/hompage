@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 
 /**
- * useReveal — reveals every `.reveal` element once it scrolls into view by
- * adding `.is-visible` (CSS handles the fade/rise). Reveal-once. Falls back
- * to showing everything when IntersectionObserver is unavailable.
+ * useReveal — toggles `.is-visible` on every `.reveal` element as it enters and
+ * leaves the viewport (CSS handles the fade/rise), so arriving at a section
+ * always animates — portofoliov1's `viewport={{ once: false }}`. Falls back to
+ * showing everything when IntersectionObserver is unavailable.
  *
  * Two guards keep the reveal feeling intentional:
  *  - It doesn't start observing until the intro overlay is done, so sections
@@ -20,7 +21,7 @@ export function useReveal(deps: unknown[] = []) {
     let mo: MutationObserver | null = null;
 
     const start = () => {
-      const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal:not(.is-visible)"));
+      const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
       if (!els.length) return;
 
       if (!("IntersectionObserver" in window)) {
@@ -29,12 +30,12 @@ export function useReveal(deps: unknown[] = []) {
       }
 
       observer = new IntersectionObserver(
-        (entries, obs) => {
+        (entries) => {
           for (const entry of entries) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              obs.unobserve(entry.target);
-            }
+            // Replays every time the section comes back into view, matching
+            // portofoliov1's `viewport={{ once: false }}` — arriving at a
+            // section should always animate, not just the first time.
+            entry.target.classList.toggle("is-visible", entry.isIntersecting);
           }
         },
         { rootMargin: "0px 0px -12% 0px", threshold: 0.08 },

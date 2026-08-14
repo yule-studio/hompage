@@ -1,7 +1,10 @@
 /// <reference types="vite/client" />
 
-declare module "*.css";
-declare module "*.svg" {
-  const src: string;
-  export default src;
+interface ImportMetaEnv {
+  /** Base URL of the comment API (yule-studio/hompage-comments). */
+  readonly VITE_COMMENTS_API?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }

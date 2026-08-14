@@ -17,6 +17,7 @@ import {
  */
 const ITEMS = [
   { id: "home", label: "Home" },
+  { id: "about", label: "About" },
   { id: "portfolio", label: "Portfolio" },
   { id: "homelab", label: "Homelab" },
   { id: "contact", label: "Contact" },
@@ -27,7 +28,7 @@ const ITEMS = [
  * #portfolio now, not a section of its own — spying on its anchor would make it
  * win over Portfolio for the whole showcase, so the tab decides that one.
  */
-const SPY_IDS = ["home", "portfolio", "contact"];
+const SPY_IDS = ["home", "about", "portfolio", "contact"];
 
 export default function Navigation() {
   const location = useLocation();
@@ -79,7 +80,9 @@ export default function Navigation() {
       const target = id === "homelab" ? "portfolio" : id;
       document.getElementById(target)?.scrollIntoView({ behavior: "smooth" });
     } else {
-      navigate(id === "home" ? "/" : `/#${id}`);
+      // state, not `/#id` — a hash would stay in the address bar and make the
+      // next reload open on that section instead of Home
+      navigate("/", id === "home" ? undefined : { state: { section: id === "homelab" ? "portfolio" : id } });
     }
   };
 
