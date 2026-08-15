@@ -579,18 +579,25 @@ export const activities: Activity[] = [
     title: "LG 유플러스 유레카 SW 교육과정",
     highlight: true,
     detail: {
-      org: "LG 유플러스 · 유레카 SW 교육과정 (백엔드 Java 과정)",
+      org: "LG 유플러스 × 멀티캠퍼스 · 유레카 SW 교육과정 1기 (백엔드)",
       facts: [
-        { label: "과정", value: "백엔드 Java" },
-        { label: "기간", value: "2024.06.10 – 2024.12.24 (약 7개월)" },
-        { label: "방식", value: "프로젝트 중심 교육 + 현업 멘토링" },
-        { label: "프로젝트", value: "미니 프로젝트 · 팀 협업 프로젝트" },
+        { label: "과정", value: "백엔드 · 1기" },
+        { label: "기간", value: "2024.06.10 – 2024.12.24 (7개월)" },
+        { label: "총 교육시간", value: "약 1,000시간" },
+        { label: "장소", value: "멀티캠퍼스 선릉" },
+        { label: "최종 프로젝트", value: "댕댕플레이스 · 7조(7DDAENG)" },
+        { label: "수료 기준", value: "출석 80% 이상" },
       ],
+      hero: {
+        src: `${import.meta.env.BASE_URL}assets/ureca-graduation.jpg`,
+        alt: "유레카 SW 교육과정 1기 수료식에서 수료증을 들고 찍은 단체 사진",
+        caption: "1기 수료식. 2024년 12월, 7개월을 함께 통과한 사람들.",
+      },
       summary:
-        "LG 유플러스가 현업 수요에 맞춰 운영하는 ==SW 교육과정==이다. 커리큘럼과 융합 " +
-        "프로젝트로 역량을 쌓고 ==현업 멘토링==을 받으며 실무형으로 다듬는 과정이었다. " +
-        "들어갈 때 자바는 ==하기 싫은 언어==였는데, 나올 때는 익숙해지고 활용할 수 있는 " +
-        "언어가 되어 있었다.",
+        "LG 유플러스가 현업 수요에 맞춰 운영하는 ==SW 교육과정 1기== 백엔드 트랙이다. " +
+        "7개월 동안 알고리즘부터 Spring, 배포까지 훑고 ==세 번의 프로젝트==로 매듭지었다. " +
+        "들어갈 때 자바는 ==하기 싫은 언어==였는데, 나올 때는 ==AWS 위에 서비스를 올려두고 " +
+        "있었다==.",
       sections: [
         {
           heading: "왜 유레카였는가",
@@ -600,6 +607,23 @@ export const activities: Activity[] = [
               "나누며 성장하고 싶어서 지원했다.",
             "면접에서도 같은 이야기를 했다. 이 답만큼은 자신 있게 말할 수 있었는데, 그건 " +
               "지어낸 이유가 아니라 그때 실제로 겪고 있던 문제였기 때문이다.",
+          ],
+        },
+        {
+          heading: "커리큘럼 — 무엇을 언제 배웠나",
+          body: [
+            "7개월이 통으로 주어진 게 아니라 월 단위로 쪼개져 있었고, 앞 달에 배운 것이 " +
+              "뒤 달의 재료가 되도록 짜여 있었다. 마지막 두 달은 수업이 아니라 프로젝트다.",
+            "수료 조건은 총 교육시간의 **80% 이상 출석**이었다. 하루 교육시간의 절반을 " +
+              "빠지면 결석 1일, 지각·조퇴 3회가 결석 1일로 쌓였다.",
+          ],
+          list: [
+            "1개월차 — 소프트웨어 엔지니어링(객체지향 · 설계 원칙), 알고리즘, 데이터베이스 활용",
+            "2개월차 — 데이터베이스 활용(80H), 미니 프로젝트",
+            "3개월차 — 프레임워크(Spring)",
+            "4개월차 — REST API, 취업 특강",
+            "5개월차 — 종합 프로젝트(120H)",
+            "6~7개월차 — 최종 융합 프로젝트(88H)",
           ],
         },
         {
@@ -657,18 +681,141 @@ export const activities: Activity[] = [
           ],
         },
         {
+          heading: "최종 융합 프로젝트 — 댕댕플레이스",
+          figure: {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-title.png`,
+            alt: "댕댕플레이스 발표 자료 표지. 7DDAENG 팀원 이름이 적혀 있다.",
+            caption: "7DDAENG(칠땡) — 프론트 3명, 백엔드 4명. 백엔드에 이름을 올렸다.",
+          },
+          body: [
+            "마지막은 프론트와 백엔드가 섞인 **7인 융합 프로젝트**였다. 주제는 " +
+              "**강아지 동반 가능 시설 공유 플랫폼**. 반려견을 데리고 갈 수 있는 곳을 " +
+              "지도에서 찾고, 다녀온 사람이 리뷰를 남기고, 성향에 맞는 곳을 추천받는 " +
+              "서비스다.",
+            "데이터는 지어내지 않았다. 한국문화정보원의 전국 반려동물 동반 가능 문화시설 " +
+              "위치 데이터 **23,930개**를 그대로 밀어 넣고 시작했다.",
+            "백엔드 4명 중 내가 맡은 건 **시설 필터링 · 리뷰 CRUD · 성향 테스트 · 성향별 " +
+              "추천 시스템**이었다. 앞서 팀 프로젝트에서 리뷰를 한 번 만들어봤던 게 여기서 " +
+              "그대로 쓰였고, 추천은 처음 해보는 쪽이었다.",
+          ],
+        },
+        {
+          heading: "이번엔 배포까지가 과제였다",
+          figure: {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-arch.png`,
+            alt: "댕댕플레이스 기술 스택과 시스템 아키텍처 다이어그램",
+            caption: "Next.js / Spring Boot / MySQL · Redis, 그리고 AWS 위의 배포 파이프라인.",
+          },
+          body: [
+            "미니 프로젝트는 내 노트북에서 돌면 끝이었고, 팀 프로젝트도 크게 다르지 " +
+              "않았다. 이번엔 **실제로 인터넷에 올라가 있어야** 했다.",
+            "프론트는 Next.js에 Storybook, 상태는 Zustand. 백엔드는 Spring Boot, " +
+              "DB는 MySQL에 Redis를 얹었다. 배포는 프론트가 Vercel, 백엔드가 AWS ECS이고 " +
+              "RDS · S3 · ElastiCache가 붙는다. 로그인은 Google · Kakao OAuth, 지도는 " +
+              "Google Map API 를 썼다.",
+            "이 그림을 처음 그렸을 때가 기억에 남는다. 그때까지 배운 단어들이 각자 " +
+              "어디에 놓이는지가 한 장에 정리되는 경험이었다.",
+          ],
+        },
+        {
+          heading: "막힌 두 곳",
+          figure: {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-ocr.png`,
+            alt: "영수증 OCR 모델 선정 과정을 정리한 트러블슈팅 슬라이드",
+            caption: "Tesseract 의 한글 인식률이 낮아 CLOVA OCR 로 갈아탄 과정.",
+          },
+          body: [
+            "**배포** — GitHub Actions 의 `gradle.yml` 에 넣어둔 환경변수가 컨테이너까지 " +
+              "전달되지 않았다. 값이 비어 있으니 컨테이너는 뜨는데 서비스가 안 되는, " +
+              "제일 답답한 종류의 실패였다. 결국 AWS CodePipeline 으로 배포를 옮기고, " +
+              "환경변수 파일을 S3 에 올려 ECS 가 읽어가는 방식으로 바꿔 풀었다.",
+            "**OCR** — 리뷰를 아무나 못 쓰게 하려고 영수증을 찍어 인증하는 구조를 잡았다. " +
+              "처음 붙인 Google Tesseract 는 한글 인식률이 너무 낮아서, 추가 학습 없이 " +
+              "바로 쓸 수 있는 **Naver CLOVA OCR** 로 교체했다.",
+            "인식이 되고 나서도 끝이 아니었다. OCR 결과에는 필요 없는 필드가 잔뜩 섞여 " +
+              "있고 상호명 사이에 공백이 들쭉날쭉해서, 영수증의 가게 이름과 시설 이름이 " +
+              "매칭되지 않았다. 불필요한 필드를 걷어내고 공백을 정리한 뒤 JSON 을 파싱해 " +
+              "비교하는 식으로 맞췄다.",
+          ],
+        },
+        {
           heading: "7개월이 남긴 것",
           body: [
             "기술만 남은 과정은 아니었다. 혼자 공부할 때는 보이지 않던 내 위치가 여러 " +
               "사람 사이에서는 분명하게 보였고, 그게 다음에 무엇을 해야 하는지를 " +
               "정해줬다. 지원할 때 바랐던 것이 정확히 그거였다.",
-            "이 과정에서 못 한 것들 — Refresh Token, 적극적인 코드 리뷰 — 은 그대로 다음 " +
-              "숙제로 남겼다.",
+            "세 프로젝트가 각각 다른 걸 가르쳤다. 미니 프로젝트는 **끝까지 만들어보는 " +
+              "일**, 팀 프로젝트는 **남과 코드를 합치는 일**, 최종 프로젝트는 **만든 것을 " +
+              "실제로 띄워두는 일**이었다.",
+            "팀 프로젝트에서 못 했던 Refresh Token 은 최종 프로젝트에서 처리했다 — " +
+              "Access Token 은 로컬 스토리지, Refresh Token 은 쿠키. 한 과정 안에서 " +
+              "숙제를 남기고 다시 가져와 푼 셈이다.",
           ],
         },
       ],
-      linksHeading: "노션 링크",
+      clip: {
+        src: `${import.meta.env.BASE_URL}media/ureca-daengplace-demo.mp4`,
+        poster: `${import.meta.env.BASE_URL}media/ureca-daengplace-demo.jpg`,
+        heading: "댕댕플레이스 시연",
+        caption:
+          "소셜 로그인 → 반려견 등록 → 반경 5km 시설 조회 → 리뷰 · 즐겨찾기 → 성향별 추천. " +
+          "최종 발표에서 튼 시연 영상.",
+      },
+      deck: {
+        heading: "발표 자료에서",
+        note:
+          "최종 융합 프로젝트 발표 자료 중 설계와 트러블슈팅 부분. " +
+          "==크게 보기==를 누르면 원본이 열린다.",
+        slides: [
+          {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-roles.png`,
+            alt: "백엔드 4인의 역할 분담을 정리한 슬라이드",
+            caption: "백엔드 역할 분담. 시설 필터링 · 리뷰 CRUD · 성향 테스트 · 추천 시스템.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-db.png`,
+            alt: "댕댕플레이스 데이터베이스 설계도",
+            caption: "DB 설계. 회원 · 반려견 · 시설 · 리뷰 · 성향이 엮인다.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-recommend.png`,
+            alt: "성향별 시설 추천 기능을 설명한 슬라이드",
+            caption: "성향별 추천. 반려견 성향과 보호자 선호를 받아 시설을 고른다.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-deploy.png`,
+            alt: "백엔드 배포 트러블슈팅을 정리한 슬라이드",
+            caption: "GitHub Actions 환경변수 문제 → AWS CodePipeline 전환.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ureca-dp-ocr.png`,
+            alt: "영수증 OCR 모델 선정 트러블슈팅 슬라이드",
+            caption: "Tesseract → CLOVA OCR, 그리고 상호명 매칭 전처리.",
+          },
+        ],
+      },
+      downloads: {
+        heading: "자료 받기",
+        items: [
+          {
+            label: "댕댕플레이스 — 최종 발표 자료",
+            url: `${import.meta.env.BASE_URL}docs/ureca-daengplace-deck.pdf`,
+            meta: "PDF · 22장 · 7.3MB",
+          },
+        ],
+      },
+      linksHeading: "링크",
       links: [
+        {
+          label: "DaengPlace — GitHub",
+          url: "https://github.com/DaengPlace",
+          note: "댕댕플레이스 저장소. 프론트 · 백엔드가 나뉘어 있다.",
+        },
+        {
+          label: "댕댕플레이스 — 배포된 서비스",
+          url: "https://daengplace.vercel.app",
+          note: "최종 발표 시점에 올려둔 주소.",
+        },
         {
           label: "LG 유플러스 부트캠프 — 과정 정리",
           url: "https://yuchan-log.notion.site/2a7445b5c77c41fda28403197ff6037d",
