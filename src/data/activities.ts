@@ -43,6 +43,11 @@ export type ActivityDetail = {
   };
   /** embedded YouTube clip */
   video?: { id: string; title: string; heading?: string; caption?: string };
+  /**
+   * A clip served from `public/` rather than YouTube — for recordings that
+   * were never published anywhere, and shouldn't be just to embed them.
+   */
+  clip?: { src: string; poster?: string; heading?: string; caption?: string };
   /** heading above the link block */
   linksHeading?: string;
   links?: { label: string; url: string; note?: string }[];
@@ -493,12 +498,25 @@ export const activities: Activity[] = [
           ],
         },
       ],
+      clip: {
+        src: `${import.meta.env.BASE_URL}media/ettifos-snake-demo.mp4`,
+        poster: `${import.meta.env.BASE_URL}media/ettifos-snake-demo.jpg`,
+        heading: "실제로 돌아가는 화면",
+        caption:
+          "왼쪽이 게임, 오른쪽이 서버. 서버를 띄우면 Waiting.. 으로 대기하다가 " +
+          "클라이언트가 붙는 순간 Client is connected. 가 찍힌다.",
+      },
       deck: {
         heading: "남은 기록",
         note:
           "두 달을 증명하는 서류들. 출근부는 ==11월 22일 · 12월 20일, 결석 0일==로 " +
           "양쪽 다 출석률 100% 였다. 멘토 평가에서 성실성이 5점이었던 근거가 여기 있다.",
         slides: [
+          {
+            src: `${import.meta.env.BASE_URL}assets/ettifos-slide-demo.png`,
+            alt: "Snake 게임 화면과 조작 방법을 설명한 발표 슬라이드",
+            caption: "과제 ① 발표 슬라이드. 캐릭터 O, 아이템 @, 장애물 X, 점수는 초당 10점.",
+          },
           {
             src: `${import.meta.env.BASE_URL}assets/ettifos-report.png`,
             alt: "에티포스 현장실습 결과보고서(학생용) 문서",

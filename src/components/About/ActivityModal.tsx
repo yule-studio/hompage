@@ -143,6 +143,25 @@ export default function ActivityModal({
           </section>
         ))}
 
+        {d?.clip && (
+          <section className="am-section">
+            {d.clip.heading && <h4 className="am-heading">{d.clip.heading}</h4>}
+            <figure className="am-figure am-figure--video">
+              {/* preload="metadata": the poster carries the still, so there is
+                  no reason to pull the file down before it is played. */}
+              <video
+                className="am-clip"
+                src={d.clip.src}
+                poster={d.clip.poster}
+                controls
+                playsInline
+                preload="metadata"
+              />
+              {d.clip.caption && <figcaption>{d.clip.caption}</figcaption>}
+            </figure>
+          </section>
+        )}
+
         {d?.deck?.slides?.length ? (
           <section className="am-section">
             {d.deck.heading && <h4 className="am-heading">{d.deck.heading}</h4>}

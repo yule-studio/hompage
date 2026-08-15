@@ -522,6 +522,18 @@
   border-left: 2px solid var(--border-accent);
 }
 
+/* Self-hosted clip. Sits in the same 16:10 frame as the figures so the article
+   keeps one column edge, and letterboxes rather than cropping the recording. */
+.am-clip {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
 /* ── file downloads ─────────────────────────────────────────── */
 .am-files {
   display: grid;
