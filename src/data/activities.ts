@@ -470,11 +470,6 @@ export const activities: Activity[] = [
         },
         {
           heading: "두 달 뒤",
-          figure: {
-            src: `${import.meta.env.BASE_URL}assets/ettifos-report.png`,
-            alt: "에티포스 현장실습 결과보고서(학생용) 문서",
-            caption: "현장실습 결과보고서. 실습기간 2023.11.01 ~ 2023.12.29, 향후 진로계획란에 DevOps 라고 적혀 있다.",
-          },
           body: [
             "학교 현장실습은 11월에 끝났고, 12월은 인턴형 일경험 프로그램으로 이어져 " +
               "12월 29일자로 마무리됐다. 회사 사정으로 취업 연계까지는 가지 못해 다시 " +
@@ -490,6 +485,29 @@ export const activities: Activity[] = [
           ],
         },
       ],
+      deck: {
+        heading: "남은 기록",
+        note:
+          "두 달을 증명하는 서류들. 출근부는 ==11월 22일 · 12월 20일, 결석 0일==로 " +
+          "양쪽 다 출석률 100% 였다. 멘토 평가에서 성실성이 5점이었던 근거가 여기 있다.",
+        slides: [
+          {
+            src: `${import.meta.env.BASE_URL}assets/ettifos-report.png`,
+            alt: "에티포스 현장실습 결과보고서(학생용) 문서",
+            caption: "현장실습 결과보고서. 향후 진로계획란에 DevOps 라고 적혀 있다.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ettifos-attend-11.png`,
+            alt: "11월 출근부의 일자별 근로시간 표",
+            caption: "11월 출근부. 09:00–18:00, 22일 전부 출석.",
+          },
+          {
+            src: `${import.meta.env.BASE_URL}assets/ettifos-attend-12.png`,
+            alt: "12월 출근부의 일자별 근로시간 표",
+            caption: "12월 출근부. 마지막 근무일이 12월 29일로 찍혀 있다.",
+          },
+        ],
+      },
       linksHeading: "회사 링크",
       links: [
         {

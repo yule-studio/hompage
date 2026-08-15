@@ -75,6 +75,15 @@ export default function ActivityModal({
           {d?.org && <span className="am-org">{d.org}</span>}
         </header>
 
+        {d?.hero && (
+          <figure className="am-figure">
+            <img src={d.hero.src} alt={d.hero.alt} loading="lazy" />
+            {d.hero.caption && <figcaption>{d.hero.caption}</figcaption>}
+          </figure>
+        )}
+
+        {/* Under the photograph, not above it: the picture is the opening
+            image and the facts read as its caption block. */}
         {d?.facts?.length ? (
           <dl className="am-facts">
             {d.facts.map((f) => (
@@ -85,13 +94,6 @@ export default function ActivityModal({
             ))}
           </dl>
         ) : null}
-
-        {d?.hero && (
-          <figure className="am-figure">
-            <img src={d.hero.src} alt={d.hero.alt} loading="lazy" />
-            {d.hero.caption && <figcaption>{d.hero.caption}</figcaption>}
-          </figure>
-        )}
 
         {d?.summary && <p className="am-lead">{rich(d.summary)}</p>}
 
@@ -135,12 +137,23 @@ export default function ActivityModal({
             >
               {d.deck.slides.map((slide, i) => (
                 <figure className="am-deck-slide" key={slide.src}>
-                  <div className="am-deck-frame">
+                  {/* A scanned page is unreadable at strip size, so the frame
+                      opens the original rather than pretending to be legible. */}
+                  <a
+                    className="am-deck-frame"
+                    href={slide.src}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${slide.alt} — 원본 크기로 보기`}
+                  >
                     <img src={slide.src} alt={slide.alt} loading="lazy" />
                     <span className="am-deck-index mono" aria-hidden>
                       {i + 1} / {d.deck!.slides.length}
                     </span>
-                  </div>
+                    <span className="am-deck-zoom mono" aria-hidden>
+                      크게 보기 ↗
+                    </span>
+                  </a>
                   {slide.caption && <figcaption>{slide.caption}</figcaption>}
                 </figure>
               ))}

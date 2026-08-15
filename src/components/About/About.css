@@ -298,12 +298,17 @@
 }
 
 /* ── standfirst facts ───────────────────────────────────────── */
+/*
+ * A grid, not a wrapping flex row: with six facts the flex version broke into
+ * 4 + 2 at whatever widths the content happened to be, so the second row's
+ * labels lined up with nothing above them. Fixed tracks keep the columns.
+ */
 .am-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-6);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3) var(--space-5);
   margin: 0;
-  padding: var(--space-4) 0;
+  padding: var(--space-3) 0;
   border-block: 1px solid var(--border);
 }
 .am-fact {
@@ -326,7 +331,7 @@
 /* ── body ───────────────────────────────────────────────────── */
 .am-lead {
   font-size: var(--text-lg);
-  line-height: 1.75;
+  line-height: 1.62;
   color: var(--text);
 }
 .am-section {
@@ -340,9 +345,11 @@
   letter-spacing: -0.015em;
   color: var(--text);
 }
+/* 1.95 at 14px left 27px of leading — the lines drifted apart far enough that
+   a paragraph stopped reading as a block. 1.72 still clears Korean ascenders. */
 .am-para {
   font-size: var(--text-base);
-  line-height: 1.95;
+  line-height: 1.72;
   color: var(--text-muted);
 }
 
@@ -360,7 +367,7 @@
 .am-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -369,14 +376,14 @@
   position: relative;
   padding-left: var(--space-4);
   font-size: var(--text-base);
-  line-height: 1.75;
+  line-height: 1.7;
   color: var(--text-muted);
 }
 .am-list li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.7em;
+  top: 0.62em;
   width: 5px;
   height: 5px;
   border-radius: 999px;
@@ -396,11 +403,20 @@
  * column because max-width binds first. width:auto keeps the border on the
  * image rather than around empty space.
  */
+/*
+ * Every figure is the same box: full column width on a fixed ratio, so the
+ * left edge lines up with the text and the right edge never leaves a ragged
+ * gap. The picture is fitted inside with `contain` — it is never stretched and
+ * never cropped, it just sits on the frame's ground when its shape differs.
+ *
+ * `cover` would fill more handsomely but cuts the edges off, and half of these
+ * are scanned documents where the cut-off part is the content.
+ */
 .am-figure img {
-  align-self: center;
-  width: auto;
-  max-width: 100%;
-  max-height: 400px;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
@@ -439,9 +455,11 @@
   border-radius: var(--radius-md);
 }
 
+/* Height-capped like the figures, and the image drives the width — an A4 scan
+   at full column width ran 719px tall, which is the same problem twice. */
 .am-deck-slide {
   flex: 0 0 auto;
-  width: min(100%, 520px);
+  max-width: min(100%, 520px);
   scroll-snap-align: center;
   display: flex;
   flex-direction: column;
@@ -451,6 +469,7 @@
 
 .am-deck-frame {
   position: relative;
+  display: block;
   /* slides are light; a white ground keeps them legible on the dark sheet */
   background: #fff;
   border: 1px solid var(--border);
@@ -459,8 +478,27 @@
 }
 .am-deck-frame img {
   display: block;
-  width: 100%;
-  height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: 380px;
+}
+/* the affordance only shows on the frame that's being pointed at */
+.am-deck-zoom {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #fff;
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+.am-deck-frame:hover .am-deck-zoom,
+.am-deck-frame:focus-visible .am-deck-zoom {
+  opacity: 1;
 }
 
 .am-deck-index {
