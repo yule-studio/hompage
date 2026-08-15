@@ -29,9 +29,17 @@ export type ActivityDetail = {
     heading?: string;
     /** one line above the strip — what this deck is and where it came from */
     note?: string;
-    /** offered under the strip when the whole file is downloadable */
-    file?: { label: string; url: string };
     slides: { src: string; alt: string; caption?: string }[];
+  };
+  /**
+   * Original files offered for download — the deck as authored, a report, a
+   * document. Served straight from `public/docs/`, so adding one is a file
+   * copy plus a line here.
+   */
+  downloads?: {
+    heading?: string;
+    note?: string;
+    items: { label: string; url: string; meta?: string }[];
   };
   /** embedded YouTube clip */
   video?: { id: string; title: string; heading?: string; caption?: string };
@@ -505,6 +513,29 @@ export const activities: Activity[] = [
             src: `${import.meta.env.BASE_URL}assets/ettifos-attend-12.png`,
             alt: "12월 출근부의 일자별 근로시간 표",
             caption: "12월 출근부. 마지막 근무일이 12월 29일로 찍혀 있다.",
+          },
+        ],
+      },
+      downloads: {
+        heading: "자료 받기",
+        note:
+          "실습 중에 만든 발표 자료와 학교에 낸 보고서. 원본 그대로이고, " +
+          "회사 템플릿과 대외비 표시가 남아 있다.",
+        items: [
+          {
+            label: "인턴 최종 발표 자료",
+            url: `${import.meta.env.BASE_URL}docs/ettifos-final-presentation.pptx`,
+            meta: "PPTX · 24장 · 4.6MB",
+          },
+          {
+            label: "과제 ① Snake 게임 소스 코드 분석",
+            url: `${import.meta.env.BASE_URL}docs/ettifos-snake-analysis.pptx`,
+            meta: "PPTX · 7장 · 0.4MB",
+          },
+          {
+            label: "현장실습 결과보고서",
+            url: `${import.meta.env.BASE_URL}docs/ettifos-practicum-report.docx`,
+            meta: "DOCX · 20KB",
           },
         ],
       },

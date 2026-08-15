@@ -27,6 +27,25 @@ function rich(text: string): ReactNode[] {
   });
 }
 
+function DownloadIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5M12 12v5M9.5 14.5 12 17l2.5-2.5" />
+    </svg>
+  );
+}
+
 /**
  * ActivityModal — one activity record entry opened as an article: a lead, a
  * photograph, body sections, an embedded clip and source links.
@@ -75,15 +94,20 @@ export default function ActivityModal({
           {d?.org && <span className="am-org">{d.org}</span>}
         </header>
 
+        {/* The opening photograph reads caption-first — the line sets up the
+            picture here, where a section figure's caption explains one it has
+            already shown. <figcaption> is allowed as the first child. */}
         {d?.hero && (
-          <figure className="am-figure">
-            <img src={d.hero.src} alt={d.hero.alt} loading="lazy" />
+          <figure className="am-figure am-figure--lead">
             {d.hero.caption && <figcaption>{d.hero.caption}</figcaption>}
+            <img src={d.hero.src} alt={d.hero.alt} loading="lazy" />
           </figure>
         )}
 
-        {/* Under the photograph, not above it: the picture is the opening
-            image and the facts read as its caption block. */}
+        {d?.summary && <p className="am-lead">{rich(d.summary)}</p>}
+
+        {/* After the lead, not before it: the standfirst says what this was in
+            sentences, and the facts are the reference table you check second. */}
         {d?.facts?.length ? (
           <dl className="am-facts">
             {d.facts.map((f) => (
@@ -94,8 +118,6 @@ export default function ActivityModal({
             ))}
           </dl>
         ) : null}
-
-        {d?.summary && <p className="am-lead">{rich(d.summary)}</p>}
 
         {d?.sections?.map((section) => (
           <section className="am-section" key={section.heading}>
@@ -159,16 +181,27 @@ export default function ActivityModal({
               ))}
             </div>
 
-            {d.deck.file && (
-              <a
-                className="am-source"
-                href={d.deck.file.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="am-source-label">{d.deck.file.label} ↗</span>
-              </a>
-            )}
+          </section>
+        ) : null}
+
+        {d?.downloads?.items?.length ? (
+          <section className="am-section">
+            {d.downloads.heading && <h4 className="am-heading">{d.downloads.heading}</h4>}
+            {d.downloads.note && <p className="am-para">{rich(d.downloads.note)}</p>}
+            <div className="am-files">
+              {d.downloads.items.map((file) => (
+                /* `download` rather than a new tab: these are .pptx/.docx, and
+                   a browser that can't render them would otherwise navigate
+                   away from the article to a blank page. */
+                <a className="am-file" key={file.url} href={file.url} download>
+                  <DownloadIcon />
+                  <span className="am-file-text">
+                    <span className="am-file-label">{file.label}</span>
+                    {file.meta && <span className="am-file-meta mono">{file.meta}</span>}
+                  </span>
+                </a>
+              ))}
+            </div>
           </section>
         ) : null}
 

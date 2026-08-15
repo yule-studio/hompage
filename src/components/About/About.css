@@ -522,6 +522,42 @@
   border-left: 2px solid var(--border-accent);
 }
 
+/* ── file downloads ─────────────────────────────────────────── */
+.am-files {
+  display: grid;
+  gap: var(--space-2);
+}
+.am-file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  transition: border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
+}
+.am-file:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  transform: translateX(2px);
+}
+.am-file-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.am-file-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+.am-file-meta {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+
 .am-video {
   position: relative;
   aspect-ratio: 16 / 9;
