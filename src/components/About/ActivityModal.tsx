@@ -119,6 +119,46 @@ export default function ActivityModal({
           </section>
         ))}
 
+        {d?.deck?.slides?.length ? (
+          <section className="am-section">
+            {d.deck.heading && <h4 className="am-heading">{d.deck.heading}</h4>}
+            {d.deck.note && <p className="am-para">{rich(d.deck.note)}</p>}
+
+            {/* Horizontal and scroll-snapped: a deck is read in order, and a
+                strip says that where a grid doesn't. Native scrolling means
+                trackpad, wheel, touch and keyboard all work for free. */}
+            <div
+              className="am-deck"
+              tabIndex={0}
+              role="group"
+              aria-label={`${d.deck.heading ?? "발표 자료"} — 슬라이드 ${d.deck.slides.length}장`}
+            >
+              {d.deck.slides.map((slide, i) => (
+                <figure className="am-deck-slide" key={slide.src}>
+                  <div className="am-deck-frame">
+                    <img src={slide.src} alt={slide.alt} loading="lazy" />
+                    <span className="am-deck-index mono" aria-hidden>
+                      {i + 1} / {d.deck!.slides.length}
+                    </span>
+                  </div>
+                  {slide.caption && <figcaption>{slide.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+
+            {d.deck.file && (
+              <a
+                className="am-source"
+                href={d.deck.file.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="am-source-label">{d.deck.file.label} ↗</span>
+              </a>
+            )}
+          </section>
+        ) : null}
+
         {d?.video && (
           <section className="am-section">
             {d.video.heading && <h4 className="am-heading">{d.video.heading}</h4>}

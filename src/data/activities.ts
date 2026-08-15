@@ -16,6 +16,23 @@ export type ActivityDetail = {
     /** bulleted items rendered after the paragraphs */
     list?: string[];
   }[];
+  /**
+   * A deck read page by page — presentation slides, a scanned report, anything
+   * that only makes sense in order. Rendered as a swipeable strip rather than a
+   * stack of figures, so a 20-slide deck costs one screen instead of twenty.
+   *
+   * Slides go in as images. Embedding a PDF means an <iframe> the phone will
+   * not scroll and a few megabytes before the first pixel; exported pages are
+   * just pictures, and the popup already knows how to size those.
+   */
+  deck?: {
+    heading?: string;
+    /** one line above the strip — what this deck is and where it came from */
+    note?: string;
+    /** offered under the strip when the whole file is downloadable */
+    file?: { label: string; url: string };
+    slides: { src: string; alt: string; caption?: string }[];
+  };
   /** embedded YouTube clip */
   video?: { id: string; title: string; heading?: string; caption?: string };
   /** heading above the link block */
