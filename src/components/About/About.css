@@ -147,13 +147,10 @@
   color: var(--text-muted);
 }
 /*
- * Two different things used to share one colour. The accent now means exactly
- * "this opens" — a row that is merely highlighted on the source record reads
- * brighter than its neighbours, but doesn't promise a click that never comes.
+ * Colour means one thing only: "this opens". `highlight` still marks the rows
+ * that were emphasised on the source record — it just doesn't tint them, so a
+ * row that can't be clicked reads exactly like its neighbours.
  */
-.about-act--key .about-act-title {
-  color: var(--text);
-}
 .about-act--open .about-act-title {
   color: var(--accent);
 }
