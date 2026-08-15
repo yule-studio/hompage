@@ -32,8 +32,9 @@ export const profile = {
   /** the quote block in the About section */
   tagline: "No amount of money ever bought a second of time.",
   taglineKo: "아무리 많은 돈도 단 1초의 시간을 살 수는 없다.",
-  phone: "",
-  phoneDisplay: "",
+  // No phone number here. This file is source in a public repository, so
+  // anything in it is readable whether or not a component renders it —
+  // contact goes through email and the Contact form instead.
   emailDisplay: "oyuchan50@gmail.com",
   links: {
     email: "mailto:oyuchan50@gmail.com",

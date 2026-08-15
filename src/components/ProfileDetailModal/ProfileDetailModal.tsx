@@ -139,12 +139,6 @@ export default function ProfileDetailModal({ open, onClose }: Props) {
             <h3 className="profile-modal-section-title">Contact</h3>
             <ul className="profile-modal-contact">
               <li>
-                <span className="label">phone</span>
-                <a className="profile-modal-link" href={`tel:${profile.phone}`}>
-                  {profile.phoneDisplay}
-                </a>
-              </li>
-              <li>
                 <span className="label">email</span>
                 <a className="profile-modal-link" href={profile.links.email}>
                   {profile.emailDisplay}
