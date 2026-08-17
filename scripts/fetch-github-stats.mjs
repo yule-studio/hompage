@@ -51,8 +51,21 @@ async function graphql(query, variables) {
 
   const body = await response.json();
 
-  if (!response.ok || body.errors?.length) {
+  /*
+   * GraphQL reports per-field failures alongside the data it did resolve, so
+   * treating any error as fatal throws away a good response. A token that
+   * can't read `stargazers` used to fail the whole deploy over a star count.
+   *
+   * Fail only when there is nothing usable; otherwise warn and let the caller
+   * work with the nulls.
+   */
+  if (!response.ok || !body.data) {
     throw new Error(`GitHub GraphQL failed: ${JSON.stringify(body.errors ?? body)}`);
+  }
+
+  if (body.errors?.length) {
+    const summary = [...new Set(body.errors.map((e) => `${e.type}: ${e.message}`))];
+    console.warn(`GitHub GraphQL returned partial data — ${summary.join(" | ")}`);
   }
 
   return body.data;
@@ -122,8 +135,10 @@ const [readmeStats, allCommits] = await Promise.all([
   includeAllCommits ? countCommitSearch(`author:${username}`) : Promise.resolve(null),
 ]);
 
-const stars = readmeStats.repositories.nodes.reduce((sum, repo) => {
-  return sum + (repo.stargazers.totalCount ?? 0);
+// `stargazers` is null for any repo the token may not read it on — see the
+// partial-data note in graphql(). Missing counts as zero rather than crashing.
+const stars = (readmeStats.repositories?.nodes ?? []).reduce((sum, repo) => {
+  return sum + (repo?.stargazers?.totalCount ?? 0);
 }, 0);
 const contributionCommits = commitsYear
   ? readmeStats.commitsSinceYear.totalCommitContributions
