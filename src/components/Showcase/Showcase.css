@@ -564,6 +564,42 @@ button.sc-card {
   border-color: color-mix(in srgb, var(--lang) 45%, var(--border));
 }
 
+/*
+ * Demo clip, sitting under everything the poster draws. `cover` because the
+ * tile is 4:5 and the recording is landscape — letterboxing would leave two
+ * grey bands inside a card whose whole job is to look composed. It stays dim
+ * until hover so the name and status keep their contrast.
+ */
+.pg-demo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--t-base);
+  pointer-events: none;
+}
+.pg-item--demo:hover .pg-demo,
+.pg-item--demo:focus-visible .pg-demo {
+  opacity: 0.85;
+}
+/* the name sits on footage now, so it needs its own ground to stay legible */
+.pg-item--demo:hover .pg-poster-name,
+.pg-item--demo:focus-visible .pg-poster-name {
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+/* the watermark is texture; with footage behind it, it turns into noise */
+.pg-item--demo:hover .pg-watermark,
+.pg-item--demo:focus-visible .pg-watermark {
+  opacity: 0.06;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-demo { transition: none; }
+}
+
 /* oversized language mark filling the poster's upper field as texture, kept
    clear of the name at the bottom */
 .pg-watermark {

@@ -4,6 +4,7 @@ import { type Project } from "../../data/projects";
 import { certs, type Cert } from "../../data/certs";
 import { skills } from "../../data/skills";
 import { hosts, services } from "../../data/homelab";
+import { projectDemos, type ProjectDemo } from "../../data/projectDemos";
 
 /**
  * PosterGrid — every showcase tab as the same dense poster grid. Nothing here
@@ -77,6 +78,8 @@ type TileProps = {
   /** caption under the poster */
   caption: string;
   sub: string;
+  /** plays over the poster art while the tile is hovered or focused */
+  demo?: ProjectDemo;
   /** wraps the tile in a link when the item has somewhere to go */
   href?: string;
   to?: string;
@@ -84,10 +87,45 @@ type TileProps = {
   index: number;
 };
 
-function Tile({ mark, badge, name, color, status, extra, caption, sub, href, to, index }: TileProps) {
+function Tile({ mark, badge, name, color, status, extra, caption, sub, demo, href, to, index }: TileProps) {
+  const video = useRef<HTMLVideoElement>(null);
+
+  /*
+   * Play on hover/focus rather than autoplaying every tile: a grid of clips all
+   * running at once is noise, and it costs a decode per tile. Paused clips are
+   * rewound so the next hover starts from the top.
+   */
+  const play = () => {
+    const el = video.current;
+    if (!el) return;
+    void el.play().catch(() => {
+      /* autoplay policy or a codec the browser won't take — poster stays */
+    });
+  };
+  const stop = () => {
+    const el = video.current;
+    if (!el) return;
+    el.pause();
+    el.currentTime = 0;
+  };
+
   const body = (
     <>
       <article className="pg-poster">
+        {demo && (
+          <video
+            ref={video}
+            className="pg-demo"
+            src={demo.src}
+            poster={demo.poster}
+            muted
+            loop
+            playsInline
+            preload="none"
+            aria-hidden
+          />
+        )}
+
         <span className="pg-watermark" aria-hidden>
           {mark}
         </span>
@@ -119,22 +157,27 @@ function Tile({ mark, badge, name, color, status, extra, caption, sub, href, to,
 
   const style = { ["--lang" as string]: color, ["--i" as string]: index } as React.CSSProperties;
 
+  const hover = demo
+    ? { onMouseEnter: play, onMouseLeave: stop, onFocus: play, onBlur: stop }
+    : {};
+  const cls = `pg-item${demo ? " pg-item--demo" : ""}`;
+
   if (to) {
     return (
-      <Link to={to} className="pg-item" style={style}>
+      <Link to={to} className={cls} style={style} {...hover}>
         {body}
       </Link>
     );
   }
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className="pg-item" style={style}>
+      <a href={href} target="_blank" rel="noreferrer" className={cls} style={style} {...hover}>
         {body}
       </a>
     );
   }
   return (
-    <div className="pg-item pg-item--static" style={style}>
+    <div className={`${cls} pg-item--static`} style={style} {...hover}>
       {body}
     </div>
   );
@@ -232,6 +275,7 @@ export function ProjectGrid({
             name={p.name}
             color={langColor(lang, p.slug)}
             status={projStatus(p)}
+            demo={projectDemos[p.slug]}
             caption={p.name}
             sub={`${lang} · ${p.year}`}
             to={`/projects/${p.slug}`}
