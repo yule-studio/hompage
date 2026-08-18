@@ -94,17 +94,19 @@ export default function ActivityModal({
           {d?.org && <span className="am-org">{d.org}</span>}
         </header>
 
-        {/* The opening photograph reads caption-first — the line sets up the
-            picture here, where a section figure's caption explains one it has
-            already shown. <figcaption> is allowed as the first child. */}
+        {/* The standfirst opens the article, and the photograph follows it —
+            reading what this was before looking at it means the picture lands
+            as evidence rather than as decoration you have to decode. Its
+            caption sits under the image for the same reason every other figure
+            here does: by then the picture has already been shown. */}
+        {d?.summary && <p className="am-lead">{rich(d.summary)}</p>}
+
         {d?.hero && (
           <figure className="am-figure am-figure--lead">
-            {d.hero.caption && <figcaption>{d.hero.caption}</figcaption>}
             <img src={d.hero.src} alt={d.hero.alt} loading="lazy" />
+            {d.hero.caption && <figcaption>{d.hero.caption}</figcaption>}
           </figure>
         )}
-
-        {d?.summary && <p className="am-lead">{rich(d.summary)}</p>}
 
         {/* After the lead, not before it: the standfirst says what this was in
             sentences, and the facts are the reference table you check second. */}

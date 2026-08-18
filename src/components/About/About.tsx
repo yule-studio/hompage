@@ -78,7 +78,7 @@ export default function About() {
         <ul className="about-act-list">
           {activities.map((a) => (
             <li
-              className={`about-act${a.highlight ? " about-act--key" : ""}${a.detail ? " about-act--open" : ""}`}
+              className={`about-act${a.highlight ? " about-act--key" : ""}${a.detail ? " about-act--open" : ""}${a.breakBefore ? " about-act--break" : ""}`}
               key={`${a.at}-${a.title}`}
             >
               <span className="about-act-date mono">{a.period}</span>

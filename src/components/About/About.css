@@ -113,16 +113,36 @@
   gap: var(--space-5);
 }
 
-/* multi-column so ~26 dated rows stay scannable instead of a long ladder */
+/*
+ * Multi-column so ~27 dated rows stay scannable instead of a long ladder. The
+ * section is full-bleed, so at desktop width three columns still leave each row
+ * its date and title on one line — and the dashed rule between them says where
+ * one column ends, which a gap alone never quite does. Two columns once the
+ * third would start breaking titles, one on a phone.
+ */
 .about-act-list {
-  columns: 2;
+  columns: 3;
   column-gap: var(--space-8);
+  column-rule: 1px dashed var(--border);
   margin: 0;
   padding: 0;
   list-style: none;
 }
+/* an entry that opens its own column — the newest record, kept apart from the
+   run of past ones rather than tacked onto the end of it */
+.about-act--break {
+  break-before: column;
+}
+@media (max-width: 1500px) {
+  .about-act-list { columns: 2; }
+  /* two columns can't spare one for a single row */
+  .about-act--break { break-before: auto; }
+}
 @media (max-width: 860px) {
-  .about-act-list { columns: 1; }
+  .about-act-list {
+    columns: 1;
+    column-rule: none;
+  }
 }
 
 .about-act {
@@ -131,12 +151,13 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-3);
-  padding-block: 8px;
+  padding-block: 9px;
+  padding-inline-end: var(--space-2);
   border-bottom: 1px dashed var(--border);
 }
 .about-act-date {
   flex: 0 0 auto;
-  min-width: 182px;
+  min-width: 168px;
   font-size: 12px;
   letter-spacing: 0.02em;
   color: var(--text-faint);
@@ -158,7 +179,8 @@
   text-decoration: underline;
 }
 
-@media (max-width: 560px) {
+/* narrow enough that a date and a title can't share a line */
+@media (max-width: 720px) {
   .about-act {
     flex-direction: column;
     gap: 2px;
