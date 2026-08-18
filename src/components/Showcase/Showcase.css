@@ -564,40 +564,251 @@ button.sc-card {
   border-color: color-mix(in srgb, var(--lang) 45%, var(--border));
 }
 
-/*
- * Demo clip, sitting under everything the poster draws. `cover` because the
- * tile is 4:5 and the recording is landscape — letterboxing would leave two
- * grey bands inside a card whose whole job is to look composed. It stays dim
- * until hover so the name and status keep their contrast.
+/* ── demo tile: the clip staged as a screen inside the poster ──
+ *
+ * These recordings are dark interfaces. Laid flat behind the type they
+ * disappeared into a dark card, and what did read looked like a video someone
+ * had left running. So the poster is lit for them instead: a brighter,
+ * language-tinted ground, and the footage inset in a framed screen that throws
+ * its own glow — the card now shows a demo rather than plays one.
  */
-.pg-demo {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity var(--t-base);
-  pointer-events: none;
-}
-.pg-item--demo:hover .pg-demo,
-.pg-item--demo:focus-visible .pg-demo {
-  opacity: 0.85;
-}
-/* the name sits on footage now, so it needs its own ground to stay legible */
-.pg-item--demo:hover .pg-poster-name,
-.pg-item--demo:focus-visible .pg-poster-name {
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9);
-}
-/* the watermark is texture; with footage behind it, it turns into noise */
-.pg-item--demo:hover .pg-watermark,
-.pg-item--demo:focus-visible .pg-watermark {
-  opacity: 0.06;
+.pg-item--demo .pg-poster {
+  background:
+    radial-gradient(85% 55% at 50% 33%, color-mix(in srgb, var(--lang) 40%, transparent), transparent 72%),
+    radial-gradient(120% 90% at 12% 0%, color-mix(in srgb, var(--lang) 20%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--lang) 12%, transparent), transparent 58%),
+    var(--bg-card);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .pg-demo { transition: none; }
+.pg-screen {
+  position: absolute;
+  left: 6.5%;
+  right: 6.5%;
+  top: 22%;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 7px;
+  border: 1px solid color-mix(in srgb, var(--lang) 38%, var(--border));
+  /* near-black ground so a frame is still a frame before the clip loads */
+  background: #05070a;
+  /* the glow is what separates dark footage from a dark card */
+  box-shadow:
+    0 14px 34px -12px rgba(0, 0, 0, 0.92),
+    0 8px 44px -16px color-mix(in srgb, var(--lang) 62%, transparent);
+  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+}
+
+/* window chrome — three dots and the repo name where a URL would go */
+.pg-screen-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.1cqw;
+  height: 4.6cqw;
+  padding-inline: 2.4cqw;
+  background: color-mix(in srgb, var(--lang) 14%, #0b0e12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.pg-screen-bar i {
+  width: 1.5cqw;
+  height: 1.5cqw;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.pg-screen-url {
+  margin-left: 1.4cqw;
+  font-size: 2.4cqw;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pg-screen-url b {
+  margin-right: 0.5cqw;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--lang) 60%, #fff);
+}
+
+/*
+ * The band the section cards ride on.
+ *
+ * Cards are strung along a track that shifts one place each time a clip ends.
+ * The one in the middle is at full size and plays; its neighbours are the same
+ * card scaled down — still a rectangle, just a smaller one — and the tile's
+ * edges cut them off, which is what says the band continues past what you see.
+ *
+ *   slot 88% wide · pulled together by -26% so the step is 62% · middle at 6%
+ *   neighbours scale to 0.55, so about 12% of each shows past the middle card
+ *
+ * The band sits high in the poster and the language mark fills the field below
+ * it, the way it does on a tile with no demo — a 16:9 card can never fill a 4:5
+ * poster on its own, and leaving that space blank made the tile look unfinished.
+ *
+ * Slots overlap on purpose: at full width they would push the neighbours off
+ * the edges entirely, and a band you cannot see the next link of is just a
+ * slideshow.
+ */
+.pg-stage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13%;
+  z-index: 0;
+  display: block;
+}
+.pg-deck {
+  display: block;
+  overflow: hidden;
+}
+.pg-belt {
+  display: flex;
+  transform: translateX(calc(6% - var(--pos, 0) * 62%));
+  transition: transform 1150ms cubic-bezier(0.32, 0.9, 0.24, 1);
+}
+/* the jump back to the start happens with the band held still — the card it
+   lands on is the same picture in the same place, so nothing appears to move */
+.pg-belt.is-snapping,
+.pg-belt.is-snapping .pg-card {
+  transition: none;
+}
+
+.pg-card {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 88%;
+  margin-right: -26%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: #05070a;
+  box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.9);
+  opacity: 0.42;
+  /* each card opens out of its own corner — see GROW_FROM in PosterGrid */
+  transform-origin: var(--grow-from, 50% 50%);
+  transform: scale(0.55);
+  transition:
+    transform 1150ms cubic-bezier(0.32, 0.9, 0.24, 1),
+    opacity 620ms ease,
+    border-color var(--t-base),
+    box-shadow var(--t-base);
+  pointer-events: none;
+}
+.pg-card.is-on {
+  z-index: 2;
+  opacity: 1;
+  transform: none;
+  border-color: color-mix(in srgb, var(--lang) 50%, var(--border));
+  box-shadow:
+    0 14px 34px -12px rgba(0, 0, 0, 0.92),
+    0 8px 44px -16px color-mix(in srgb, var(--lang) 62%, transparent);
+}
+
+/* window chrome — three dots, then which screen this card is */
+.pg-card-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  height: 4.2cqw;
+  padding-inline: 1.8cqw;
+  background: color-mix(in srgb, var(--lang) 14%, #0b0e12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.pg-card-bar i {
+  flex: 0 0 auto;
+  width: 1.3cqw;
+  height: 1.3cqw;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.pg-card-name {
+  margin-left: 1.2cqw;
+  font-size: 2.2cqw;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+/* only the card in the middle is big enough for its name to be worth reading */
+.pg-card.is-on .pg-card-name {
+  opacity: 1;
+  transition: opacity 320ms ease 520ms;
+}
+.pg-card-name b {
+  margin-right: 0.5cqw;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--lang) 60%, #fff);
+}
+
+/*
+ * The clips are cut to the recording's browser viewport, so they arrive at 16:9
+ * with the dead bands already gone. The lift in brightness and contrast is for
+ * the same reason the poster ground is tinted — a near-black UI needs help to
+ * read at tile size.
+ */
+.pg-shot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #05070a;
+  filter: brightness(1.16) contrast(1.08) saturate(1.08);
+  transition: filter var(--t-base);
+  pointer-events: none;
+}
+
+.pg-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 34%,
+    rgba(255, 255, 255, 0.16) 47%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+}
+/* only the card in the middle catches the light */
+.pg-card.is-on .pg-card-glare {
+  animation: pg-glare 7.5s cubic-bezier(0.5, 0, 0.5, 1) 1s infinite;
+}
+
+/* a project with no section cuts yet — the whole walkthrough, filling the frame */
+.pg-demo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: brightness(1.16) contrast(1.08) saturate(1.08);
+  transition: filter var(--t-base);
+  pointer-events: none;
+}
+
+/* chapters — one segment per screen, spanning the card the band is showing */
+.pg-chapters {
+  display: flex;
+  gap: 1.2cqw;
+  margin-top: 3.2cqw;
+  padding-inline: 6%;
+}
+.pg-chapters i {
+  flex: 1 1 0;
+  height: 0.9cqw;
+  border-radius: 1cqw;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background var(--t-base);
+}
+.pg-chapters i.is-on {
+  background: color-mix(in srgb, var(--lang) 72%, #fff);
 }
 
 /* oversized language mark filling the poster's upper field as texture, kept
@@ -616,6 +827,17 @@ button.sc-card {
   color: color-mix(in srgb, var(--lang) 15%, transparent);
   user-select: none;
   pointer-events: none;
+}
+/* on a demo tile the mark is what fills the field under the band — a 16:9 card
+   cannot fill a 4:5 poster, and that space reading as empty made the tile look
+   half-drawn next to its neighbours */
+.pg-item--demo .pg-watermark {
+  top: 66%;
+  font-size: 54cqw;
+}
+/* the name sits over a lit poster, so it keeps its own ground */
+.pg-item--demo .pg-poster-name {
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .pg-poster-top {

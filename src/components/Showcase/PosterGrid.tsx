@@ -5,6 +5,7 @@ import { certs, type Cert } from "../../data/certs";
 import { skills } from "../../data/skills";
 import { hosts, services } from "../../data/homelab";
 import { projectDemos, type ProjectDemo } from "../../data/projectDemos";
+import { useClipInView } from "../../hooks/useClipInView";
 
 /**
  * PosterGrid — every showcase tab as the same dense poster grid. Nothing here
@@ -78,7 +79,7 @@ type TileProps = {
   /** caption under the poster */
   caption: string;
   sub: string;
-  /** plays over the poster art while the tile is hovered or focused */
+  /** plays over the poster art on its own, for as long as the tile is on screen */
   demo?: ProjectDemo;
   /** wraps the tile in a link when the item has somewhere to go */
   href?: string;
@@ -87,44 +88,215 @@ type TileProps = {
   index: number;
 };
 
-function Tile({ mark, badge, name, color, status, extra, caption, sub, demo, href, to, index }: TileProps) {
-  const video = useRef<HTMLVideoElement>(null);
+/*
+ * The demo inside a tile.
+ *
+ * A single long clip playing behind the type read as "a video is running" — you
+ * could not say what it showed. Cut by section it becomes a tour: a separate
+ * card per screen of the site, strung along one band that runs behind the tile.
+ *
+ * The card in the middle is the big one and it plays; the cards either side are
+ * the same card at a smaller size, cut off by the tile's edges. When a clip ends
+ * the band moves one place along — the card that was playing shrinks as it
+ * leaves the middle and the next one grows into it.
+ *
+ * It only ever moves one way. The band carries three passes of the sections and
+ * starts on the middle one, so when the track reaches the same spot a pass
+ * later it can be wound back by one pass with the transition off: every card in
+ * view, and both neighbours, are identical either side of that move, so nothing
+ * on screen changes and the band appears to run on forever. The wind-back
+ * happens after the slide and before the next clip starts, so no clip is ever
+ * cut short by it.
+ *
+ * Clips run at the project's `rate`, because a recording made at reading speed
+ * is unfollowable once it is a thumbnail. Only the card in the middle is loaded
+ * and playing, the rest wait at `preload="none"`, and the band stops the moment
+ * the tile scrolls off.
+ */
+
+/** how long the band takes to carry one card into the middle — mirrors the CSS */
+const SLIDE_MS = 1150;
+
+/**
+ * Where each card grows from and shrinks back to.
+ *
+ * A card scaled about its centre grows evenly on all four sides, and six of
+ * those in a row is a metronome. Giving each card its own corner to open out of
+ * — this one from the top, the next from the bottom, another folding away to
+ * the left — makes the band feel handmade instead of generated, which is the
+ * whole point of the motion.
+ *
+ * Assigned by section index, not by position on the belt, so a section grows
+ * the same way on every pass and the wind-back stays invisible. The horizontal
+ * halves are kept off the extremes: at 0% or 100% a card can fold entirely out
+ * of view and leave a gap at the tile's edge.
+ */
+const GROW_FROM = ["50% 0%", "50% 100%", "20% 100%", "80% 0%", "20% 0%", "80% 100%"];
+
+function DemoScreen({ demo, fallbackLabel }: { demo: ProjectDemo; fallbackLabel: string }) {
+  const sections = demo.sections ?? [];
+  const rate = demo.rate ?? 1;
+  const count = sections.length;
+
+  /* three passes of the same sections — see the note about winding back */
+  const belt = count ? [...sections, ...sections, ...sections] : [];
+
+  /* start on the middle pass so there is a card to the left from the first frame */
+  const [pos, setPos] = useState(count);
+  const [snapping, setSnapping] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const stage = useRef<HTMLSpanElement>(null);
+  const clips = useRef<(HTMLVideoElement | null)[]>([]);
+
+  /* the tile has to be on screen for any of this to be worth doing */
+  useEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      threshold: 0.2,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   /*
-   * Play on hover/focus rather than autoplaying every tile: a grid of clips all
-   * running at once is noise, and it costs a decode per tile. Paused clips are
-   * rewound so the next hover starts from the top.
+   * Play whatever is in the middle — unless the band has run a full pass past
+   * where it started, in which case let the slide finish and wind the track back
+   * by one pass. What is on screen is identical either side of that, and it
+   * happens before anything starts playing, so no clip is cut off mid-way.
    */
-  const play = () => {
-    const el = video.current;
+  useEffect(() => {
+    if (!count) return;
+
+    if (pos === count * 2) {
+      const t = window.setTimeout(() => {
+        setSnapping(true);
+        setPos(count);
+      }, SLIDE_MS);
+      return () => window.clearTimeout(t);
+    }
+
+    const el = clips.current[pos];
     if (!el) return;
+    if (!visible) {
+      el.pause();
+      return;
+    }
+    el.playbackRate = rate;
+    el.currentTime = 0;
     void el.play().catch(() => {
       /* autoplay policy or a codec the browser won't take — poster stays */
     });
-  };
-  const stop = () => {
-    const el = video.current;
-    if (!el) return;
-    el.pause();
-    el.currentTime = 0;
-  };
 
+    const next = clips.current[pos + 1];
+    if (next && next.preload === "none") {
+      next.preload = "auto";
+      next.load();
+    }
+    // `snapping` is deliberately not a dependency: it flips right after the jump
+    // and re-running here would restart the clip that just started.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pos, visible, rate, count]);
+
+  /* transitions come back the frame after the jump, never during it */
+  useEffect(() => {
+    if (!snapping) return;
+    const raf = requestAnimationFrame(() => setSnapping(false));
+    return () => cancelAnimationFrame(raf);
+  }, [snapping]);
+
+  /* a project with no section cuts yet — the whole walkthrough in one window */
+  if (!count) {
+    return (
+      <span className="pg-screen" aria-hidden>
+        <span className="pg-screen-bar">
+          <i />
+          <i />
+          <i />
+          <span className="pg-screen-url mono">{fallbackLabel}</span>
+        </span>
+        <SingleClip demo={demo} />
+        <span className="pg-screen-glare" />
+      </span>
+    );
+  }
+
+  /* a clip reached its end — hand the middle to the next card */
+  const advance = () => setPos((p) => p + 1);
+
+  return (
+    <span ref={stage} className="pg-stage" aria-hidden>
+      <span className="pg-deck">
+      <span
+        className={`pg-belt${snapping ? " is-snapping" : ""}`}
+        style={{ ["--pos" as string]: pos } as React.CSSProperties}
+      >
+        {belt.map((section, i) => (
+          <span
+            key={`${section.src}-${i}`}
+            className={`pg-card${i === pos ? " is-on" : ""}`}
+            style={
+              { ["--grow-from" as string]: GROW_FROM[i % count % GROW_FROM.length] } as React.CSSProperties
+            }
+          >
+            <span className="pg-card-bar">
+              <i />
+              <i />
+              <i />
+              <span className="pg-card-name mono">
+                <b>{String((i % count) + 1).padStart(2, "0")}</b> {section.label}
+              </span>
+            </span>
+            <video
+              ref={(el) => {
+                clips.current[i] = el;
+              }}
+              className="pg-shot"
+              src={section.src}
+              poster={section.poster}
+              muted
+              playsInline
+              preload="none"
+              onEnded={i === pos ? advance : undefined}
+            />
+            <span className="pg-card-glare" />
+          </span>
+        ))}
+      </span>
+      </span>
+
+      {/* chapters — how many screens there are and which one is up */}
+      <span className="pg-chapters">
+        {sections.map((section, i) => (
+          <i key={section.src} className={i === pos % count ? "is-on" : undefined} />
+        ))}
+      </span>
+    </span>
+  );
+}
+
+/** a project with no section cuts yet — the whole walkthrough, looped */
+function SingleClip({ demo }: { demo: ProjectDemo }) {
+  const video = useClipInView();
+  return (
+    <video
+      ref={video}
+      className="pg-demo is-on"
+      src={demo.src}
+      poster={demo.poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+    />
+  );
+}
+
+function Tile({ mark, badge, name, color, status, extra, caption, sub, demo, href, to, index }: TileProps) {
   const body = (
     <>
       <article className="pg-poster">
-        {demo && (
-          <video
-            ref={video}
-            className="pg-demo"
-            src={demo.src}
-            poster={demo.poster}
-            muted
-            loop
-            playsInline
-            preload="none"
-            aria-hidden
-          />
-        )}
+        {demo && <DemoScreen demo={demo} fallbackLabel={caption} />}
 
         <span className="pg-watermark" aria-hidden>
           {mark}
@@ -157,27 +329,24 @@ function Tile({ mark, badge, name, color, status, extra, caption, sub, demo, hre
 
   const style = { ["--lang" as string]: color, ["--i" as string]: index } as React.CSSProperties;
 
-  const hover = demo
-    ? { onMouseEnter: play, onMouseLeave: stop, onFocus: play, onBlur: stop }
-    : {};
   const cls = `pg-item${demo ? " pg-item--demo" : ""}`;
 
   if (to) {
     return (
-      <Link to={to} className={cls} style={style} {...hover}>
+      <Link to={to} className={cls} style={style}>
         {body}
       </Link>
     );
   }
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={cls} style={style} {...hover}>
+      <a href={href} target="_blank" rel="noreferrer" className={cls} style={style}>
         {body}
       </a>
     );
   }
   return (
-    <div className={`${cls} pg-item--static`} style={style} {...hover}>
+    <div className={`${cls} pg-item--static`} style={style}>
       {body}
     </div>
   );
