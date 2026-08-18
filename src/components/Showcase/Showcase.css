@@ -654,7 +654,9 @@ button.sc-card {
   position: absolute;
   left: 0;
   right: 0;
-  top: 13%;
+  /* centred in the field it has — between the poster's header line and the name
+     at the foot, not in the poster as a whole */
+  top: 24%;
   z-index: 0;
   display: block;
 }
@@ -828,11 +830,11 @@ button.sc-card {
   user-select: none;
   pointer-events: none;
 }
-/* on a demo tile the mark is what fills the field under the band — a 16:9 card
+/* on a demo tile the mark is what fills the field around the band — a 16:9 card
    cannot fill a 4:5 poster, and that space reading as empty made the tile look
-   half-drawn next to its neighbours */
+   half-drawn next to its neighbours. Held back a size so it stays texture
+   behind the card rather than competing with it. */
 .pg-item--demo .pg-watermark {
-  top: 66%;
   font-size: 54cqw;
 }
 /* the name sits over a lit poster, so it keeps its own ground */
