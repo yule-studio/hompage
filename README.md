@@ -33,6 +33,8 @@
 | [`03 Portfolio`](public/media/demo/hompage-portfolio.mp4) | 포스터 그리드에서 프로젝트 상세까지 |
 | [`04 Contact`](public/media/demo/hompage-contact.mp4) | 문의 폼 + 코멘트 월 |
 
+전체 녹화본은 [`public/media/hompage-demo.mp4`](public/media/hompage-demo.mp4).
+
 ## Overview
 
 한 페이지짜리 스크롤 내러티브다. 히어로가 먼저 오고, 그 아래로 About · Portfolio ·
